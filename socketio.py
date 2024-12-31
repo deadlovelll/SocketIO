@@ -4,22 +4,55 @@ from urllib.parse import urlparse
 
 
 class SocketIO:
+    
     def __init__(self):
         self.routes = {}
         self.task_type = {}
+        
         self.io_executor = ThreadPoolExecutor()  # For IO-bound tasks
         self.cpu_executor = ProcessPoolExecutor()  # For CPU-bound tasks
+        
+        self.startup_handlers = []
+        self.shutdown_handlers = []
 
     def route(self, path):
         def wrapper(handler):
             self.routes[path] = handler
             return handler
         return wrapper
+    
+    def on_start(self):
+        def wrapper(handler):
+            self.startup_handlers.append(handler)
+            return handler
+        return wrapper
+    
+    def on_shutdown(self, path):
+        def wrapper(handler):
+            self.shutdown_handlers.append(handler)
+            return handler
+        return wrapper
+    
+    async def run_on_start_handlers(self) -> None:
+        for handler in self.startup_handlers:
+            if asyncio.iscoroutinefunction(handler):
+                await handler()
+            else:
+                handler()
+        return None
+                
+    async def run_on_shutdown_handlers(self):
+        for handler in self.shutdown_handlers:
+            if asyncio.iscoroutinefunction(handler):
+                await handler()
+            else:
+                handler()
+        return None
 
     def IOBound(self, task_type):
         def wrapper(handler):
             async def wrapped_handler(*args, **kwargs):
-                result = await self.io_executor.submit(self.executor, handler, *args, **kwargs)
+                result = await self.io_executor.submit(handler, *args, **kwargs)
                 return result
 
             self.task_type[wrapped_handler] = ('io', task_type)
@@ -76,8 +109,22 @@ class SocketIO:
         writer.close()
 
     async def serve(self, host="127.0.0.1", port=8000):
+        await self.run_on_start_handlers()
         server = await asyncio.start_server(self.handle_request, host, port)
+        print(f"Welcome to SocketIO!")
         print(f"Serving on {host}:{port}")
-        async with server:
-            await server.serve_forever()
+        
+        try:
+            async with server:
+                await server.serve_forever()
+                
+        except KeyboardInterrupt:
+            print("\nShutting down server...")
+            
+        finally:
+            await self.run_on_start_handlers()
+            self.io_executor.shutdown(wait=True)
+            self.cpu_executor.shutdown(wait=True)
+            print("Server has been shut down cleanly.")
+            
 
