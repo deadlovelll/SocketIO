@@ -34,15 +34,12 @@ class SocketIO:
         
         self.openapi_paths = {}
 
+    @property
     def route (
-        self, 
-        path,
-    ) -> Any:
+        self,
+    ) -> None:
         
-        def wrapper(handler):
-            self.routes[path] = handler
-            return handler
-        return wrapper
+        self.IORouter.route
     
     def generate_openapi(self):
         openapi_spec = {

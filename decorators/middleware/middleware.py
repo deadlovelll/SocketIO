@@ -12,21 +12,23 @@ class IOMiddleware:
     def before_request (
         self,
     ) -> Callable[[Callable[..., None]], Callable[..., None]]:
+        
         def wrapper (
             handler: Callable[..., None]
         ) -> Callable[..., None]:
-            self.before_request_handlers.append(handler)
             
+            self.before_request_handlers.append(handler)
             return handler
         return wrapper
     
     def after_request (
         self,
     ) -> Callable[[Callable[..., None]], Callable[..., None]]:
+        
         def wrapper (
             handler: Callable[..., None]
         ) -> Callable[..., None]:
-            self.after_request_handlers.append(handler)
             
+            self.after_request_handlers.append(handler)
             return handler
         return wrapper

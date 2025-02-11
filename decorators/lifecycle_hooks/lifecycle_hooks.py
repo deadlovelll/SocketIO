@@ -11,10 +11,12 @@ class LifecycleHooks:
 
     def on_start (
         self
-    ) -> Callable[[Callable[[], None]], Callable[[], None]]:     
+    ) -> Callable[[Callable[[], None]], Callable[[], None]]:
+            
         def wrapper (
             handler: Callable[[], None]
         ) -> Callable[[], None]:
+            
             self.startup_handlers.append(handler)
             return handler 
         return wrapper
@@ -22,10 +24,12 @@ class LifecycleHooks:
 
     def on_shutdown (
         self
-    ) -> Callable[[Callable[[], None]], Callable[[], None]]:    
+    ) -> Callable[[Callable[[], None]], Callable[[], None]]:
+            
         def wrapper (
             handler: Callable[[], None]
         ) -> Callable[[], None]:
+            
             self.shutdown_handlers.append(handler)
             return handler 
         return wrapper
