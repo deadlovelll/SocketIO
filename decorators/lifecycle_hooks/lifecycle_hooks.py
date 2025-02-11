@@ -1,3 +1,5 @@
+from typing import Callable
+
 class LifecycleHooks:
     
     def __init__ (
@@ -7,16 +9,23 @@ class LifecycleHooks:
         self.startup_handlers = []
         self.shutdown_handlers = []
 
-    def on_start(self):
-        """Decorator to register startup handlers"""
-        def wrapper(handler):
+    def on_start (
+        self
+    ) -> Callable[[Callable[[], None]], Callable[[], None]]:     
+        def wrapper (
+            handler: Callable[[], None]
+        ) -> Callable[[], None]:
             self.startup_handlers.append(handler)
-            return handler  # Return the original function
+            return handler 
         return wrapper
 
-    def on_shutdown(self):
-        """Decorator to register shutdown handlers"""
-        def wrapper(handler):
+
+    def on_shutdown (
+        self
+    ) -> Callable[[Callable[[], None]], Callable[[], None]]:    
+        def wrapper (
+            handler: Callable[[], None]
+        ) -> Callable[[], None]:
             self.shutdown_handlers.append(handler)
-            return handler  # Return the original function
+            return handler 
         return wrapper
