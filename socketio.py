@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from typing import Any
 
 from autodoc.autodoc import AutoDocGenerator
+from decorators.lifecycle_hooks.lifecycle_hooks import LifecycleHooks
 
 class SocketIO:
     
@@ -16,6 +17,7 @@ class SocketIO:
         
         self.io_executor = ThreadPoolExecutor()  # For IO-bound tasks
         self.cpu_executor = ProcessPoolExecutor()  # For CPU-bound tasks
+        self.life_cycle_hooks = LifecycleHooks()
         
         self.startup_handlers = []
         self.shutdown_handlers = []
@@ -51,18 +53,6 @@ class SocketIO:
                 }
             openapi_spec["paths"][path] = path_item
         return openapi_spec
-    
-    def on_start(self):
-        def wrapper(handler):
-            self.startup_handlers.append(handler)
-            return handler
-        return wrapper
-    
-    def on_shutdown(self, path):
-        def wrapper(handler):
-            self.shutdown_handlers.append(handler)
-            return handler
-        return wrapper
     
     async def run_on_start_handlers(self) -> None:
         for handler in self.startup_handlers:
@@ -101,7 +91,12 @@ class SocketIO:
 
         return wrapper
 
-    async def run_in_executor(self, handler, *args):
+    async def run_in_executor (
+        self,
+        handler, 
+        *args
+    ) -> None:
+        
         task_info = self.task_type.get(handler)
         if task_info:
             task_type, _ = task_info
@@ -110,7 +105,12 @@ class SocketIO:
         else:
             return handler(*args)
 
-    async def handle_request(self, reader, writer):
+    async def handle_request (
+        self, 
+        reader, 
+        writer
+    ) -> None:
+        
         data = await reader.read(1024)
         request_line = data.decode('utf-8').splitlines()[0]
         method, path, _ = request_line.split(" ")
@@ -148,7 +148,12 @@ class SocketIO:
         await writer.drain()
         writer.close()
 
-    async def serve(self, host="127.0.0.1", port=8000):
+    async def serve (
+        self, 
+        host="127.0.0.1", 
+        port=8000,
+    ) -> None:
+        
         await self.run_on_start_handlers()
         server = await asyncio.start_server(self.handle_request, host, port)
         self.generate_openapi()
