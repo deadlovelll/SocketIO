@@ -1,11 +1,16 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from urllib.parse import urlparse
+from typing import Any
 
+from autodoc.autodoc import AutoDocGenerator
 
 class SocketIO:
     
-    def __init__(self):
+    def __init__ (
+        self,
+    ) -> None:
+        
         self.routes = {}
         self.task_type = {}
         
@@ -14,12 +19,38 @@ class SocketIO:
         
         self.startup_handlers = []
         self.shutdown_handlers = []
+        
+        self.openapi_paths = {}
 
-    def route(self, path):
+    def route (
+        self, 
+        path,
+    ) -> Any:
+        
         def wrapper(handler):
             self.routes[path] = handler
             return handler
         return wrapper
+    
+    def generate_openapi(self):
+        openapi_spec = {
+            "openapi": "3.0.0",
+            "info": {
+                "title": "SocketIO API",
+                "version": "1.0.0"
+            },
+            "paths": {}
+        }
+        for path, details in self.openapi_paths.items():
+            path_item = {}
+            for method, method_details in details["methods"].items():
+                path_item[method.lower()] = {
+                    "summary": details.get("summary", ""),
+                    "description": details.get("description", ""),
+                    "responses": method_details["responses"]
+                }
+            openapi_spec["paths"][path] = path_item
+        return openapi_spec
     
     def on_start(self):
         def wrapper(handler):
@@ -86,6 +117,15 @@ class SocketIO:
         parsed_path = urlparse(path)
 
         handler = self.routes.get(parsed_path.path)
+        
+        if parsed_path.path == "/docs":
+            response_body = self.serve_swagger_ui()
+            status_line = "HTTP/1.1 200 OK\r\n"
+            response = f"{status_line}Content-Type: text/html\r\n\r\n{response_body}"
+            writer.write(response.encode('utf-8'))
+            await writer.drain()
+            writer.close()
+            return
 
         if handler:
             try:
@@ -111,6 +151,7 @@ class SocketIO:
     async def serve(self, host="127.0.0.1", port=8000):
         await self.run_on_start_handlers()
         server = await asyncio.start_server(self.handle_request, host, port)
+        self.generate_openapi()
         print(f"Welcome to SocketIO!")
         print(f"Serving on {host}:{port}")
         
