@@ -9,7 +9,6 @@ class RateLimitation:
         max_calls: int, 
         interval: int
     ):
-        """Limit function execution to `max_calls` per `interval` seconds."""
         call_times = []
 
         def decorator (
