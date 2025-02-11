@@ -1,0 +1,2 @@
+class AsyncDecorator:
+    pass

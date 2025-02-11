@@ -1,0 +1,2 @@
+class IOMiddleware:
+    pass

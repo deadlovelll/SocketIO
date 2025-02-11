@@ -4,7 +4,13 @@ from urllib.parse import urlparse
 from typing import Any
 
 from autodoc.autodoc import AutoDocGenerator
+
 from decorators.lifecycle_hooks.lifecycle_hooks import LifecycleHooks
+from decorators.rate_limit_decorator.rate_limit import RateLimitation
+from decorators.async_decorator.async_decorator import AsyncDecorator
+from decorators.cache_decorator.cache_decorator import CacheDecorator
+from decorators.route_decorator.IO_Router import IORouter
+from decorators.middleware.middleware import IOMiddleware
 
 class SocketIO:
     
@@ -17,10 +23,14 @@ class SocketIO:
         
         self.io_executor = ThreadPoolExecutor()  # For IO-bound tasks
         self.cpu_executor = ProcessPoolExecutor()  # For CPU-bound tasks
-        self.life_cycle_hooks = LifecycleHooks()
         
-        self.startup_handlers = []
-        self.shutdown_handlers = []
+        # Decorators
+        self.life_cycle_hooks_handler = LifecycleHooks()
+        self.rate_limitation_handler = RateLimitation()
+        self.async_handler = AsyncDecorator()
+        self.cache_handler = CacheDecorator()
+        self.IORouter = IORouter()
+        self.IOMiddleware = IOMiddleware()
         
         self.openapi_paths = {}
 
