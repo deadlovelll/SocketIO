@@ -2,6 +2,12 @@ from typing import Callable
 
 class IORouter:
     
+    def __init__ (
+        self
+    ) -> None:
+        
+        self.routes = []
+    
     def route (
         self, 
         path,

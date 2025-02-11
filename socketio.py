@@ -11,6 +11,7 @@ from decorators.async_decorator.async_decorator import AsyncDecorator
 from decorators.cache_decorator.cache_decorator import CacheDecorator
 from decorators.route_decorator.IO_Router import IORouter
 from decorators.middleware.middleware import IOMiddleware
+from decorators.bound_handlers.bound_handlers import BoundHandlers
 
 class SocketIO:
     
@@ -18,16 +19,13 @@ class SocketIO:
         self,
     ) -> None:
         
-        self.routes = {}
-        self.task_type = {}
-        
-        self.io_executor = ThreadPoolExecutor()  # For IO-bound tasks
-        self.cpu_executor = ProcessPoolExecutor()  # For CPU-bound tasks
-        
         # Decorators
         self.life_cycle_hooks_handler = LifecycleHooks()
         self.rate_limitation_handler = RateLimitation()
+        
         self.async_handler = AsyncDecorator()
+        self.bound_handler = BoundHandlers()
+        
         self.cache_handler = CacheDecorator()
         self.IORouter = IORouter()
         self.IOMiddleware = IOMiddleware()
@@ -76,27 +74,6 @@ class SocketIO:
             else:
                 handler()
         return None
-
-    def IOBound(self, task_type):
-        def wrapper(handler):
-            async def wrapped_handler(*args, **kwargs):
-                result = await self.io_executor.submit(handler, *args, **kwargs)
-                return result
-
-            self.task_type[wrapped_handler] = ('io', task_type)
-            return wrapped_handler
-
-        return wrapper
-
-    def CPUBound(self, task_type):
-        def wrapper(handler):
-            def wrapped_handler(*args, **kwargs):
-                return self.cpu_executor.submit(handler, *args, **kwargs)
-
-            self.task_type[wrapped_handler] = ('cpu', task_type)
-            return wrapped_handler
-
-        return wrapper
 
     async def run_in_executor (
         self,
