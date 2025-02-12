@@ -6,7 +6,7 @@ from typing import Callable
 class IORouter:
     
     def __init__ (
-        self
+        self,
     ) -> None:
         
         self.routes = {}
@@ -17,7 +17,7 @@ class IORouter:
     ) -> Callable[[Callable[..., None]], Callable[..., None]]:
         
         def wrapper (
-            handler: Callable[..., None]
+            handler: Callable[..., None],
         ) -> Callable[..., None]:
             
             self.routes[path] = handler
@@ -27,7 +27,7 @@ class IORouter:
     async def handle_request (
         self, 
         reader, 
-        writer
+        writer,
     ) -> None:
         
         data = await reader.read(1024)
