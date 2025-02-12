@@ -7,9 +7,9 @@ class CacheDecorator:
     
     def __init__ (
         self,
-        redis_host,
-        redis_port,
-        redis_db,
+        redis_host='localhost',
+        redis_port=6379,
+        redis_db=0,
     ) -> None:
         
         self.redis_client = redis.Redis (

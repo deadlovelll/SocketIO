@@ -40,6 +40,7 @@ class SocketIO:
     rate_limit = _create_property("rate_limitation_handler.rate_limit")
     on_start = _create_property("life_cycle_hooks_handler.on_start")
     on_shutdown = _create_property("life_cycle_hooks_handler.on_shutdown")
+    cache = _create_property("cache_handler.cache")
 
     async def run_in_executor (
         self,

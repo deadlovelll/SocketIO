@@ -35,7 +35,7 @@ class IORouter:
         method, path, _ = request_line.split(" ")
         parsed_path = urlparse(path)
 
-        handler = self.IORouter.routes.get(parsed_path.path)
+        handler = self.routes.get(parsed_path.path)
         
         if parsed_path.path == "/docs":
             response_body = self.serve_swagger_ui()
