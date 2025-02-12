@@ -1,5 +1,4 @@
 import asyncio
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from urllib.parse import urlparse
 from typing import Any
 
@@ -22,58 +21,25 @@ class SocketIO:
         # Decorators
         self.life_cycle_hooks_handler = LifecycleHooks()
         self.rate_limitation_handler = RateLimitation()
-        
         self.async_handler = AsyncDecorator()
         self.bound_handler = BoundHandlers()
-        
         self.cache_handler = CacheDecorator()
         self.IORouter = IORouter()
         self.IOMiddleware = IOMiddleware()
         
         self.openapi_paths = {}
 
-    @property
-    def route (
-        self,
-    ) -> None:
-        
-        self.IORouter.route
-    
-    def generate_openapi(self):
-        openapi_spec = {
-            "openapi": "3.0.0",
-            "info": {
-                "title": "SocketIO API",
-                "version": "1.0.0"
-            },
-            "paths": {}
-        }
-        for path, details in self.openapi_paths.items():
-            path_item = {}
-            for method, method_details in details["methods"].items():
-                path_item[method.lower()] = {
-                    "summary": details.get("summary", ""),
-                    "description": details.get("description", ""),
-                    "responses": method_details["responses"]
-                }
-            openapi_spec["paths"][path] = path_item
-        return openapi_spec
-    
-    async def run_on_start_handlers(self) -> None:
-        for handler in self.startup_handlers:
-            if asyncio.iscoroutinefunction(handler):
-                await handler()
-            else:
-                handler()
-        return None
-                
-    async def run_on_shutdown_handlers(self):
-        for handler in self.shutdown_handlers:
-            if asyncio.iscoroutinefunction(handler):
-                await handler()
-            else:
-                handler()
-        return None
+    def _create_property(attr_path: str):
+        """Helper function to create a dynamic property"""
+        return property(lambda self: eval(f"self.{attr_path}"))
+
+    # Dynamically define properties
+    route = _create_property("IORouter.route")
+    IOBound = _create_property("bound_handler.IOBound")
+    CPUBound = _create_property("bound_handler.CPUBound")
+    rate_limit = _create_property("rate_limitation_handler.rate_limit")
+    on_start = _create_property("life_cycle_hooks_handler.on_start")
+    on_shutdown = _create_property("life_cycle_hooks_handler.on_shutdown")
 
     async def run_in_executor (
         self,
@@ -100,7 +66,7 @@ class SocketIO:
         method, path, _ = request_line.split(" ")
         parsed_path = urlparse(path)
 
-        handler = self.routes.get(parsed_path.path)
+        handler = self.IORouter.routes.get(parsed_path.path)
         
         if parsed_path.path == "/docs":
             response_body = self.serve_swagger_ui()
@@ -138,9 +104,12 @@ class SocketIO:
         port=8000,
     ) -> None:
         
-        await self.run_on_start_handlers()
-        server = await asyncio.start_server(self.handle_request, host, port)
-        self.generate_openapi()
+        await self.life_cycle_hooks_handler.run_on_start_handlers()
+        server = await asyncio.start_server (
+            self.handle_request, 
+            host, 
+            port
+        )
         print(f"Welcome to SocketIO!")
         print(f"Serving on {host}:{port}")
         
@@ -152,9 +121,15 @@ class SocketIO:
             print("\nShutting down server...")
             
         finally:
-            await self.run_on_start_handlers()
+            await self.life_cycle_hooks_handler.run_on_shutdown_handlers()
             self.io_executor.shutdown(wait=True)
             self.cpu_executor.shutdown(wait=True)
             print("Server has been shut down cleanly.")
+            
+    async def shutdown (
+        self,
+    ) -> None:
+        
+        pass
             
 

@@ -6,7 +6,7 @@ class IORouter:
         self
     ) -> None:
         
-        self.routes = []
+        self.routes = {}
     
     def route (
         self, 

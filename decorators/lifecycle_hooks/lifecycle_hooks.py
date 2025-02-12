@@ -1,3 +1,4 @@
+import asyncio
 from typing import Callable
 
 class LifecycleHooks:
@@ -33,3 +34,21 @@ class LifecycleHooks:
             self.shutdown_handlers.append(handler)
             return handler 
         return wrapper
+    
+    async def run_on_start_handlers (
+        self,
+    ) -> None:
+        
+        await asyncio.gather(*[
+            handler() if asyncio.iscoroutinefunction(handler) else asyncio.to_thread(handler)
+            for handler in self.startup_handlers
+        ])
+
+    async def run_on_shutdown_handlers (
+        self,
+    ) -> None:
+        
+        await asyncio.gather(*[
+            handler() if asyncio.iscoroutinefunction(handler) else asyncio.to_thread(handler)
+            for handler in self.shutdown_handlers
+        ])
