@@ -61,49 +61,21 @@ class SocketIO:
     
     async def serve (
         self,
-    ):  
+    ) -> None:  
+        
+        # Registering signal handlers
         await self.register_signal_handlers()
         
-        self.running = True
-        self.server_socket = socket.socket (
-            socket.AF_INET, 
-            socket.SOCK_STREAM
-        )
-        self.server_socket.setsockopt (
-            socket.SOL_SOCKET, 
-            socket.SO_REUSEADDR, 
-            1,
-        )
-        self.server_socket.bind (
-            (self.host, self.port)
-        )
-        self.server_socket.listen(self.backlog)
+        # Binding server socket
+        await self.__bind_socket()
         
-        print('Wecolme to SocketIO!')
-        print(f"Server running on http://{self.host}:{self.port}")
-        print('Quit the server with CONTROL-C.')
+        # Displaying hello message
+        await self.__print_hello_message()
         
-        watcher_thread = threading.Thread(
-            target=FileWatcher(["."], self.restart_server).start,
-            daemon=True
-        )
-        watcher_thread.start()
-
-        try:
-            while self.running:
-                client_socket, client_address = self.server_socket.accept()
-                client_thread = threading.Thread (
-                    target=self.IORouter.handle_request, 
-                    args=(client_socket,)
-                )
-                client_thread.start()
-                self.threads.append(client_thread)
-
-        except Exception as e:
-            print(f"Error: {e}")
-
-        finally:
-            await self.shutdown()
+        # Starting file observer
+        await self.__start_file_observer()
+        
+        await self.__consume_requests()
             
     async def register_signal_handlers(self):
         loop = asyncio.get_running_loop()
@@ -138,3 +110,60 @@ class SocketIO:
 
         python = sys.executable
         os.execv(python, [python] + sys.argv)
+        
+    async def __bind_socket (
+        self,
+    ) -> None:
+        
+        self.running = True
+        self.server_socket = socket.socket (
+            socket.AF_INET, 
+            socket.SOCK_STREAM
+        )
+        self.server_socket.setsockopt (
+            socket.SOL_SOCKET, 
+            socket.SO_REUSEADDR, 
+            1,
+        )
+        self.server_socket.bind (
+            (self.host, self.port)
+        )
+        self.server_socket.listen(self.backlog)
+        
+    async def __start_file_observer (
+        self,
+    ) -> None:
+        
+        watcher_thread = threading.Thread(
+            target=FileWatcher(["."], self.restart_server).start,
+            daemon=True
+        )
+        watcher_thread.start()
+        
+    async def __print_hello_message (
+        self,
+    ) -> None:
+        
+        print('Wecolme to SocketIO!')
+        print(f"Server running on http://{self.host}:{self.port}")
+        print('Quit the server with CONTROL-C.')
+        
+    async def __consume_requests (
+        self,
+    ) -> None:
+        
+        try:
+            while self.running:
+                client_socket, client_address = self.server_socket.accept()
+                client_thread = threading.Thread (
+                    target=self.IORouter.handle_request, 
+                    args=(client_socket,)
+                )
+                client_thread.start()
+                self.threads.append(client_thread)
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+        finally:
+            await self.shutdown()
