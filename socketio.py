@@ -48,7 +48,7 @@ class SocketIO:
 
     def _create_property(attr_path: str):
         """Helper function to create a dynamic property"""
-        return property(lambda self: eval(f"self.{attr_path}"))
+        return property(lambda self: getattr(f"self.{attr_path}"))
 
     # Dynamically define properties
     route = _create_property("IORouter.route")
@@ -61,30 +61,24 @@ class SocketIO:
     
     async def serve (
         self,
-    ) -> None:  
+    ) -> None:
         
-        # Registering signal handlers
-        await self.register_signal_handlers()
+        # Preparation for server up
+        await self.__prepare()
         
-        # Binding server socket
-        await self.__bind_socket()
-        
-        # Displaying hello message
-        await self.__print_hello_message()
-        
-        # Starting file observer
-        await self.__start_file_observer()
-        
+        # Consuming incoming requests
         await self.__consume_requests()
-            
-    async def register_signal_handlers(self):
-        loop = asyncio.get_running_loop()
-        for sig in (signal.SIGINT, signal.SIGTERM):
-            loop.add_signal_handler (
-                sig, 
-                lambda: asyncio.create_task(self.shutdown(sig))
-            )
-    
+        
+    async def restart (
+        self,
+    ) -> None:
+        
+        for task in asyncio.all_tasks():
+            task.cancel()
+
+        python = sys.executable
+        os.execv(python, [python] + sys.argv)
+        
     async def shutdown (
         self,
     ) -> None:
@@ -99,54 +93,22 @@ class SocketIO:
 
         current_process = psutil.Process(os.getpid())
         current_process.terminate()
-        os._exit(0)
         
-    async def restart_server (
+    async def __prepare (
         self,
     ) -> None:
         
-        for task in asyncio.all_tasks():
-            task.cancel()
-
-        python = sys.executable
-        os.execv(python, [python] + sys.argv)
+        # Registering signal handlers
+        await self.__register_signal_handlers()
         
-    async def __bind_socket (
-        self,
-    ) -> None:
+        # Binding server socket
+        await self.__bind_socket()
         
-        self.running = True
-        self.server_socket = socket.socket (
-            socket.AF_INET, 
-            socket.SOCK_STREAM
-        )
-        self.server_socket.setsockopt (
-            socket.SOL_SOCKET, 
-            socket.SO_REUSEADDR, 
-            1,
-        )
-        self.server_socket.bind (
-            (self.host, self.port)
-        )
-        self.server_socket.listen(self.backlog)
+        # Displaying hello message
+        await self.__print_hello_message()
         
-    async def __start_file_observer (
-        self,
-    ) -> None:
-        
-        watcher_thread = threading.Thread(
-            target=FileWatcher(["."], self.restart_server).start,
-            daemon=True
-        )
-        watcher_thread.start()
-        
-    async def __print_hello_message (
-        self,
-    ) -> None:
-        
-        print('Wecolme to SocketIO!')
-        print(f"Server running on http://{self.host}:{self.port}")
-        print('Quit the server with CONTROL-C.')
+        # Starting file observer
+        await self.__start_file_observer()
         
     async def __consume_requests (
         self,
@@ -167,3 +129,52 @@ class SocketIO:
 
         finally:
             await self.shutdown()
+            
+    async def __register_signal_handlers (
+        self
+    ) -> None:
+        
+        loop = asyncio.get_running_loop()
+        
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop.add_signal_handler (
+                sig, 
+                lambda: asyncio.create_task(self.shutdown(sig))
+            )
+        
+    async def __bind_socket (
+        self,
+    ) -> None:
+        
+        self.running = True
+        self.server_socket = socket.socket (
+            socket.AF_INET, 
+            socket.SOCK_STREAM
+        )
+        self.server_socket.setsockopt (
+            socket.SOL_SOCKET, 
+            socket.SO_REUSEADDR, 
+            1,
+        )
+        self.server_socket.bind (
+            (self.host, self.port)
+        )
+        self.server_socket.listen(self.backlog)
+        
+    async def __print_hello_message (
+        self,
+    ) -> None:
+        
+        print('Wecolme to SocketIO!')
+        print(f"Server running on http://{self.host}:{self.port}")
+        print('Quit the server with CONTROL-C.')
+        
+    async def __start_file_observer (
+        self,
+    ) -> None:
+        
+        watcher_thread = threading.Thread(
+            target=FileWatcher(["."], self.restart).start,
+            daemon=True
+        )
+        watcher_thread.start()
