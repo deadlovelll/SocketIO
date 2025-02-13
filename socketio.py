@@ -10,7 +10,6 @@ from autodoc.autodoc import AutoDocGenerator
 
 from decorators.lifecycle_hooks.lifecycle_hooks import LifecycleHooks
 from decorators.rate_limit_decorator.rate_limit import RateLimitation
-from decorators.async_decorator.async_decorator import AsyncDecorator
 from decorators.cache_decorator.cache_decorator import CacheDecorator
 from decorators.route_decorator.IO_Router import IORouter
 from decorators.middleware.middleware import IOMiddleware
@@ -38,7 +37,6 @@ class SocketIO:
         # Decorators
         self.life_cycle_hooks_handler = LifecycleHooks()
         self.rate_limitation_handler = RateLimitation()
-        self.async_handler = AsyncDecorator()
         self.bound_handler = BoundHandlers()
         self.cache_handler = CacheDecorator()
         self.IORouter = IORouter()
@@ -48,10 +46,11 @@ class SocketIO:
 
     def _create_property(attr_path: str):
         """Helper function to create a dynamic property"""
-        return property(lambda self: getattr(f"self.{attr_path}"))
+        return property(lambda self: eval(f"self.{attr_path}"))
 
     # Dynamically define properties
     route = _create_property("IORouter.route")
+    websocket = _create_property("IORouter.websocket")
     IOBound = _create_property("bound_handler.IOBound")
     CPUBound = _create_property("bound_handler.CPUBound")
     rate_limit = _create_property("rate_limitation_handler.rate_limit")

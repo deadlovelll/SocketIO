@@ -38,7 +38,8 @@ class FileWatcher:
 
     def start (
         self
-    ):
+    ) -> None:
+        
         event_handler = FileChangeHandler(self.restart_callback)
         
         for path in self.paths:
@@ -51,4 +52,3 @@ class FileWatcher:
         except KeyboardInterrupt:
             self.observer.stop()
         self.observer.join()
-        print('ffjfff')

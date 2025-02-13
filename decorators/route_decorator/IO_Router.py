@@ -24,6 +24,19 @@ class IORouter:
             return handler
         return wrapper
     
+    def websocket (
+        self, 
+        path,
+    ) -> Callable[[Callable[..., None]], Callable[..., None]]:
+        
+        def wrapper (
+            handler: Callable[..., None],
+        ) -> Callable[..., None]:
+            
+            self.routes[path] = handler
+            return handler
+        return wrapper
+    
     def handle_request(self, client_socket):
         try:
             data = client_socket.recv(1024).decode().strip()
