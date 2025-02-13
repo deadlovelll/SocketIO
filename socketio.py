@@ -79,7 +79,9 @@ class SocketIO:
         )
         self.server_socket.listen(self.backlog)
         
-        print(f"Server running on {self.host}:{self.port}")
+        print('Wecolme to SocketIO!')
+        print(f"Server running on http://{self.host}:{self.port}")
+        print('Quit the server with CONTROL-C.')
         
         watcher_thread = threading.Thread(
             target=FileWatcher(["."], self.restart_server).start,
@@ -131,4 +133,8 @@ class SocketIO:
         self,
     ) -> None:
         
-        os.execv(sys.executable, [sys.executable] + sys.argv)
+        for task in asyncio.all_tasks():
+            task.cancel()
+
+        python = sys.executable
+        os.execv(python, [python] + sys.argv)
