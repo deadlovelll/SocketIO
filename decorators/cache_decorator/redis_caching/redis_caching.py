@@ -3,19 +3,17 @@ import pickle
 import hashlib
 from typing import Callable
 
+from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
+
 class RedisCaching:
     
     def __init__ (
         self,
-        redis_host='localhost',
-        redis_port=6379,
-        redis_db=0,
+        redis_config: RedisConfig
     ) -> None:
         
         self.redis_client = redis.Redis (
-            host=redis_host,
-            port=redis_port,
-            db=redis_db
+            **redis_config._asdict()
         )
         
     def cache (
