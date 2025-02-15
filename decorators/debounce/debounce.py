@@ -7,7 +7,9 @@ class Debounce:
         wait: float
     ) -> None:
         
-        def decorator(fn):
+        def decorator (
+            fn
+        ):
             timer = None
             
             @functools.wraps

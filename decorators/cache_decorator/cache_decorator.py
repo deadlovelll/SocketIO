@@ -30,7 +30,11 @@ class CacheDecorator:
                 **kwargs
             ):
                 # Generate a unique cache key based on function name & arguments
-                key = self._generate_cache_key(func.__name__, args, kwargs)
+                key = self._generate_cache_key (
+                    func.__name__, 
+                    args, 
+                    kwargs,
+                )
                 
                 # Check if result is in Redis
                 cached_result = self.redis_client.get(key)

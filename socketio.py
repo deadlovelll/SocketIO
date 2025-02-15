@@ -24,6 +24,7 @@ class SocketIO:
         host="127.0.0.1", 
         port=4000,
         redis_server=None,
+        public_endpoints=False,
         backlog=5
     ):
         
