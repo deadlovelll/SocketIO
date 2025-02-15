@@ -1,4 +1,5 @@
 from typing import Callable
+import functools
 
 from decorators.cache_decorator.redis_caching.redis_caching import RedisCaching
 from decorators.cache_decorator.memoize_caching.memoize_caching import MemoizeCaching
@@ -15,10 +16,20 @@ class CacheDecorator:
         self.lru_caching = LRUCaching()
         
     def redis_cache (
-        self,
-    ) -> None:
-        
-        self.redis_caching.cache()
+        self, 
+        duration: int
+    ):
+        def decorator(func: Callable):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                return self.redis_caching.cache (
+                    func, 
+                    duration, 
+                    *args, 
+                    **kwargs
+                )
+            return wrapper
+        return decorator
         
     def memoize (
         self,

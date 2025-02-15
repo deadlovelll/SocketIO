@@ -19,42 +19,31 @@ class RedisCaching:
         
     def cache (
         self, 
-        duration: int
+        func: Callable, 
+        duration: int, 
+        *args, 
+        **kwargs
     ):
-        """Cache function results in Redis for a given duration (seconds)."""
-        
+        """Handles caching logic for Redis."""
         if not self.redis_client:
-            raise NoRedisConfiguredException()
-        
-        def decorator (
-            func: Callable[..., str]
-        ) -> Callable[..., str]:
-            
-            def wrapper (
-                *args, 
-                **kwargs
-            ):
-                # Generate a unique cache key based on function name & arguments
-                key = self._generate_cache_key (
-                    func.__name__, 
-                    args, 
-                    kwargs,
-                )
-                
-                # Check if result is in Redis
-                cached_result = self.redis_client.get(key)
-                if cached_result:
-                    return pickle.loads(cached_result)  # Deserialize from Redis
+            raise NoRedisConfiguredException("Redis is not configured.")
 
-                # Compute the function result
-                result = func(*args, **kwargs)
+        key = f"cache:{func.__name__}:{pickle.dumps((args, kwargs))}"
+        cached_result = self.redis_client.get(key)
 
-                # Store in Redis with expiration
-                self.redis_client.setex(key, duration, pickle.dumps(result))
-                return result
-            
-            return wrapper
-        return decorator
+        if cached_result:
+            return pickle.loads(cached_result) 
+
+        result = func (
+            *args, 
+            **kwargs
+        )
+        self.redis_client.setex (
+            key, 
+            duration, 
+            pickle.dumps(result)
+        )  
+        return result
     
     def _generate_cache_key (
         self,
