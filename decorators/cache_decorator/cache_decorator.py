@@ -18,7 +18,7 @@ class CacheDecorator:
     def redis_cache (
         self, 
         duration: int
-    ):
+    ) :
         def decorator(func: Callable):
             @functools.wraps(func)
             def wrapper(*args, **kwargs):
@@ -33,7 +33,7 @@ class CacheDecorator:
         
     def memoize_cache (
         self,
-    ) -> None:
+    ):
         
         def decorator(func: Callable):
             @functools.wraps(func)
@@ -48,6 +48,15 @@ class CacheDecorator:
         
     def lru_cache (
         self,
-    ) -> None:
+    ):
         
-        pass
+        def decorator(func: Callable):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                return self.memoize_caching.cache (
+                    func,  
+                    *args, 
+                    **kwargs
+                )
+            return wrapper
+        return decorator

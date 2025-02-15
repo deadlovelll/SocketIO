@@ -1,7 +1,7 @@
 import redis
 import pickle
 import hashlib
-from typing import Callable
+from typing import Callable, Any
 
 from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
 from exceptions.redis_exceptions.no_redis_configured_exception import NoRedisConfiguredException
@@ -19,12 +19,14 @@ class RedisCaching:
         
     def cache (
         self, 
-        func: Callable, 
+        func: Callable[..., Any], 
         duration: int, 
-        *args, 
-        **kwargs
+        *args: Any, 
+        **kwargs: Any
     ):
+        
         """Handles caching logic for Redis."""
+        
         if not self.redis_client:
             raise NoRedisConfiguredException("Redis is not configured.")
 
@@ -50,7 +52,7 @@ class RedisCaching:
         func_name: str,
         args: tuple,
         kwargs: dict,
-    ) -> None:
+    ) -> str:
         
         key_data = f"{func_name}:{args}:{kwargs}"
         return hashlib.sha256(key_data.encode()).hexdigest()

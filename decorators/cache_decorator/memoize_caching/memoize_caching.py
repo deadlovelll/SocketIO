@@ -1,5 +1,5 @@
 import functools
-from typing import Callable
+from typing import Callable, Any
 
 class MemoizeCaching:
     
@@ -12,8 +12,8 @@ class MemoizeCaching:
     def cache (
         self, 
         func: Callable, 
-        *args, 
-        **kwargs
+        *args: Any, 
+        **kwargs: Any,
     ):
         key = (
             func.__name__, 
