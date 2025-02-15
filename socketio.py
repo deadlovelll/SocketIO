@@ -16,6 +16,8 @@ from decorators.middleware.middleware import IOMiddleware
 from decorators.bound_handlers.bound_handlers import BoundHandlers
 from decorators.auth.auth_handler import AuthHandler
 
+from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
+
 from file_wacther.file_watcher import FileWatcher
 
 class SocketIO:
@@ -24,7 +26,7 @@ class SocketIO:
         self, 
         host="127.0.0.1", 
         port=4000,
-        redis_server=None,
+        redis_config: RedisConfig = None,
         public_endpoints=False,
         backlog=5
     ):
@@ -35,6 +37,8 @@ class SocketIO:
         self.server_socket = None
         self.backlog = backlog
         self.threads = []
+        
+        self.redis_config = redis_config
         
         # Decorators
         self.life_cycle_hooks_handler = LifecycleHooks()
@@ -54,12 +58,18 @@ class SocketIO:
     # Dynamically define properties
     route = _create_property("IORouter.route")
     websocket = _create_property("IORouter.websocket")
+    
     IOBound = _create_property("bound_handler.IOBound")
     CPUBound = _create_property("bound_handler.CPUBound")
+    
     rate_limit = _create_property("rate_limitation_handler.rate_limit")
     on_start = _create_property("life_cycle_hooks_handler.on_start")
     on_shutdown = _create_property("life_cycle_hooks_handler.on_shutdown")
-    cache = _create_property("cache_handler.cache")
+    
+    redis_cache = _create_property("cache_handler.redis_cache")
+    memoize_cache = _create_property("cache_handler.memoize_cache")
+    lru_cache = _create_property("cache_handler.lru_cache")
+    
     private_route = _create_property("auth.auth_handler.private_route")
     public_route = _create_property("auth.auth_handler.public_route")
     

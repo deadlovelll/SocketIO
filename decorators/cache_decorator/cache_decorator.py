@@ -2,6 +2,7 @@ from typing import Callable
 import functools
 
 from decorators.cache_decorator.redis_caching.redis_caching import RedisCaching
+from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
 from decorators.cache_decorator.memoize_caching.memoize_caching import MemoizeCaching
 from decorators.cache_decorator.lru_caching.lru_caching import LRUCaching
 
@@ -9,9 +10,12 @@ class CacheDecorator:
     
     def __init__ (
         self,
+        redis_config: RedisConfig = None
     ) -> None:
+        
+        self.redis_config = redis_config
 
-        self.redis_caching = RedisCaching()
+        self.redis_caching = RedisCaching(redis_config)
         self.memoize_caching = MemoizeCaching()
         self.lru_caching = LRUCaching()
         
