@@ -14,6 +14,7 @@ from decorators.cache_decorator.cache_decorator import CacheDecorator
 from decorators.route_decorator.IO_Router import IORouter
 from decorators.middleware.middleware import IOMiddleware
 from decorators.bound_handlers.bound_handlers import BoundHandlers
+from decorators.auth.auth_handler import AuthHandler
 
 from file_wacther.file_watcher import FileWatcher
 
@@ -42,6 +43,7 @@ class SocketIO:
         self.cache_handler = CacheDecorator()
         self.IORouter = IORouter()
         self.IOMiddleware = IOMiddleware()
+        self.auth_handler = AuthHandler()
         
         self.openapi_paths = {}
 
@@ -58,6 +60,8 @@ class SocketIO:
     on_start = _create_property("life_cycle_hooks_handler.on_start")
     on_shutdown = _create_property("life_cycle_hooks_handler.on_shutdown")
     cache = _create_property("cache_handler.cache")
+    private_route = _create_property("auth.auth_handler.private_route")
+    public_route = _create_property("auth.auth_handler.public_route")
     
     async def serve (
         self,
