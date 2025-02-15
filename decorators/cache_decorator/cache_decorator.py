@@ -31,13 +31,22 @@ class CacheDecorator:
             return wrapper
         return decorator
         
-    def memoize (
+    def memoize_cache (
         self,
     ) -> None:
         
-        self.memoize_caching.memoize()
+        def decorator(func: Callable):
+            @functools.wraps(func)
+            def wrapper(*args, **kwargs):
+                return self.memoize_caching.cache (
+                    func,  
+                    *args, 
+                    **kwargs
+                )
+            return wrapper
+        return decorator
         
-    def lrucache (
+    def lru_cache (
         self,
     ) -> None:
         

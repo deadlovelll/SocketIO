@@ -1,16 +1,30 @@
 import functools
+from typing import Callable
 
 class MemoizeCaching:
     
-    def memoize (
-        func
+    def __init__ (
+        self,
+    ) ->  None:
+        
+        self.cache_d = {}
+
+    def cache (
+        self, 
+        func: Callable, 
+        *args, 
+        **kwargs
     ):
-        cache = {}
-        @functools.wraps(func)
-        def wrapper(*args):
-            if args in cache:
-                return cache[args]
-            result = func(*args)
-            cache[args] = result
-            return result
-        return wrapper
+        key = (
+            func.__name__, 
+            args, 
+            frozenset(kwargs.items())
+        )
+        
+        if key in self.cache_d:
+            return self.cache_d[key]
+        
+        result = func(*args, **kwargs)
+        self.cache_d[key] = result
+        
+        return result
