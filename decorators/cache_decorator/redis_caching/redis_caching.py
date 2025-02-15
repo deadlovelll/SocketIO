@@ -4,12 +4,13 @@ import hashlib
 from typing import Callable
 
 from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
+from exceptions.redis_exceptions.no_redis_configured_exception import NoRedisConfiguredException
 
 class RedisCaching:
     
     def __init__ (
         self,
-        redis_config: RedisConfig
+        redis_config: RedisConfig = None
     ) -> None:
         
         self.redis_client = redis.Redis (
@@ -21,6 +22,9 @@ class RedisCaching:
         duration: int
     ):
         """Cache function results in Redis for a given duration (seconds)."""
+        
+        if not self.redis_client:
+            raise NoRedisConfiguredException()
         
         def decorator (
             func: Callable[..., str]
