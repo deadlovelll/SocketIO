@@ -13,9 +13,20 @@ class RedisCaching:
         redis_config: RedisConfig = None
     ) -> None:
         
-        self.redis_client = redis.Redis (
-            **redis_config._asdict()
+        self.redis_client = self.__init_redis (
+            redis_config
         )
+        
+    def __init_redis (
+        self,
+        redis_config,
+    ):
+        if redis_config:
+            return redis.Redis (
+                **redis_config._asdict()
+            )
+        
+        return None
         
     def cache (
         self, 
@@ -28,7 +39,7 @@ class RedisCaching:
         """Handles caching logic for Redis."""
         
         if not self.redis_client:
-            raise NoRedisConfiguredException("Redis is not configured.")
+            raise NoRedisConfiguredException()
 
         key = f"cache:{func.__name__}:{pickle.dumps((args, kwargs))}"
         cached_result = self.redis_client.get(key)

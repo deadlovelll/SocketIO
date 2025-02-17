@@ -4,7 +4,7 @@ from socketio import SocketIO
 
 app = SocketIO()
 
-@app.route("/")
+@app.route("/", methods=['POST'])
 def html_response():
     html_content = """
     <!DOCTYPE html>
