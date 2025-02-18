@@ -5,8 +5,8 @@ from socketio import SocketIO
 
 app = SocketIO()
 
-@app.route("/", methods=['GET'])
-def html_response():
-    return JsonResponse({'data':'data'})
+@app.websocket("/")
+def main():
+    pass
 
 asyncio.run(app.serve())
