@@ -1,6 +1,8 @@
 import asyncio
+import socket
 import base64
 import hashlib
+import struct
 
 from urllib.parse import urlparse
 from typing import Callable
@@ -145,3 +147,47 @@ class IORouter:
         client_socket.send(response.encode())
         
         self.websockets[path](client_socket)
+        
+    def receive_message(self, client_socket: socket.socket) -> str:
+        """Receive WebSocket message"""
+        try:
+            data = client_socket.recv(2)
+            if not data:
+                return None
+            
+            opcode = data[0] & 0b00001111
+            if opcode == 8:
+                return None
+
+            payload_length = data[1] & 127
+
+            if payload_length == 126:
+                data += client_socket.recv(2)
+                payload_length = struct.unpack(">H", data[2:4])[0]
+            elif payload_length == 127:
+                data += client_socket.recv(8)
+                payload_length = struct.unpack(">Q", data[2:10])[0]
+
+            mask = client_socket.recv(4)
+            encrypted_payload = client_socket.recv(payload_length)
+
+            message = bytearray(
+                encrypted_payload[i] ^ mask[i % 4] for i in range(payload_length)
+            )
+            return message.decode()
+        except:
+            return None
+
+    def send_message(self, client_socket: socket.socket, message: str):
+        """Send WebSocket message"""
+        encoded_message = message.encode()
+        message_length = len(encoded_message)
+
+        if message_length <= 125:
+            frame = bytearray([129, message_length]) + encoded_message
+        elif message_length <= 65535:
+            frame = bytearray([129, 126]) + message_length.to_bytes(2, 'big') + encoded_message
+        else:
+            frame = bytearray([129, 127]) + message_length.to_bytes(8, 'big') + encoded_message
+
+        client_socket.sendall(frame)
