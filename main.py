@@ -1,25 +1,12 @@
 from returnables.html_response.html_response import HTMLResponse
+from returnables.json_response.json_response import JsonResponse
 import asyncio
 from socketio import SocketIO
 
 app = SocketIO()
 
-@app.route("/", methods=['POST'])
+@app.route("/", methods=['GET'])
 def html_response():
-    html_content = """
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>Hello</title>
-      </head>
-      <body>
-        <h1>Hello, world!</h1>
-        <p>Welcome to SocketIO.</p>
-      </body>
-    </html>
-    """
-    h = HTMLResponse(content=html_content)
-    return h.to_http_response()
+    return JsonResponse({'data':'data'})
 
 asyncio.run(app.serve())

@@ -44,7 +44,10 @@ class IORouter:
             return handler
         return wrapper
     
-    def handle_request(self, client_socket):
+    def handle_request (
+        self, 
+        client_socket
+    ):
         
         try:
             data = client_socket.recv(1024).decode().strip()
@@ -90,7 +93,7 @@ class IORouter:
         parsed_path
     ) -> None:
         
-        operation_type = data.split('\n')[0].split('/')[0].strip('')
+        operation_type = data.split('\n')[0].split('/')[0].strip(' ')
         if operation_type not in self.routes.get(parsed_path.path)['methods']:
             raise InvalidRestOperationType (
                 self.routes.get(parsed_path.path)['methods'],
