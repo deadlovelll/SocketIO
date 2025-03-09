@@ -1,5 +1,6 @@
 import re
 import asyncio
+import socket
 
 from urllib.parse import urlparse
 from typing import Callable
@@ -7,8 +8,7 @@ from typing import Callable
 from exceptions.handler_exceptions.invalid_rest_operation_type import InvalidRestOperationType
 
 from parsers.request_parser.request_parser import RequestParser
-from handlers.websocket_handler.websocket_handler import WebsocketHandler
-from handlers.http_handler.http_handler import HTTPHandler
+from handlers.request_handler.request_handler import RequestHandler
 
 class IORouter:
     
@@ -19,8 +19,7 @@ class IORouter:
         self.routes = {}
         self.websockets = {}
         
-        self.websocket_handler = WebsocketHandler()
-        self.http_handler = HTTPHandler()
+        self.request_handler = RequestHandler()
         
     def __convert_path_to_regex (
         self,
@@ -61,7 +60,7 @@ class IORouter:
     
     def websocket (
         self, 
-        path,
+        path: str,
     ) -> Callable[[Callable[..., None]], Callable[..., None]]:
         
         def wrapper (
@@ -74,49 +73,13 @@ class IORouter:
     
     def handle_request (
         self, 
-        client_socket
-    ):
+        client_socket: socket.socket,
+        allowed_hosts: list,
+    ) -> None:
         
-        try:
-            data = client_socket.recv(1024).decode().strip()
-            if not data:
-                return
-            
-            if not asyncio.run(self.__verify_host(client_socket)):
-                client_socket.close()
-
-            request_line = data.splitlines()[0]
-            method, path, _ = request_line.split(" ")
-            parsed_path = urlparse(path)
-            
-            headers = RequestParser.parse_headers(data)
-            
-            if "Upgrade" in headers and headers["Upgrade"].lower() == "websocket":
-                self.websocket_handler.handle_websocket (
-                    client_socket, 
-                    data, 
-                    headers,
-                )
-                return
-            
-            else:
-                self.http_handler.handle_http_request (
-                    data, 
-                    path, 
-                    parsed_path, 
-                    client_socket,
-                    self.routes,
-                )
-        
-        except Exception as e:
-            print(f"Error processing request: {e}")
-        finally:
-            client_socket.close()
-    
-    async def __verify_host (
-        self, 
-        client_socket,
-    ):
-        ip, port = client_socket.getpeername()
-        
-        return ip in self.allowed_hosts
+        self.request_handler.handle_request (
+            client_socket,
+            self.routes,
+            self.websockets,
+            allowed_hosts,
+        )
