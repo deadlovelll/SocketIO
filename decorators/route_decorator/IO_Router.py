@@ -171,7 +171,7 @@ class IORouter:
             mask = client_socket.recv(4)
             encrypted_payload = client_socket.recv(payload_length)
 
-            message = bytearray(
+            message = bytearray (
                 encrypted_payload[i] ^ mask[i % 4] for i in range(payload_length)
             )
             return message.decode()

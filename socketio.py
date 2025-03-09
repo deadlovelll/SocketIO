@@ -38,6 +38,8 @@ class SocketIO:
         self.backlog = backlog
         self.threads = []
         
+        self.allowed_hosts = ['127.0.0.1']
+        
         self.redis_config = redis_config
         
         # Decorators
@@ -131,6 +133,11 @@ class SocketIO:
         try:
             while self.running:
                 client_socket, client_address = self.server_socket.accept()
+                
+                if not await self.__verify_host(client_socket):
+                    client_socket.close()
+                    continue
+                
                 client_thread = threading.Thread (
                     target=self.IORouter.handle_request, 
                     args=(client_socket,)
@@ -187,8 +194,16 @@ class SocketIO:
         self,
     ) -> None:
         
-        watcher_thread = threading.Thread(
+        watcher_thread = threading.Thread (
             target=FileWatcher(["."], self.restart).start,
             daemon=True
         )
         watcher_thread.start()
+        
+    async def __verify_host (
+        self, 
+        client_socket,
+    ):
+        ip, port = client_socket.getpeername()
+        
+        return ip in self.allowed_hosts
