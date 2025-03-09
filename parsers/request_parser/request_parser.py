@@ -1,16 +1,20 @@
 class RequestParser:
     
     @staticmethod
-    def parse_request(request_data: str) -> tuple[str, dict]:
-        """Parses the request data into a request line and headers."""
+    def parse_request (
+        request_data: str,
+    ) -> tuple[str, dict]:
+
         lines = request_data.splitlines()
         request_line = lines[0] if lines else ""
         headers = RequestParser.parse_headers(request_data)
         return request_line, headers
 
     @staticmethod
-    def parse_headers(request: str) -> dict:
-        """Extracts headers from the request string."""
+    def parse_headers (
+        request: str,
+    ) -> dict:
+
         headers = {}
         lines = request.split("\r\n")
         for line in lines[1:]:
