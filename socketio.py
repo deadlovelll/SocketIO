@@ -134,10 +134,6 @@ class SocketIO:
             while self.running:
                 client_socket, client_address = self.server_socket.accept()
                 
-                if not await self.__verify_host(client_socket):
-                    client_socket.close()
-                    continue
-                
                 client_thread = threading.Thread (
                     target=self.IORouter.handle_request, 
                     args=(client_socket,)
@@ -199,11 +195,3 @@ class SocketIO:
             daemon=True
         )
         watcher_thread.start()
-        
-    async def __verify_host (
-        self, 
-        client_socket,
-    ):
-        ip, port = client_socket.getpeername()
-        
-        return ip in self.allowed_hosts
