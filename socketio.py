@@ -136,7 +136,7 @@ class SocketIO:
                 
                 client_thread = threading.Thread (
                     target=self.IORouter.handle_request, 
-                    args=(client_socket,)
+                    args=(client_socket, self.allowed_hosts,)
                 )
                 client_thread.start()
                 self.threads.append(client_thread)
