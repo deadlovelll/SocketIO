@@ -9,15 +9,16 @@ class WebsocketHandler:
     
     def handle_websocket (
         self, 
-        client_socket, 
-        requests,
-        headers
-    ):
+        client_socket: socket.socket, 
+        requests: str,
+        headers: dict,
+        websockets: dict,
+    ) -> None:
         
         sec_websocket_key = headers.get('Sec-WebSocket-Key')
         path = requests.split('\n')[0].split(' ')[1]
         
-        if not sec_websocket_key or path not in self.websockets:
+        if not sec_websocket_key or path not in websockets:
             client_socket.close()
             return
         
@@ -33,12 +34,12 @@ class WebsocketHandler:
         )
         client_socket.send(response.encode())
         
-        self.websockets[path](client_socket)
+        websockets[path](client_socket)
         
     def receive_message (
         self, 
         client_socket: socket.socket,
-    ) -> str:
+    ) -> str | None:
         
         try:
             data = client_socket.recv(2)
