@@ -5,14 +5,8 @@ from socketio import SocketIO
 
 app = SocketIO()
 
-@app.websocket("/ws")
-def main(client_socket):
-    while True:
-        message = app.IORouter.receive_message(client_socket)
-        if message:
-            print(f"Received: {message}")
-            app.IORouter.send_message(client_socket, f"Echo: {message}")
-        else:
-            break
+@app.route('/')
+async def main():
+    return 5
 
 asyncio.run(app.serve())

@@ -1,3 +1,4 @@
+import re
 import asyncio
 import socket
 import base64
@@ -17,22 +18,39 @@ class IORouter:
         
         self.routes = {}
         self.websockets = {} 
+        
+    def __convert_path_to_regex (
+        self,
+        path: str
+    ) -> str:
+        
+        return "^" + re.sub(r"<(\w+)>", r"(?P<\1>[^/]+)", path) + "$"
     
     def route (
         self, 
-        path,
-        methods=['GET']
+        path: str, 
+        methods: list[str] = ['GET'],
     ) -> Callable[[Callable[..., None]], Callable[..., None]]:
         
         def wrapper (
             handler: Callable[..., None],
         ) -> Callable[..., None]:
             
-            if path not in self.routes:
-                self.routes[path] = {}
-
-            self.routes[path]['handler'] = handler
-            self.routes[path]['methods'] = methods
+            # Check if the path is dynamic (contains '<' and '>')
+            if "<" in path and ">" in path:
+                regex = self._convert_path_to_regex(path)
+                self.routes[regex] = {
+                    'handler': handler,
+                    'methods': methods,
+                    'dynamic': True,
+                    'original': path
+                }
+            else:
+                if path not in self.routes:
+                    self.routes[path] = {}
+                self.routes[path]['handler'] = handler
+                self.routes[path]['methods'] = methods
+                self.routes[path]['dynamic'] = False
             return handler
         return wrapper
     
@@ -65,9 +83,12 @@ class IORouter:
                 self.handle_websocket(client_socket, data, headers)
                 return
             
+            if parsed_path.path == "/favicon.ico":
+                return
+            
             self.__verify_rest_method (
                 data, 
-                parsed_path
+                path
             )
 
             handler = self.routes.get(parsed_path.path)['handler']
@@ -101,7 +122,7 @@ class IORouter:
     ) -> None:
         
         operation_type = data.split('\n')[0].split('/')[0].strip(' ')
-        if operation_type not in self.routes.get(parsed_path.path)['methods']:
+        if operation_type not in self.routes[parsed_path]['methods']:
             raise InvalidRestOperationType (
                 self.routes.get(parsed_path.path)['methods'],
                 operation_type,  
