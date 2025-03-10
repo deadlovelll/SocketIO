@@ -3,8 +3,6 @@ import os
 import sys
 import socket
 import psutil
-import signal
-import threading
 
 from autodoc.autodoc import AutoDocGenerator
 
@@ -14,12 +12,16 @@ from decorators.cache_decorator.cache_decorator import CacheDecorator
 from decorators.route_decorator.IO_Router import IORouter
 from decorators.middleware.middleware import IOMiddleware
 from decorators.bound_handlers.bound_handlers import BoundHandlers
-
 from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
 
-from file_wacther.file_watcher import FileWatcher
+from handlers.__preparation_handler.__preparation_handler import PreparationHandler
+from handlers.request_consumer_handler.request_consumer_handler import RequestConsumerHandler
 
-class SocketIO:
+
+class SocketIO (
+    PreparationHandler,
+    RequestConsumerHandler,
+):
     
     def __init__ (
         self, 
@@ -28,7 +30,18 @@ class SocketIO:
         redis_config: RedisConfig = None,
         public_endpoints=False,
         backlog=5
-    ):
+    ) -> None:
+        
+        """
+        Initialize a new SocketIO instance.
+
+        Args:
+            host (str, optional): The IP address to bind the server. Defaults to "127.0.0.1".
+            port (int, optional): The port on which the server listens. Defaults to 4000.
+            redis_config (RedisConfig, optional): Configuration for Redis caching. Defaults to None.
+            public_endpoints (bool, optional): Flag to enable public endpoints. Defaults to False.
+            backlog (int, optional): The maximum number of queued connections. Defaults to 5.
+        """
         
         self.running = False
         self.host = host
@@ -51,41 +64,61 @@ class SocketIO:
         
         self.openapi_paths = {}
 
-    def _create_property(attr_path: str):
-        """Helper function to create a dynamic property"""
+    def _create_property (
+        attr_path: str,
+    ) -> property:
+        
+        """
+        Create a dynamic property for accessing nested attributes.
+
+        This helper function returns a property that retrieves an attribute
+        based on a dot-separated attribute path from the instance.
+
+        Args:
+            attr_path (str): A string representing the nested attribute path (e.g., "IORouter.route").
+
+        Returns:
+            property: A property object that fetches the specified nested attribute.
+        """
+        
         return property(lambda self: eval(f"self.{attr_path}"))
 
-    # Dynamically define properties
+    # Dynamically defined properties for simplified access to nested attributes
     route = _create_property("IORouter.route")
     websocket = _create_property("IORouter.websocket")
-    
     IOBound = _create_property("bound_handler.IOBound")
     CPUBound = _create_property("bound_handler.CPUBound")
-    
     rate_limit = _create_property("rate_limitation_handler.rate_limit")
     on_start = _create_property("life_cycle_hooks_handler.on_start")
     on_shutdown = _create_property("life_cycle_hooks_handler.on_shutdown")
-    
     redis_cache = _create_property("cache_handler.redis_cache")
     memoize_cache = _create_property("cache_handler.memoize_cache")
     lru_cache = _create_property("cache_handler.lru_cache")
     
-    private_route = _create_property("auth.auth_handler.private_route")
-    public_route = _create_property("auth.auth_handler.public_route")
-    
-    async def serve (
+    async def start (
         self,
     ) -> None:
         
-        # Preparation for server up
-        await self.__prepare()
+        """
+        Prepare and initiate the asynchronous request consumption process.
+
+        This method performs all necessary preparations before entering the main loop
+        to consume incoming requests.
+        """
         
-        # Consuming incoming requests
-        await self.__consume_requests()
+        await self.prepare()
+        await self.consume_requests()
         
     async def restart (
         self,
     ) -> None:
+        
+        """
+        Restart the current process.
+
+        This method cancels all running asyncio tasks and restarts the Python process,
+        effectively performing a full application restart.
+        """
         
         for task in asyncio.all_tasks():
             task.cancel()
@@ -97,6 +130,13 @@ class SocketIO:
         self,
     ) -> None:
         
+        """
+        Shutdown the server gracefully.
+
+        This method stops the server from running, closes the server socket if it exists,
+        waits for all threads to finish, and finally terminates the current process.
+        """
+        
         self.running = False
 
         if self.server_socket:
@@ -107,89 +147,3 @@ class SocketIO:
 
         current_process = psutil.Process(os.getpid())
         current_process.terminate()
-        
-    async def __prepare (
-        self,
-    ) -> None:
-        
-        # Registering signal handlers
-        await self.__register_signal_handlers()
-        
-        # Binding server socket
-        await self.__bind_socket()
-        
-        # Displaying hello message
-        await self.__print_hello_message()
-        
-        # Starting file observer
-        await self.__start_file_observer()
-        
-    async def __consume_requests (
-        self,
-    ) -> None:
-        
-        try:
-            while self.running:
-                client_socket, client_address = self.server_socket.accept()
-                
-                client_thread = threading.Thread (
-                    target=self.IORouter.handle_request, 
-                    args=(client_socket, self.allowed_hosts,)
-                )
-                client_thread.start()
-                self.threads.append(client_thread)
-
-        except Exception as e:
-            print(f"Error: {e}")
-
-        finally:
-            await self.shutdown()
-            
-    async def __register_signal_handlers (
-        self
-    ) -> None:
-        
-        loop = asyncio.get_running_loop()
-        
-        for sig in (signal.SIGINT, signal.SIGTERM):
-            loop.add_signal_handler (
-                sig, 
-                lambda: asyncio.create_task(self.shutdown(sig))
-            )
-        
-    async def __bind_socket (
-        self,
-    ) -> None:
-        
-        self.running = True
-        self.server_socket = socket.socket (
-            socket.AF_INET, 
-            socket.SOCK_STREAM
-        )
-        self.server_socket.setsockopt (
-            socket.SOL_SOCKET, 
-            socket.SO_REUSEADDR, 
-            1,
-        )
-        self.server_socket.bind (
-            (self.host, self.port)
-        )
-        self.server_socket.listen(self.backlog)
-        
-    async def __print_hello_message (
-        self,
-    ) -> None:
-        
-        print('Wecolme to SocketIO!')
-        print(f"Server running on http://{self.host}:{self.port}")
-        print('Quit the server with CONTROL-C.')
-        
-    async def __start_file_observer (
-        self,
-    ) -> None:
-        
-        watcher_thread = threading.Thread (
-            target=FileWatcher(["."], self.restart).start,
-            daemon=True
-        )
-        watcher_thread.start()
