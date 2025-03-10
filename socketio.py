@@ -14,7 +14,6 @@ from decorators.cache_decorator.cache_decorator import CacheDecorator
 from decorators.route_decorator.IO_Router import IORouter
 from decorators.middleware.middleware import IOMiddleware
 from decorators.bound_handlers.bound_handlers import BoundHandlers
-from decorators.auth.auth_handler import AuthHandler
 
 from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
 
@@ -49,7 +48,6 @@ class SocketIO:
         self.cache_handler = CacheDecorator()
         self.IORouter = IORouter()
         self.IOMiddleware = IOMiddleware()
-        self.auth_handler = AuthHandler()
         
         self.openapi_paths = {}
 

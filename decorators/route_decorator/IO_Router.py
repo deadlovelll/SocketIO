@@ -77,9 +77,9 @@ class IORouter:
         allowed_hosts: list,
     ) -> None:
         
-        self.request_handler.handle_request (
+        asyncio.run(self.request_handler.handle_request(
             client_socket,
             self.routes,
             self.websockets,
             allowed_hosts,
-        )
+        ))

@@ -1,6 +1,6 @@
 import asyncio
 import socket
-from urllib import urlparse
+from urllib.parse import urlparse
 
 from handlers.http_handler.http_handler import HTTPHandler
 from handlers.websocket_handler.websocket_handler import WebsocketHandler
@@ -16,7 +16,7 @@ class RequestHandler:
         self.websocket_handler = WebsocketHandler()
         self.http_handler = HTTPHandler()
         
-    def handle_request (
+    async def handle_request (
         self, 
         client_socket: socket.socket,
         http_routes: dict,
@@ -25,11 +25,11 @@ class RequestHandler:
     ) -> None:
         
         try:
-            request_data = self.read_request(client_socket)
+            request_data = await self.read_request(client_socket)
             if not request_data:
                 return
             
-            if not asyncio.run (
+            if not await (
                 self.__verify_host (
                     client_socket, 
                     allowed_hosts,
@@ -43,18 +43,18 @@ class RequestHandler:
             parsed_path = urlparse(path)
             
             if self.is_websocket_request(headers):
-                self.websocket_handler.handle_websocket (
+                await self.websocket_handler.handle_websocket (
                     client_socket, 
                     request_data, 
-                    headers,
+                    headers, 
                     websocket_routes,
                 )
             else:
-                self.http_handler.handle_http_request (
+                await self.http_handler.handle_http_request (
                     request_data, 
                     path, 
                     parsed_path, 
-                    client_socket,
+                    client_socket, 
                     http_routes,
                 )
             
@@ -63,7 +63,7 @@ class RequestHandler:
         finally:
             client_socket.close()
             
-    def read_request (
+    async def read_request (
         self,
         client_socket: socket.socket,
     ) -> str:

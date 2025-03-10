@@ -23,7 +23,11 @@ class HTTPHandler:
             return
 
         try:
-            self.__verify_rest_method(data, path)
+            self.__verify_rest_method (
+                data, 
+                path,
+                http_routes,
+            )
             handler = self.get_handler (
                 parsed_path.path,
                 http_routes

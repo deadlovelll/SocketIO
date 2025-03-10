@@ -7,7 +7,7 @@ class WebsocketHandler:
     
     MAGIC_STRING = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
     
-    def handle_websocket (
+    async def handle_websocket (
         self, 
         client_socket: socket.socket, 
         requests: str,
