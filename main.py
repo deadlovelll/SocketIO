@@ -9,4 +9,4 @@ app = SocketIO()
 async def main():
     return 5
 
-asyncio.run(app.serve())
+asyncio.run(app.start())
