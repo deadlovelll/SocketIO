@@ -1,7 +1,6 @@
 import asyncio
 import os
 import sys
-import socket
 import psutil
 
 from autodoc.autodoc import AutoDocGenerator
@@ -16,6 +15,8 @@ from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
 
 from handlers.__preparation_handler.__preparation_handler import PreparationHandler
 from handlers.request_consumer_handler.request_consumer_handler import RequestConsumerHandler
+
+from commands.command_controller.command_controller import CommandController
 
 
 class SocketIO (
@@ -147,3 +148,6 @@ class SocketIO (
 
         current_process = psutil.Process(os.getpid())
         current_process.terminate()
+        
+if __name__ == '__main__':
+    CommandController.main()
