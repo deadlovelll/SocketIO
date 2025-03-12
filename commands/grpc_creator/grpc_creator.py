@@ -47,10 +47,10 @@ class GRPCCreator:
                 'python', 
                 '-m', 
                 'grpc_tools.protoc', 
-                '--python_out=./grpc_stub', 
-                '--grpc_python_out=./grpc_stub', 
+                '--python_out=.', 
+                '--grpc_python_out=.', 
                 '-I.', 
-                'socketio.proto',
+                './grpc_stub/socketio.proto',
             ]
         )
         
