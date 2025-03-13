@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 import psutil
+import grpc
 
 from autodoc.autodoc import AutoDocGenerator
 
@@ -15,9 +16,9 @@ from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
 
 from handlers.__preparation_handler.__preparation_handler import PreparationHandler
 from handlers.request_consumer_handler.request_consumer_handler import RequestConsumerHandler
+from handlers.grpc_handler.grpc_handler import GRPCHandler
 
 from commands.command_controller.command_controller import CommandController
-
 
 class SocketIO (
     PreparationHandler,
@@ -30,6 +31,7 @@ class SocketIO (
         port=4000,
         redis_config: RedisConfig = None,
         public_endpoints=False,
+        grpc_port=None,
         backlog=5
     ) -> None:
         
@@ -52,6 +54,8 @@ class SocketIO (
         self.threads = []
         
         self.allowed_hosts = ['127.0.0.1']
+        self.grpc_port = grpc_port
+        self.grpc_server = None
         
         self.redis_config = redis_config
         
@@ -108,7 +112,21 @@ class SocketIO (
         """
         
         await self.prepare()
+        await self.start_grpc_server()
         await self.consume_requests()
+        
+    async def start_grpc_server (
+        self,
+    ) -> None:
+        
+        """
+        Starts the gRPC server dynamically if gRPC support exists.
+        """
+        
+        await GRPCHandler.start_grpc_server (
+            grpc_server=self.grpc_server,
+            grpc_port=self.grpc_port,
+        )
         
     async def restart (
         self,
