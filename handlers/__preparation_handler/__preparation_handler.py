@@ -109,7 +109,7 @@ class PreparationHandler:
     ) -> None:
         
         print('Wecolme to SocketIO!')
-        print(f"Server running on http://{self.host}:{self.port}")
+        print(f"HTTP Server running on http://{self.host}:{self.port}")
         print('Quit the server with CONTROL-C.')
         
     async def __start_file_observer (
