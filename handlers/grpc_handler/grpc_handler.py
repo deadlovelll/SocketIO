@@ -1,4 +1,3 @@
-import sys
 import grpc
 
 class GRPCHandler:
@@ -35,4 +34,3 @@ class GRPCHandler:
 
         except ModuleNotFoundError:
             print("Error: gRPC files not found. Run `python3 socketio.py creagrpcprotocol` first.")
-            sys.exit(0)

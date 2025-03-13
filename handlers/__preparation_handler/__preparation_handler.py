@@ -109,7 +109,9 @@ class PreparationHandler:
     ) -> None:
         
         print('Wecolme to SocketIO!')
-        print(f"HTTP Server running on http://{self.host}:{self.port}")
+        print(f"HTTP Server running on http://{self.host}:{self.port}")            
+        if getattr(self, 'grpc_port', None):
+            print(f"gRPC Server running on {self.host}:{self.grpc_port}")
         print('Quit the server with CONTROL-C.')
         
     async def __start_file_observer (
