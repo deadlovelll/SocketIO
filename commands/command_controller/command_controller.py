@@ -1,13 +1,13 @@
 import sys
 
 from commands.grpc_creator.grpc_creator import GRPCCreator
-from commands.dockerfile_creator.dockerfile_creator import DockerFileCreator
+from commands.dockerfile_creator.dockerfile_creator import DockerfileFactory
 
 class CommandController:
     
     command_map = {
         'create_grpc_protocol': GRPCCreator.create_grpc_protocol,
-        'createdockerfile': DockerFileCreator.create_dockerfile,
+        'createdockerfile': DockerfileFactory.create_dockerfile,
     }
     
     @staticmethod
