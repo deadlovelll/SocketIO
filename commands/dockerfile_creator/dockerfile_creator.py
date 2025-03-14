@@ -1,9 +1,99 @@
 import textwrap
 
 class DockerfileFactory:
-    
-    def __init__ (
-        self,
+
+    @staticmethod
+    def create(
+        python_version: str = "latest",
+        use_alpine: bool = False,
+        install_system_deps: bool = True,
+        poetry: bool = True,
+        ports: list[int] = [4000],
+        entrypoint: str = "main.py",
+        use_nonroot_user: bool = True,
+        grpc_enabled: bool = False,
+    ) -> str:
+        
+        return textwrap.dedent(f"""
+            FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS builder
+
+            WORKDIR /app
+
+            {DockerfileFactory._define_system_deps(install_system_deps)}
+
+            COPY pyproject.toml poetry.lock ./
+            {DockerfileFactory._define_poetry(poetry)}
+
+            COPY . .
+
+            FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS final
+
+            WORKDIR /app
+            COPY --from=builder / /
+
+            {DockerfileFactory._define_user_security(use_nonroot_user)}
+            {DockerfileFactory._define_exposed_ports(ports, grpc_enabled)}
+
+            CMD ["python", "{entrypoint}"]
+        """)
+
+    @staticmethod
+    def _define_python_version (
+        python_version: str, 
+        use_alpine: bool,
+    ) -> str:
+        
+        return f"python:{python_version}{'-alpine' if use_alpine else ''}"
+
+    @staticmethod
+    def _define_exposed_ports (
+        ports: list[int], 
+        grpc_enabled: bool,
+    ) -> str:
+        
+        ports = "\n".join(f"EXPOSE {port}" for port in ports)
+        if grpc_enabled:
+            ports += "\nEXPOSE 50051"
+        return ports
+
+    @staticmethod
+    def _define_system_deps (
+        install_system_deps: bool,
+    ) -> str:
+        
+        return textwrap.dedent("""
+            RUN apt-get update && apt-get install -y --no-install-recommends \
+                build-essential \
+                && rm -rf /var/lib/apt/lists/*
+        """) if install_system_deps else ""
+
+    @staticmethod
+    def _define_poetry (
+        poetry: bool,
+    ) -> str:
+        
+        return textwrap.dedent("""
+            ENV POETRY_HOME="/opt/poetry"
+            ENV PATH="$POETRY_HOME/bin:$PATH"
+            RUN pip install --upgrade pip setuptools wheel && \
+                pip install poetry && \
+                poetry config virtualenvs.create false && \
+                poetry install --no-dev --no-interaction --no-ansi --no-root
+        """) if poetry else ""
+
+    @staticmethod
+    def _define_user_security (
+        use_nonroot_user: bool,
+    ) -> str:
+        
+        return textwrap.dedent("""
+            RUN useradd -m nonroot && chown -R nonroot:nonroot /app
+            USER nonroot
+        """) if use_nonroot_user else ""
+
+    @staticmethod
+    def write_to_file(
+        filename: str = "Dockerfile",
         python_version: str = "latest",
         use_alpine: bool = False,
         install_system_deps: bool = True,
@@ -14,94 +104,15 @@ class DockerfileFactory:
         grpc_enabled: bool = False,
     ) -> None:
         
-        self.python_version = python_version
-        self.use_alpine = use_alpine
-        self.install_system_deps = install_system_deps
-        self.poetry = poetry
-        self.ports = ports
-        self.entrypoint = entrypoint
-        self.use_nonroot_user = use_nonroot_user
-        self.grpc_enabled = grpc_enabled
-
-    def create (
-        self,
-    ) -> str:
-        
-        return textwrap.dedent(f"""
-            FROM {self._define_python_version()} AS builder
-
-            WORKDIR /app
-
-            {self._define_system_deps()}
-
-            COPY pyproject.toml poetry.lock ./
-            {self._define_poetry()}
-
-            COPY . .
-
-            FROM {self._define_python_version()} AS final
-
-            WORKDIR /app
-            COPY --from=builder / /
-
-            {self._define_user_security()}
-            {self._define_exposed_ports()}
-
-            CMD ["python", "{self.entrypoint}"]
-        """)
-
-    def _define_python_version (
-        self,
-    ) -> str:
-        
-        return f"python:{self.python_version}{'-alpine' if self.use_alpine else ''}"
-
-    def _define_exposed_ports (
-        self,
-    ) -> str:
-        
-        ports = "\n".join(f"EXPOSE {port}" for port in self.ports)
-        if self.grpc_enabled:
-            ports += "\nEXPOSE 50051"
-        return ports
-
-    def _define_system_deps (
-        self,
-    ) -> str:
-        
-        return textwrap.dedent("""
-            RUN apt-get update && apt-get install -y --no-install-recommends \
-                build-essential \
-                && rm -rf /var/lib/apt/lists/*
-        """) if self.install_system_deps else ""
-
-    def _define_poetry (
-        self,
-    ) -> str:
-        
-        return textwrap.dedent("""
-            ENV POETRY_HOME="/opt/poetry"
-            ENV PATH="$POETRY_HOME/bin:$PATH"
-            RUN pip install --upgrade pip setuptools wheel && \
-                pip install poetry && \
-                poetry config virtualenvs.create false && \
-                poetry install --no-dev --no-interaction --no-ansi --no-root
-        """) if self.poetry else ""
-
-    def _define_user_security (
-        self,
-    ) -> str:
-        
-        return textwrap.dedent("""
-            RUN useradd -m nonroot && chown -R nonroot:nonroot /app
-            USER nonroot
-        """) if self.use_nonroot_user else ""
-
-    def create_dockerfile (
-        self, 
-        filename: str = "Dockerfile",
-    ) -> None:
-        
         with open(filename, "w") as f:
-            f.write(self.create())
+            f.write(DockerfileFactory.create (
+                python_version, 
+                use_alpine, 
+                install_system_deps, 
+                poetry, 
+                ports, 
+                entrypoint, 
+                use_nonroot_user, 
+                grpc_enabled,
+            ))
         print(f"Dockerfile '{filename}' has been created.")
