@@ -42,9 +42,20 @@ class DockerFileCreator:
         user_security = DockerFileCreator.define_user_security (
             use_nonroot_user,
         )
+        
+        dockerfile_content = DockerFileCreator.define_dockkerfile_content (
+            base_image,
+            system_deps,
+            poetry_install,
+            user_security,
+            exposed_ports,
+            entrypoint,
+        )
 
-        with open(f'./{dockerfile_name}', 'w') as file:
-            file.write(dockerfile_content)
+        DockerFileCreator.write_dockerfile (
+            dockerfile_name,
+            dockerfile_content,
+        )
 
         print(f"Dockerfile '{dockerfile_name}' has been created.")
         
@@ -61,8 +72,8 @@ class DockerFileCreator:
 
     @staticmethod
     def define_exposed_ports (
-        ports,
-        grpc_enabled,
+        ports: list,
+        grpc_enabled: bool,
     ) -> str:
         
         exposed_ports = "\n".join([f"EXPOSE {port}" for port in ports])
@@ -72,7 +83,7 @@ class DockerFileCreator:
     
     @staticmethod
     def define_system_deps (
-        install_system_deps,
+        install_system_deps: bool,
     ) -> str:
         
         system_deps = ""
@@ -85,7 +96,10 @@ class DockerFileCreator:
         return system_deps
     
     @staticmethod
-    def define_poetry(poetry) -> str:
+    def define_poetry (
+        poetry: bool,
+    ) -> str:
+        
         poetry_install = ""
         if poetry:
             poetry_install = """
@@ -100,7 +114,7 @@ class DockerFileCreator:
     
     @staticmethod
     def define_user_security (
-        use_nonroot_user,
+        use_nonroot_user: bool,
     ) -> str:
         
         user_security = ""
@@ -113,12 +127,12 @@ class DockerFileCreator:
     
     @staticmethod
     def define_dockkerfile_content (
-        base_image,
-        system_deps,
-        poetry_install,
-        user_security,
-        exposed_ports,
-        entrypoint,
+        base_image: str,
+        system_deps: str,
+        poetry_install: str,
+        user_security: str,
+        exposed_ports: str,
+        entrypoint: str,
     ) -> str:
         
         # Dockerfile content
@@ -157,3 +171,11 @@ class DockerFileCreator:
         """)
         
         return dockerfile_content
+    
+    def write_dockerfile (
+        dockerfile_name: str,
+        dockerfile_content: str,
+    ) -> None:
+        
+        with open(f'./{dockerfile_name}', 'w') as file:
+            file.write(dockerfile_content)
