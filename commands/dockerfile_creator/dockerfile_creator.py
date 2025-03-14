@@ -3,7 +3,7 @@ import textwrap
 class DockerfileFactory:
 
     @staticmethod
-    def create(
+    def create (
         python_version: str = "latest",
         use_alpine: bool = False,
         install_system_deps: bool = True,
@@ -92,7 +92,7 @@ class DockerfileFactory:
         """) if use_nonroot_user else ""
 
     @staticmethod
-    def write_to_file(
+    def create_dockerfile (
         filename: str = "Dockerfile",
         python_version: str = "latest",
         use_alpine: bool = False,
