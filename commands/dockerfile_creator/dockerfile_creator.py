@@ -1,4 +1,12 @@
+import os
+import requests
 import textwrap
+
+from exceptions.dockerfile_exceptions.dockerfile_exceptions import (
+    DockerfileInproperPortError, 
+    DockerfileForbieddenPortError,
+    DockerfileNoSuchEntrypoint
+)
 
 class DockerfileFactory:
 
@@ -15,23 +23,19 @@ class DockerfileFactory:
     ) -> str:
         
         return textwrap.dedent (
-        f"""
-FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS builder
+        f"""FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS builder
 
 WORKDIR /app
 
 {DockerfileFactory._define_system_deps(install_system_deps)}
-
 COPY pyproject.toml poetry.lock ./
 {DockerfileFactory._define_poetry(poetry)}
-
 COPY . .
 
 FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS final
 
 WORKDIR /app
 COPY --from=builder / /
-
 {DockerfileFactory._define_user_security(use_nonroot_user)}
 {DockerfileFactory._define_exposed_ports(ports, grpc_enabled)}
 
@@ -59,14 +63,12 @@ CMD ["python", "{entrypoint}"]
         return ports
 
     @staticmethod
-    def _define_system_deps (
-        install_system_deps: bool,
-    ) -> str:
-        
-        return textwrap.dedent("""
-        RUN apt-get update && apt-get install -y --no-install-recommends \
-            build-essential \
-            && rm -rf /var/lib/apt/lists/*
+    def _define_system_deps(install_system_deps: bool) -> str:
+        return textwrap.dedent("""\
+            RUN apt-get update && \\
+                apt-get install -y --no-install-recommends \\
+                build-essential && \\
+                rm -rf /var/lib/apt/lists/*
         """) if install_system_deps else ""
 
     @staticmethod
@@ -75,11 +77,11 @@ CMD ["python", "{entrypoint}"]
     ) -> str:
         
         return textwrap.dedent("""
-            ENV POETRY_HOME="/opt/poetry"
+            ENV POETRY_HOME="/opt/poetry" 
             ENV PATH="$POETRY_HOME/bin:$PATH"
-            RUN pip install --upgrade pip setuptools wheel && \
-                pip install poetry && \
-                poetry config virtualenvs.create false && \
+            RUN pip install --upgrade pip setuptools wheel && \\
+                pip install poetry && \\
+                poetry config virtualenvs.create false && \\
                 poetry install --no-dev --no-interaction --no-ansi --no-root
         """) if poetry else ""
 
@@ -118,3 +120,63 @@ CMD ["python", "{entrypoint}"]
                 grpc_enabled,
             ))
         print(f"Dockerfile '{filename}' has been created.")
+        
+    @staticmethod
+    def verify_dockerfile_args (
+        python_version,
+        use_alpine,
+        ports,
+        entrypoint,
+        grpc_enabled
+    ):
+        
+        is_python_version_exists = DockerfileFactory.verify_python_version (
+            python_version, 
+            use_alpine,
+        )
+        
+        is_port_valid = DockerfileFactory.verify_port_validity (
+            ports,
+        )
+    
+    @staticmethod
+    def verify_python_version (
+        python_version: str, 
+        use_alpine: bool,
+    ) -> bool:
+        
+        tag = f"{python_version}-alpine" if use_alpine else python_version
+        url = f"https://hub.docker.com/v2/repositories/library/python/tags/{tag}/"
+        
+        response = requests.get(url)
+        return response.status_code == 200
+    
+    @staticmethod
+    def verify_port_validity (
+        ports: list[int],
+    ) -> bool:
+        
+        forbidden_ports = list(range(0, 1024)) 
+        dynamic_ports = list(range(49152, 65536))
+        
+        for port in ports:
+            if port in forbidden_ports:
+                raise DockerfileForbieddenPortError(port)
+            elif port > 65535 or port < 0:
+                raise DockerfileInproperPortError(port)
+                
+            elif port in dynamic_ports:
+                print(f"Port {port} belongs to the dynamic range(49152–65535), conflicts may exist.")
+                return True
+                
+    @staticmethod
+    def verify_entrypoint_exists (
+        entrypoint: str,
+    ) -> bool:
+        
+        is_file_exists = os.path.isfile(entrypoint)
+        
+        if is_file_exists:
+            return True
+        
+        raise DockerfileNoSuchEntrypoint(entrypoint)
