@@ -6,7 +6,8 @@ from exceptions.dockerfile_exceptions.dockerfile_exceptions import (
     DockerfileInproperPortError, 
     DockerfileForbieddenPortError,
     DockerfileNoSuchEntrypoint,
-    DockerfileNoSuchPythonVersionExists
+    DockerfileNoSuchPythonVersionExists,
+    DockerfilePyFileExtensionsRequired
 )
 
 class DockerfileFactory:
@@ -109,6 +110,14 @@ CMD ["python", "{entrypoint}"]
         grpc_enabled: bool = False,
     ) -> None:
         
+        DockerfileFactory.verify_dockerfile_args (
+            python_version,
+            use_alpine,
+            ports,
+            entrypoint,
+            grpc_enabled
+        )
+        
         with open(filename, "w") as f:
             f.write(DockerfileFactory.create (
                 python_version, 
@@ -148,21 +157,19 @@ CMD ["python", "{entrypoint}"]
     def verify_python_version (
         python_version: str, 
         use_alpine: bool,
-    ) -> bool:
+    ) -> None:
         
         tag = f"{python_version}-alpine" if use_alpine else python_version
         url = f"https://hub.docker.com/v2/repositories/library/python/tags/{tag}/"
         
         response = requests.get(url)
-        if response.status_code == 200:
-            return True
-        
-        raise DockerfileNoSuchPythonVersionExists(tag)
+        if response.status_code != 200:
+            raise DockerfileNoSuchPythonVersionExists(tag)
     
     @staticmethod
     def verify_port_validity (
         ports: list[int],
-    ) -> bool:
+    ) -> None:
         
         forbidden_ports = list(range(0, 1024)) 
         dynamic_ports = list(range(49152, 65536))
@@ -175,16 +182,16 @@ CMD ["python", "{entrypoint}"]
                 
             elif port in dynamic_ports:
                 print(f"Port {port} belongs to the dynamic range(49152–65535), conflicts may exist.")
-                return True
                 
     @staticmethod
     def verify_entrypoint_exists (
         entrypoint: str,
-    ) -> bool:
+    ) -> None:
         
         is_file_exists = os.path.isfile(entrypoint)
+        file_extension = entrypoint.split('.')[1]
         
-        if is_file_exists:
-            return True
-        
-        raise DockerfileNoSuchEntrypoint(entrypoint)
+        if not is_file_exists:
+            raise DockerfileNoSuchEntrypoint(entrypoint)
+        elif file_extension != 'py':
+            raise DockerfilePyFileExtensionsRequired()
