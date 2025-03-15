@@ -27,7 +27,13 @@ class DockerfileNoSuchEntrypoint(SocketIOException):
         filename: str,
     ) -> None:
         
-        message = f"Entrypoint {filename} does not exist. Please verify the file existance."
+        message = f"""
+\n
+{"#" * 75}
+#  ERROR: The specified entrypoint file '{filename}' was not found.         #
+#  Please verify that the file exists and is correctly referenced.        #
+{"#" * 75}
+        """
         super().__init__(message)
         
 class DockerfileNoSuchPythonVersionExists(SocketIOException):
@@ -38,8 +44,13 @@ class DockerfileNoSuchPythonVersionExists(SocketIOException):
     ) -> None:
         
         message = f"""
-        Python version {python_version} does not exist in Dockerhub. 
-        You can verify it by the link below https://hub.docker.com/_/python.
+\n
+{"#" * 75}
+#  ERROR: The specified Python version ({python_version})                              #
+#  is not available on Docker Hub.                                        #
+#  Please verify its existence using the link below:                      #
+#  https://hub.docker.com/_/python                                        #
+{"#" * 75}
         """
         
         super().__init__(message)
