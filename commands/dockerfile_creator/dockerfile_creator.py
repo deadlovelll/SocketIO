@@ -5,7 +5,8 @@ import textwrap
 from exceptions.dockerfile_exceptions.dockerfile_exceptions import (
     DockerfileInproperPortError, 
     DockerfileForbieddenPortError,
-    DockerfileNoSuchEntrypoint
+    DockerfileNoSuchEntrypoint,
+    DockerfileNoSuchPythonVersionExists
 )
 
 class DockerfileFactory:
@@ -138,6 +139,10 @@ CMD ["python", "{entrypoint}"]
         is_port_valid = DockerfileFactory.verify_port_validity (
             ports,
         )
+        
+        is_entrypoint_exists = DockerfileFactory.verify_entrypoint_exists (
+            entrypoint,
+        )
     
     @staticmethod
     def verify_python_version (
@@ -149,7 +154,10 @@ CMD ["python", "{entrypoint}"]
         url = f"https://hub.docker.com/v2/repositories/library/python/tags/{tag}/"
         
         response = requests.get(url)
-        return response.status_code == 200
+        if response.status_code == 200:
+            return True
+        
+        raise DockerfileNoSuchPythonVersionExists(tag)
     
     @staticmethod
     def verify_port_validity (
