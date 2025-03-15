@@ -21,10 +21,25 @@ class DockerfileForbieddenPortError(SocketIOException):
         super().__init__(message)
         
 class DockerfileNoSuchEntrypoint(SocketIOException):
+    
     def __init__ (
         self, 
-        filename: str
+        filename: str,
     ) -> None:
         
         message = f"Entrypoint {filename} does not exist. Please verify the file existance."
+        super().__init__(message)
+        
+class DockerfileNoSuchPythonVersionExists(SocketIOException):
+    
+    def __init__ (
+        self, 
+        python_version: str,
+    ) -> None:
+        
+        message = f"""
+        Python version {python_version} does not exist in Dockerhub. 
+        You can verify it by the link below https://hub.docker.com/_/python.
+        """
+        
         super().__init__(message)
