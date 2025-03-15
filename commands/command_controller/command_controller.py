@@ -16,6 +16,7 @@ class CommandController:
         if len(sys.argv) > 1:
             command = sys.argv[1]
             arguments_map = CommandController.parse_arguments(sys.argv[2:])
+            print(arguments_map)
             CommandController.command_map[command](**arguments_map)
             
     @staticmethod
@@ -31,12 +32,12 @@ class CommandController:
             value = key_value[1] if len(key_value) > 1 else None
 
             if value:
-                if value.startswith("[") and value.endswith("]"): 
-                    value = json.loads(value)  
-                elif "," in value: 
-                    value = [v.strip() for v in value.split(",")]  
-                elif value.isdigit(): 
-                    value = int(value)
+                if value.startswith("[") and value.endswith("]"):  
+                    value = json.loads(value) 
+                elif "," in value:  
+                    value = [int(v.strip()) if v.strip().lstrip("-").isdigit() else v.strip() for v in value.split(",")]
+                elif value.lstrip("-").isdigit():  
+                    value = [int(value)]
             arguments_map[key] = value
         
         return arguments_map
