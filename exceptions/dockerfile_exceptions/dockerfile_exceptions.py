@@ -54,3 +54,18 @@ class DockerfileNoSuchPythonVersionExists(SocketIOException):
         """
         
         super().__init__(message)
+        
+class DockerfilePyFileExtensionsRequired(SocketIOException):
+    
+    def __init__(self) -> None:
+        
+        message = f"""
+\n
+{"#" * 75}
+#  ERROR: Python file extension required.                                 #
+#  The specified file must have a '.py' extension.                        #
+#  Please ensure you are using a valid Python script.                     #
+{"#" * 75}
+        """
+        
+        super().__init__(message)
