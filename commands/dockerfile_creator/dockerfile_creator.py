@@ -14,28 +14,30 @@ class DockerfileFactory:
         grpc_enabled: bool = False,
     ) -> str:
         
-        return textwrap.dedent(f"""
-            FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS builder
+        return textwrap.dedent (
+        f"""
+FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS builder
 
-            WORKDIR /app
+WORKDIR /app
 
-            {DockerfileFactory._define_system_deps(install_system_deps)}
+{DockerfileFactory._define_system_deps(install_system_deps)}
 
-            COPY pyproject.toml poetry.lock ./
-            {DockerfileFactory._define_poetry(poetry)}
+COPY pyproject.toml poetry.lock ./
+{DockerfileFactory._define_poetry(poetry)}
 
-            COPY . .
+COPY . .
 
-            FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS final
+FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS final
 
-            WORKDIR /app
-            COPY --from=builder / /
+WORKDIR /app
+COPY --from=builder / /
 
-            {DockerfileFactory._define_user_security(use_nonroot_user)}
-            {DockerfileFactory._define_exposed_ports(ports, grpc_enabled)}
+{DockerfileFactory._define_user_security(use_nonroot_user)}
+{DockerfileFactory._define_exposed_ports(ports, grpc_enabled)}
 
-            CMD ["python", "{entrypoint}"]
-        """)
+CMD ["python", "{entrypoint}"]
+        """
+        )
 
     @staticmethod
     def _define_python_version (
@@ -62,9 +64,9 @@ class DockerfileFactory:
     ) -> str:
         
         return textwrap.dedent("""
-            RUN apt-get update && apt-get install -y --no-install-recommends \
-                build-essential \
-                && rm -rf /var/lib/apt/lists/*
+        RUN apt-get update && apt-get install -y --no-install-recommends \
+            build-essential \
+            && rm -rf /var/lib/apt/lists/*
         """) if install_system_deps else ""
 
     @staticmethod
