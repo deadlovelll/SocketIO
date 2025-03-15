@@ -8,9 +8,10 @@ class DockerfileInproperPortError(SocketIOException):
     ) -> None:
         
         message = f"""
+\n
 {"#" * 75}
-#  ERROR: Invalid port number '{port}'.                                    #
-#  Allowed port range: 0–65535.                                            #
+#  ERROR: Invalid port number '{port}'.                                     #
+#  Allowed port range: 0–65535.                                           #
 #  Please specify a valid port within this range.                         #
 {"#" * 75}
         """
@@ -25,8 +26,9 @@ class DockerfileForbieddenPortError(SocketIOException):
     ) -> None:
         
         message = f"""
+\n
 {"#" * 75}
-#  ERROR: Port '{port}' is reserved by the system.                        #
+#  ERROR: Port '{port}' is reserved by the system.                            #
 #  Please use a port number higher than 1024.                             #
 #  System-reserved ports range: 0–1024.                                   #
 {"#" * 75}
