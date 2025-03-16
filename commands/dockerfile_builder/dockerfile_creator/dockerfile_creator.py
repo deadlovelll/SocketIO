@@ -14,24 +14,30 @@ class DockerfileFactory:
         entrypoint: str = "main.py",
         use_nonroot_user: bool = True,
         grpc_enabled: bool = False,
+        in_env: bool = False
     ) -> str:
         
+        python_version = DockerfileFactory._define_python_version(python_version, use_alpine)
+        system_deps = DockerfileFactory._define_system_deps(install_system_deps)
+        poetry = DockerfileFactory._define_poetry(poetry, in_env)
+        user_security = DockerfileFactory._define_user_security(use_nonroot_user)
+        exposed_ports = DockerfileFactory._define_exposed_ports(ports, grpc_enabled)
+        
         return textwrap.dedent (
-        f"""FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS builder
-
+        f"""FROM {python_version} AS builder
+        
 WORKDIR /app
 
-{DockerfileFactory._define_system_deps(install_system_deps)}
-COPY pyproject.toml poetry.lock ./
-{DockerfileFactory._define_poetry(poetry)}
+{system_deps}
+{poetry}
 COPY . .
 
-FROM {DockerfileFactory._define_python_version(python_version, use_alpine)} AS final
+FROM {python_version} AS final
 
 WORKDIR /app
 COPY --from=builder / /
-{DockerfileFactory._define_user_security(use_nonroot_user)}
-{DockerfileFactory._define_exposed_ports(ports, grpc_enabled)}
+{user_security}
+{exposed_ports}
 
 CMD ["python", "{entrypoint}"]
         """
@@ -68,27 +74,28 @@ CMD ["python", "{entrypoint}"]
         """) if install_system_deps else ""
 
     @staticmethod
-    def _define_poetry (
-        poetry: bool,
-    ) -> str:
-        
-        print(poetry)
-        
+    def _define_poetry(poetry: bool, in_env: bool) -> str:
+        env_setup = """\
+RUN python -m venv /venv && \\
+    . /venv/bin/activate
+""" if in_env else ""
+
         if poetry:
-            return textwrap.dedent("""
-                ENV POETRY_HOME="/opt/poetry" 
-                ENV PATH="$POETRY_HOME/bin:$PATH"
-                RUN pip install --upgrade pip setuptools wheel && \\
-                    pip install poetry && \\
-                    poetry config virtualenvs.create false && \\
-                    poetry install --no-dev --no-interaction --no-ansi --no-root
-            """)
+            return f"""\
+{env_setup}COPY pyproject.toml poetry.lock ./
+ENV POETRY_HOME="/opt/poetry"
+ENV PATH="$POETRY_HOME/bin:$PATH"
+RUN pip install --upgrade pip setuptools wheel && \\
+    pip install poetry && \\
+    poetry config virtualenvs.create false && \\
+    poetry install --no-dev --no-interaction --no-ansi --no-root
+"""
         else:
-            return textwrap.dedent("""
-                RUN pip install --upgrade pip setuptools wheel && \\
-                    pip install -r requirements.txt
-            """)
-            
+            return f"""{env_setup}COPY requirements.txt ./
+RUN pip install --upgrade pip setuptools wheel && \\
+    pip install -r requirements.txt
+    """
+
     @staticmethod
     def _define_user_security (
         use_nonroot_user: bool,
@@ -97,7 +104,7 @@ CMD ["python", "{entrypoint}"]
         return textwrap.dedent("""
             RUN useradd -m nonroot && chown -R nonroot:nonroot /app
             USER nonroot
-        """) if use_nonroot_user else ""
+""") if use_nonroot_user else ""
 
     @staticmethod
     def create_dockerfile (
@@ -110,6 +117,7 @@ CMD ["python", "{entrypoint}"]
         entrypoint: str = "main.py",
         use_nonroot_user: bool = True,
         grpc_enabled: bool = False,
+        in_env: bool = False,
     ) -> None:
         
         DockerfileValidator.verify_dockerfile_args (
@@ -130,5 +138,6 @@ CMD ["python", "{entrypoint}"]
                 entrypoint, 
                 use_nonroot_user, 
                 grpc_enabled,
+                in_env,
             ))
         print(f"Dockerfile '{filename}' has been created.")
