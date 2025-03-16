@@ -6,7 +6,8 @@ from exceptions.dockerfile_exceptions.dockerfile_exceptions import (
     DockerfileForbieddenPortError,
     DockerfileNoSuchEntrypoint,
     DockerfileNoSuchPythonVersionExists,
-    DockerfilePyFileExtensionsRequired
+    DockerfilePyFileExtensionsRequired,
+    DockerfileNoGRPCServiceEnabled,
 )
 
 class DockerfileValidator:
@@ -31,6 +32,10 @@ class DockerfileValidator:
         
         DockerfileValidator.verify_entrypoint_exists (
             entrypoint,
+        )
+        
+        DockerfileValidator.verify_grpc_enabled (
+            grpc_enabled,
         )
     
     @staticmethod
@@ -75,3 +80,11 @@ class DockerfileValidator:
             raise DockerfileNoSuchEntrypoint(entrypoint)
         elif file_extension != 'py':
             raise DockerfilePyFileExtensionsRequired()
+        
+    @staticmethod
+    def verify_grpc_enabled (
+        grpc_enabled: bool,
+    ) -> None:
+        
+        if grpc_enabled and not bool(os.environ.get('GRPC_SERVICE_ENABLED')):
+            raise DockerfileNoGRPCServiceEnabled()

@@ -87,3 +87,18 @@ class DockerfilePyFileExtensionsRequired(SocketIOException):
         """
         
         super().__init__(message)
+        
+class DockerfileNoGRPCServiceEnabled(SocketIOException):
+    
+    def __init__(self) -> None:
+        
+        message = f"""
+\n
+{"#" * 77}
+#  ERROR: No gRPC service is enabled.                                       #
+#  A gRPC server must be properly configured and exposed in the Dockerfile. #
+#  Please ensure that your application includes a running gRPC service.     #
+{"#" * 77}
+        """
+        
+        super().__init__(message)
