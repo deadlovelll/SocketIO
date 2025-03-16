@@ -1,4 +1,6 @@
 import textwrap
+import platform
+import os
 
 from commands.dockerfile_builder.dockerfile_validator.dockerfile_validator import DockerfileValidator
 
@@ -14,11 +16,12 @@ class DockerfileFactory:
         entrypoint: str = "main.py",
         use_nonroot_user: bool = True,
         grpc_enabled: bool = False,
-        in_env: bool = False
+        in_env: bool = False,
+        os_type: str = None,
     ) -> str:
         
         python_version = DockerfileFactory._define_python_version(python_version, use_alpine)
-        system_deps = DockerfileFactory._define_system_deps(install_system_deps)
+        system_deps = DockerfileFactory._define_system_deps(install_system_deps, os_type)
         poetry = DockerfileFactory._define_poetry(poetry, in_env)
         user_security = DockerfileFactory._define_user_security(use_nonroot_user)
         exposed_ports = DockerfileFactory._define_exposed_ports(ports, grpc_enabled)
@@ -64,14 +67,61 @@ CMD ["python", "{entrypoint}"]
 
     @staticmethod
     def _define_system_deps (
-        install_system_deps: bool,
+        install_system_deps: bool, 
+        os_type: str,
     ) -> str:
-        return textwrap.dedent("""\
-            RUN apt-get update && \\
-                apt-get install -y --no-install-recommends \\
-                build-essential && \\
-                rm -rf /var/lib/apt/lists/*
-        """) if install_system_deps else ""
+        
+        if not install_system_deps:
+            return ""
+        
+        if not os_type:
+            os_type = platform.platform()
+            
+        print(os_type)
+        
+        depends_map = DockerfileFactory.get_os_map()
+        
+        return 
+        # else:
+        #     raise ValueError(f"Unsupported OS type: {os_type}")
+        
+    @staticmethod
+    def define_user_os():
+        pass
+        
+    @staticmethod
+    def get_os_map() -> dict:
+        
+        depends_map = {
+            'ubuntu': """\
+                RUN apt-get update && \\
+                    apt-get install -y --no-install-recommends \\
+                    build-essential && \\
+                    rm -rf /var/lib/apt/lists/*
+                """,
+            'alpine': """\
+                RUN apk add --no-cache \\
+                    build-base
+                """,
+            'centos': """\
+                RUN yum groupinstall -y "Development Tools" && \\
+                    yum clean all
+                """,
+            'arch': """\
+                RUN pacman -Syu --noconfirm base-devel
+                """,
+            'darwin': """\
+                RUN brew install coreutils
+                """,
+            'windows': """\
+                RUN choco install make mingw
+                """,
+        }
+        
+        depends_map['debian'] = depends_map['ubuntu']
+        depends_map['rhel'] = depends_map['centos']
+        
+        return depends_map
 
     @staticmethod
     def _define_poetry(poetry: bool, in_env: bool) -> str:
@@ -118,6 +168,7 @@ RUN pip install --upgrade pip setuptools wheel && \\
         use_nonroot_user: bool = True,
         grpc_enabled: bool = False,
         in_env: bool = False,
+        os_type: str = None
     ) -> None:
         
         DockerfileValidator.verify_dockerfile_args (
@@ -139,5 +190,6 @@ RUN pip install --upgrade pip setuptools wheel && \\
                 use_nonroot_user, 
                 grpc_enabled,
                 in_env,
+                os_type,
             ))
         print(f"Dockerfile '{filename}' has been created.")
