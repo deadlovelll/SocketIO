@@ -2,7 +2,7 @@ import sys
 import json
 
 from commands.grpc_creator.grpc_creator import GRPCCreator
-from commands.dockerfile_creator.dockerfile_creator import DockerfileFactory
+from commands.dockerfile_builder.dockerfile_creator.dockerfile_creator import DockerfileFactory
 
 class CommandController:
     
@@ -16,7 +16,6 @@ class CommandController:
         if len(sys.argv) > 1:
             command = sys.argv[1]
             arguments_map = CommandController.parse_arguments(sys.argv[2:])
-            print(arguments_map)
             CommandController.command_map[command](**arguments_map)
             
     @staticmethod
@@ -35,7 +34,12 @@ class CommandController:
                 if value.startswith("[") and value.endswith("]"):  
                     value = json.loads(value) 
                 elif "," in value:  
-                    value = [int(v.strip()) if v.strip().lstrip("-").isdigit() else v.strip() for v in value.split(",")]
+                    value = [
+                        int(v.strip()) 
+                        if v.strip().lstrip("-").isdigit() 
+                        else v.strip() 
+                        for v in value.split(",")
+                    ]
                 elif value.lstrip("-").isdigit():  
                     value = [int(value)]
             arguments_map[key] = value
