@@ -31,7 +31,9 @@ class CommandController:
             value = key_value[1] if len(key_value) > 1 else None
 
             if value:
-                if value.startswith("[") and value.endswith("]"):  
+                if value.lower() in ["true", "false"]:  
+                    value = value.lower() == "true"
+                elif value.startswith("[") and value.endswith("]"):  
                     value = json.loads(value) 
                 elif "," in value:  
                     value = [
