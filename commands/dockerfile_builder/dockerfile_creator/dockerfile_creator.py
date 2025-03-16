@@ -57,7 +57,9 @@ CMD ["python", "{entrypoint}"]
         return ports
 
     @staticmethod
-    def _define_system_deps(install_system_deps: bool) -> str:
+    def _define_system_deps (
+        install_system_deps: bool,
+    ) -> str:
         return textwrap.dedent("""\
             RUN apt-get update && \\
                 apt-get install -y --no-install-recommends \\
@@ -107,7 +109,7 @@ CMD ["python", "{entrypoint}"]
             use_alpine,
             ports,
             entrypoint,
-            grpc_enabled
+            grpc_enabled,
         )
         
         with open(filename, "w") as f:

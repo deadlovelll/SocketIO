@@ -14,11 +14,11 @@ class DockerfileValidator:
     
     @staticmethod
     def verify_dockerfile_args (
-        python_version,
-        use_alpine,
-        ports,
-        entrypoint,
-        grpc_enabled
+        python_version: str,
+        use_alpine: bool,
+        ports: list[int],
+        entrypoint: str,
+        grpc_enabled: bool,
     ):
         
         DockerfileValidator.verify_python_version (
