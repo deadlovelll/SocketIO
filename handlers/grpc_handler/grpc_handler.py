@@ -1,4 +1,5 @@
 import grpc
+import os
 
 class GRPCHandler:
     
@@ -30,6 +31,9 @@ class GRPCHandler:
             
             grpc_server.add_insecure_port(f"[::]:{grpc_port}")
             await grpc_server.start()
+            
+            os.environ["GRPC_SERVICE_ENABLED"] = "1"
+            
             await grpc_server.wait_for_termination()
 
         except ModuleNotFoundError:

@@ -68,6 +68,9 @@ class SocketIO (
         self.IOMiddleware = IOMiddleware()
         
         self.openapi_paths = {}
+        
+    def verify_server_params():
+        pass
 
     def _create_property (
         attr_path: str,
@@ -112,7 +115,10 @@ class SocketIO (
         """
         
         await self.prepare()
-        await self.start_grpc_server()
+        if self.grpc_port:
+            await self.start_grpc_server()
+        else:
+            os.environ['GRPC_SERVICE_ENABLED'] = 0
         await self.consume_requests()
         
     async def start_grpc_server (
