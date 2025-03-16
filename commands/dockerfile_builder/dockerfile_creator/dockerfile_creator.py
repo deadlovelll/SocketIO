@@ -72,15 +72,23 @@ CMD ["python", "{entrypoint}"]
         poetry: bool,
     ) -> str:
         
-        return textwrap.dedent("""
-            ENV POETRY_HOME="/opt/poetry" 
-            ENV PATH="$POETRY_HOME/bin:$PATH"
-            RUN pip install --upgrade pip setuptools wheel && \\
-                pip install poetry && \\
-                poetry config virtualenvs.create false && \\
-                poetry install --no-dev --no-interaction --no-ansi --no-root
-        """) if poetry else ""
-
+        print(poetry)
+        
+        if poetry:
+            return textwrap.dedent("""
+                ENV POETRY_HOME="/opt/poetry" 
+                ENV PATH="$POETRY_HOME/bin:$PATH"
+                RUN pip install --upgrade pip setuptools wheel && \\
+                    pip install poetry && \\
+                    poetry config virtualenvs.create false && \\
+                    poetry install --no-dev --no-interaction --no-ansi --no-root
+            """)
+        else:
+            return textwrap.dedent("""
+                RUN pip install --upgrade pip setuptools wheel && \\
+                    pip install -r requirements.txt
+            """)
+            
     @staticmethod
     def _define_user_security (
         use_nonroot_user: bool,
