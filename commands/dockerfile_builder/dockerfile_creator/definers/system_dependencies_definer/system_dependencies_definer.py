@@ -1,5 +1,3 @@
-import platform
-
 from utils.os_detector.os_detector.os_detector import OSDetector
 
 class SystemDependenciesDefiner:
@@ -15,7 +13,6 @@ class SystemDependenciesDefiner:
         
         if not os_type:
             os_type = OSDetector().detect()
-            print(os_type)
         
         depends_map = SystemDependenciesDefiner._get_os_map()
         
@@ -26,27 +23,27 @@ class SystemDependenciesDefiner:
         
         depends_map = {
             'ubuntu': """\
-                RUN apt-get update && \\
-                    apt-get install -y --no-install-recommends \\
-                    build-essential && \\
-                    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \\
+    apt-get install -y --no-install-recommends \\
+    build-essential && \\
+    rm -rf /var/lib/apt/lists/*
                 """,
             'alpine': """\
-                RUN apk add --no-cache \\
-                    build-base
+RUN apk add --no-cache \\
+    build-base
                 """,
             'centos': """\
-                RUN yum groupinstall -y "Development Tools" && \\
-                    yum clean all
+RUN yum groupinstall -y "Development Tools" && \\
+    yum clean all
                 """,
             'arch': """\
-                RUN pacman -Syu --noconfirm base-devel
+RUN pacman -Syu --noconfirm base-devel
                 """,
             'macos': """\
-                RUN brew install coreutils
+RUN brew install coreutils
                 """,
             'windows': """\
-                RUN choco install make mingw
+RUN choco install make mingw
                 """,
         }
         
