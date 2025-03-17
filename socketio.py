@@ -20,6 +20,8 @@ from handlers.grpc_handler.grpc_handler import GRPCHandler
 
 from commands.command_controller.command_controller import CommandController
 
+from utils.socketio_validators.socketio_port_validator.socketio_port_validator import SocketIOPortValidator
+
 class SocketIO (
     PreparationHandler,
     RequestConsumerHandler,
@@ -48,7 +50,7 @@ class SocketIO (
         
         self.running = False
         self.host = host
-        self.port = port
+        self.port = SocketIOPortValidator.verify_port_validity(port)
         self.server_socket = None
         self.backlog = backlog
         self.threads = []
@@ -69,9 +71,6 @@ class SocketIO (
         
         self.openapi_paths = {}
         
-    def verify_server_params():
-        pass
-
     def _create_property (
         attr_path: str,
     ) -> property:
