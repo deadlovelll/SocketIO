@@ -2,7 +2,7 @@ import sys
 import json
 
 from commands.grpc_creator.grpc_creator import GRPCCreator
-from commands.dockerfile_builder.dockerfile_creator.dockerfile_creator import DockerfileFactory
+from commands.dockerfile_builder.dockerfile_creator.docker.dockerfile_creator import DockerfileFactory
 
 class CommandController:
     
