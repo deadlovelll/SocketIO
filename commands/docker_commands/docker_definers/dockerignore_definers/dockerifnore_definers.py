@@ -3,6 +3,11 @@ from commands.docker_commands.docker_definers.base_definer.base_dockerignore_def
 
 class PythonCacheDefiner(BaseDockerDefiner, BaseDockerignoreDefiner):
     
+    """
+    Defines patterns to ignore Python cache files.
+    Includes `__pycache__/`, `.pyc`, `.pyo`, and `.pyd` files.
+    """
+    
     @classmethod
     def define (
         cls,
@@ -22,6 +27,11 @@ class PythonCacheDefiner(BaseDockerDefiner, BaseDockerignoreDefiner):
 
 class VenvDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
     
+    """
+    Defines patterns to ignore virtual environment files.
+    Includes `venv/`, `.env/`, and `.venv/`.
+    """
+    
     @classmethod
     def define (
         cls,
@@ -39,6 +49,11 @@ class VenvDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         return ''
     
 class SystemSpecsDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
+    
+    """
+    Defines patterns to ignore system-specific files.
+    Includes `.DS_Store`, `Thumbs.db`, `.idea/`, `.vscode/`, and `*.iml`.
+    """
     
     @classmethod
     def define (
@@ -59,6 +74,11 @@ class SystemSpecsDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         return ''
     
 class LogsDefine(BaseDockerignoreDefiner, BaseDockerDefiner):
+    
+    """
+    Defines patterns to ignore logs and temporary files.
+    Includes log files (`*.log`, `*.out`, `*.err`), temp files (`tmp/`), and swap files (`*.swp`, `*.swo`).
+    """
     
     @classmethod
     def define (
@@ -84,6 +104,11 @@ class LogsDefine(BaseDockerignoreDefiner, BaseDockerDefiner):
             
 class TestCoverageDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
     
+    """
+    Defines patterns to ignore test coverage files.
+    Includes `tests/`, `coverage/`, `*.cover`, and `.pytest_cache/`.
+    """
+    
     @classmethod
     def define (
         cls,
@@ -103,6 +128,11 @@ class TestCoverageDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
     
 
 class GitAttributesDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
+    
+    """
+    Defines patterns to ignore Git-related files.
+    Includes `.git/`, `.gitignore`, `.idea/`, `.vscode/`, and `*.iml`.
+    """
     
     @classmethod
     def define (
@@ -125,6 +155,11 @@ class GitAttributesDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
     
 class DockerFilesDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
     
+    """
+    Defines patterns to ignore Docker-related files.
+    Includes `.dockerignore`, `Dockerfile*`, and `docker-compose.yml`.
+    """
+    
     @classmethod
     def define (
         cls,
@@ -143,6 +178,11 @@ class DockerFilesDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
 
 class PoetryDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
     
+    """
+    Defines patterns to ignore Poetry-related files.
+    Includes `.poetry/`.
+    """
+    
     @classmethod
     def define (
         cls,
@@ -158,6 +198,11 @@ class PoetryDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         return ''
 
 class CompiledFiledDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
+    
+    """
+    Defines patterns to ignore compiled files and build artifacts.
+    Includes `dist/`, `build/`, and `*.egg-info/`.
+    """
     
     @classmethod
     def define (
@@ -178,6 +223,11 @@ class CompiledFiledDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
 
 class DocumentationDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
     
+    """
+    Defines patterns to ignore documentation files.
+    Includes `docs/`, `*.md`, and `*.rst`.
+    """
+    
     @classmethod
     def define (
         cls,
@@ -196,6 +246,11 @@ class DocumentationDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
     
 
 class EnvFilesDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
+    
+    """
+    Defines patterns to ignore environment files.
+    Includes `*.env`.
+    """
     
     @classmethod
     def define (
