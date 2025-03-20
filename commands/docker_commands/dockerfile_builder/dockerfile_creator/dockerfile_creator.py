@@ -1,12 +1,13 @@
 import textwrap
 
-from commands.dockerfile_builder.dockerfile_creator.definers.exposed_ports_definer.exposed_ports_definer import ExposedPortsDefiner
-from commands.dockerfile_builder.dockerfile_creator.definers.poetry_definer.poetry_definer import PoetryDefiner
-from commands.dockerfile_builder.dockerfile_creator.definers.python_version_definer.python_version_definer import PythonVesionDefiner
-from commands.dockerfile_builder.dockerfile_creator.definers.system_dependencies_definer.system_dependencies_definer import SystemDependenciesDefiner
-from commands.dockerfile_builder.dockerfile_creator.definers.user_security_definer.user_security_definer import UserSecurityDefiner
-
-from commands.dockerfile_builder.dockerfile_validator.dockerfile_validator import DockerfileValidator
+from commands.docker_commands.docker_definers.dockerfile_definers.dockerfile_definers import (
+    PythonVesionDefiner,
+    SystemDependenciesDefiner,
+    PoetryDefiner,
+    UserSecurityDefiner,
+    ExposedPortsDefiner,
+)
+from commands.docker_commands.dockerfile_builder.dockerfile_validator.dockerfile_validator import DockerfileValidator
 
 class DockerfileFactory:
 
@@ -24,22 +25,22 @@ class DockerfileFactory:
         os_type: str = None,
     ) -> str:
         
-        python_version = PythonVesionDefiner.define_python_version (
+        python_version = PythonVesionDefiner.define (
             python_version, 
             use_alpine,
         )
-        system_deps = SystemDependenciesDefiner.define_system_deps (
+        system_deps = SystemDependenciesDefiner.define (
             install_system_deps, 
             os_type,
         )
-        poetry = PoetryDefiner.define_poetry (
+        poetry = PoetryDefiner.define (
             poetry, 
             in_env,
         )
-        user_security = UserSecurityDefiner.define_user_security (
+        user_security = UserSecurityDefiner.define (
             use_nonroot_user,
         )
-        exposed_ports = ExposedPortsDefiner.define_exposed_ports (
+        exposed_ports = ExposedPortsDefiner.define (
             ports, 
             grpc_enabled,
         )
