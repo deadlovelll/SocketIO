@@ -2,13 +2,15 @@ import sys
 import json
 
 from commands.grpc_creator.grpc_creator import GRPCCreator
-from commands.dockerfile_builder.dockerfile_creator.docker.dockerfile_creator import DockerfileFactory
+from commands.docker_commands.dockerfile_builder.dockerfile_creator.dockerfile_creator import DockerfileFactory
+from commands.docker_commands.dockerignore_builder.dockerignore_builder import DockerignoreBuilder
 
 class CommandController:
     
     command_map = {
         'create_grpc_protocol': GRPCCreator.create_grpc_protocol,
         'createdockerfile': DockerfileFactory.create_dockerfile,
+        'createdockerignore': DockerignoreBuilder.create_dockerignore_file,
     }
     
     @staticmethod
