@@ -152,7 +152,7 @@ class PoetryDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         if poetry:
             return super().add_ignorance (
                 [
-                    '.poetry/'
+                    '.poetry/',
                 ]
             )
         return ''
