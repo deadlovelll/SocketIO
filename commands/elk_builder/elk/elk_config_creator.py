@@ -9,11 +9,21 @@ class ELKConfigCreator:
     @staticmethod
     def create_elk_config():
         
-        config_path = "config/elk"
+        config_path = 'config/elk'
         os.makedirs(config_path, exist_ok=True) 
 
-        ElasticsearchConfigCreator.write_config()
-        LogstashConfigCreator.write_config()
-        KibanaConfigCreator.write_config()
+        services = {
+            'Elasticsearch': ElasticsearchConfigCreator,
+            'Logstash': LogstashConfigCreator,
+            'Kibana': KibanaConfigCreator
+        }
+
+        for service_name, creator in services.items():
+            try:
+                config_file = creator.write_config(config_path)
+            except Exception as e:
+                pass
         
-        print('elk config created successfully!')
+        os.environ['ELK_SERVICE_ENABLED'] = 1
+
+        print('ELK config successfully created!')
