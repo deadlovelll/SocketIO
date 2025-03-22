@@ -6,23 +6,16 @@ from typing import Callable
 
 from SocketIO.handlers.request_handler.request_handler import RequestHandler
 
+from SocketIO.route_registry.router_registry import RouteRegistry
+
 class IORouter:
     
     def __init__ (
         self,
     ) -> None:
         
-        self.routes = {}
-        self.websockets = {}
-        
         self.request_handler = RequestHandler()
-        
-    def __convert_path_to_regex (
-        self,
-        path: str
-    ) -> str:
-        
-        return "^" + re.sub(r"<(\w+)>", r"(?P<\1>[^/]+)", path) + "$"
+        self.router_registry = RouteRegistry()
     
     def route (
         self, 
@@ -35,22 +28,12 @@ class IORouter:
             handler: Callable[..., None],
         ) -> Callable[..., None]:
             
-            if "<" in path and ">" in path:
-                regex = self.__convert_path_to_regex(path)
-                self.routes[regex] = {
-                    'handler': handler,
-                    'methods': methods,
-                    'dynamic': True,
-                    'original': path,
-                    'protected': protected
-                }
-            else:
-                if path not in self.routes:
-                    self.routes[path] = {}
-                self.routes[path]['handler'] = handler
-                self.routes[path]['methods'] = methods
-                self.routes[path]['dynamic'] = False
-                self.routes[path]['protected'] = protected
+            self.router_registry.add_route (
+                path,
+                handler,
+                methods,
+                protected,
+            )
             return handler
         return wrapper
     
@@ -63,7 +46,7 @@ class IORouter:
             handler: Callable[..., None],
         ) -> Callable[..., None]:
             
-            self.websockets[path] = handler
+            self.router_registry.websockets[path] = handler
             return handler
         return wrapper   
     
