@@ -1,4 +1,4 @@
-from exceptions.base_exception.socketio_exception import SocketIOException
+from SocketIO.exceptions.base_exception.socketio_exception import SocketIOException
 
 class NoRedisConfiguredException(SocketIOException):
     

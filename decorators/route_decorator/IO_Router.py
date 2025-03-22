@@ -2,13 +2,9 @@ import re
 import asyncio
 import socket
 
-from urllib.parse import urlparse
 from typing import Callable
 
-from exceptions.handler_exceptions.invalid_rest_operation_type import InvalidRestOperationType
-
-from parsers.request_parser.request_parser import RequestParser
-from handlers.request_handler.request_handler import RequestHandler
+from SocketIO.handlers.request_handler.request_handler import RequestHandler
 
 class IORouter:
     

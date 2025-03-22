@@ -1,5 +1,5 @@
-from commands.docker_commands.docker_definers.base_definer.base_definer import BaseDockerDefiner
-from commands.docker_commands.docker_definers.base_definer.base_dockerignore_definer import BaseDockerignoreDefiner
+from SocketIO.commands.docker_commands.docker_definers.base_definer.base_definer import BaseDockerDefiner
+from SocketIO.commands.docker_commands.docker_definers.base_definer.base_dockerignore_definer import BaseDockerignoreDefiner
 
 class PythonCacheDefiner(BaseDockerDefiner, BaseDockerignoreDefiner):
     

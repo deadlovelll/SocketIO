@@ -1,10 +1,10 @@
 import sys
 import json
 
-from commands.grpc_creator.grpc_creator import GRPCCreator
-from commands.docker_commands.dockerfile_builder.dockerfile_creator.dockerfile_creator import DockerfileFactory
-from commands.docker_commands.dockerignore_builder.dockerignore_builder import DockerignoreBuilder
-from commands.elk_builder.elk.elk_config_creator import ELKConfigCreator
+from SocketIO.commands.grpc_creator.grpc_creator import GRPCCreator
+from SocketIO.commands.docker_commands.dockerfile_builder.dockerfile_creator.dockerfile_creator import DockerfileFactory
+from SocketIO.commands.docker_commands.dockerignore_builder.dockerignore_builder import DockerignoreBuilder
+from SocketIO.commands.elk_builder.elk.elk_config_creator import ELKConfigCreator
 
 class CommandController:
     

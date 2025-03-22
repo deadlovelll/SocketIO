@@ -1,6 +1,6 @@
 import textwrap
 
-from commands.docker_commands.docker_definers.dockerignore_definers.dockerifnore_definers import (
+from SocketIO.commands.docker_commands.docker_definers.dockerignore_definers.dockerifnore_definers import (
     PythonCacheDefiner,
     VenvDefiner,
     SystemSpecsDefiner,

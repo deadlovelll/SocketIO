@@ -1,7 +1,7 @@
 import platform
 
-from utils.os_detector.base_os_detector.base_os_detector import BaseOSDetector
-from utils.os_detector.detectors.detectors import (
+from SocketIO.utils.os_detector.base_os_detector.base_os_detector import BaseOSDetector
+from SocketIO.utils.os_detector.detectors.detectors import (
     WindowsDetector,
     MacOSDetector,
     LinuxDetector,

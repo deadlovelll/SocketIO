@@ -1,7 +1,7 @@
 import os
 import requests
 
-from exceptions.dockerfile_exceptions.dockerfile_exceptions import (
+from SocketIO.exceptions.dockerfile_exceptions.dockerfile_exceptions import (
     DockerfileInproperPortError, 
     DockerfileForbieddenPortError,
     DockerfileNoSuchEntrypoint,

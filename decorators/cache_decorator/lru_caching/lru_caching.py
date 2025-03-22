@@ -17,7 +17,6 @@ class LRUCaching:
         if key not in self.cache_d:
             return None
         
-        # Move key to end (most recently used)
         self.cache_d.move_to_end(key)
         return self.cache_d[key]
 
@@ -31,7 +30,7 @@ class LRUCaching:
             self.cache_d.move_to_end(key)
             
         elif len(self.cache_d) >= self.max_size:
-            self.cache_d.popitem(last=False)  # Remove the least recently used item
+            self.cache_d.popitem(last=False)  
             
         self.cache_d[key] = value
         

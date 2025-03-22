@@ -1,7 +1,7 @@
 import textwrap
 
-from commands.docker_commands.docker_definers.base_definer.base_definer import BaseDockerDefiner
-from utils.os_detector.os_detector.os_detector import OSDetector
+from SocketIO.commands.docker_commands.docker_definers.base_definer.base_definer import BaseDockerDefiner
+from SocketIO.utils.os_detector.os_detector.os_detector import OSDetector
 
 class PythonVesionDefiner(BaseDockerDefiner):
     

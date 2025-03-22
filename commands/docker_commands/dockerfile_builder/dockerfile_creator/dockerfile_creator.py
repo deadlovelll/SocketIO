@@ -1,13 +1,13 @@
 import textwrap
 
-from commands.docker_commands.docker_definers.dockerfile_definers.dockerfile_definers import (
+from SocketIO.commands.docker_commands.docker_definers.dockerfile_definers.dockerfile_definers import (
     PythonVesionDefiner,
     SystemDependenciesDefiner,
     PoetryDefiner,
     UserSecurityDefiner,
     ExposedPortsDefiner,
 )
-from commands.docker_commands.dockerfile_builder.dockerfile_validator.dockerfile_validator import DockerfileValidator
+from SocketIO.commands.docker_commands.dockerfile_builder.dockerfile_validator.dockerfile_validator import DockerfileValidator
 
 class DockerfileFactory:
 

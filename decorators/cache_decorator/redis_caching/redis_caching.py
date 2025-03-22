@@ -3,8 +3,8 @@ import pickle
 import hashlib
 from typing import Callable, Any
 
-from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
-from exceptions.redis_exceptions.no_redis_configured_exception import NoRedisConfiguredException
+from SocketIO.decorators.cache_decorator.redis_caching.redis_config import RedisConfig
+from SocketIO.exceptions.redis_exceptions.no_redis_configured_exception import NoRedisConfiguredException
 
 class RedisCaching:
     
