@@ -4,23 +4,23 @@ import sys
 import psutil
 import grpc
 
-from autodoc.autodoc import AutoDocGenerator
+from SocketIO.autodoc.autodoc import AutoDocGenerator
 
-from decorators.lifecycle_hooks.lifecycle_hooks import LifecycleHooks
-from decorators.rate_limit_decorator.rate_limit import RateLimitation
-from decorators.cache_decorator.cache_decorator import CacheDecorator
-from decorators.route_decorator.IO_Router import IORouter
-from decorators.middleware.middleware import IOMiddleware
-from decorators.bound_handlers.bound_handlers import BoundHandlers
-from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
+from SocketIO.decorators.lifecycle_hooks.lifecycle_hooks import LifecycleHooks
+from SocketIO.decorators.rate_limit_decorator.rate_limit import RateLimitation
+from SocketIO.decorators.cache_decorator.cache_decorator import CacheDecorator
+from SocketIO.decorators.route_decorator.IO_Router import IORouter
+from SocketIO.decorators.middleware.middleware import IOMiddleware
+from SocketIO.decorators.bound_handlers.bound_handlers import BoundHandlers
+from SocketIO.decorators.cache_decorator.redis_caching.redis_config import RedisConfig
 
-from handlers.__preparation_handler.__preparation_handler import PreparationHandler
-from handlers.request_consumer_handler.request_consumer_handler import RequestConsumerHandler
-from handlers.grpc_handler.grpc_handler import GRPCHandler
+from SocketIO.handlers.__preparation_handler.__preparation_handler import PreparationHandler
+from SocketIO.handlers.request_consumer_handler.request_consumer_handler import RequestConsumerHandler
+from SocketIO.handlers.grpc_handler.grpc_handler import GRPCHandler
 
-from commands.command_controller.command_controller import CommandController
+from SocketIO.commands.command_controller.command_controller import CommandController
 
-from utils.socketio_validators.socketio_port_validator.socketio_port_validator import SocketIOPortValidator
+from SocketIO.utils.socketio_validators.socketio_port_validator.socketio_port_validator import SocketIOPortValidator
 
 class SocketIO (
     PreparationHandler,
@@ -117,7 +117,7 @@ class SocketIO (
         if self.grpc_port:
             await self.start_grpc_server()
         else:
-            os.environ['GRPC_SERVICE_ENABLED'] = 0
+            os.environ['GRPC_SERVICE_ENABLED'] = '0'
         await self.consume_requests()
         
     async def start_grpc_server (
