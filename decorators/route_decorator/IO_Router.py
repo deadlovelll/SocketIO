@@ -56,7 +56,7 @@ class IORouter:
         
         asyncio.run(self.request_handler.handle_request(
             client_socket,
-            self.routes,
-            self.websockets,
+            self.router_registry.routes,
+            self.router_registry.websockets,
             allowed_hosts,
         ))
