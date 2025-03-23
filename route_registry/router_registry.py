@@ -42,3 +42,11 @@ class RouteRegistry:
                 'dynamic': False,
                 'protected': protected
             }
+            
+    def add_websocket_route (
+        self,
+        path: str,
+        handler: Callable[..., None],
+    ) -> None:
+        
+        self.websockets[path] = handler

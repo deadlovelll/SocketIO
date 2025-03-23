@@ -1,21 +1,28 @@
-from typing import Callable
+from SocketIO.route_registry.router_registry import RouteRegistry
+from SocketIO.configs.route_config.route_config import RouteConfig
 
 class SocketIORouter:
     
-    async def add_api_route (
+    def __init__ (
         self,
-        path: str, 
-        methods: list[str],
-        protected: bool,
-        response_type,
-        on_startup: Callable[..., None],
-        on_shutdown: Callable[..., None],
-        IOBound: bool,
-        CPUBound: bool,
-        rate_limitation: bool,
-        debounce: int,
-        caching: None,
-        logging: bool = None,
     ) -> None:
         
-        pass
+        self.router_registry = RouteRegistry()
+    
+    async def add_api_route (
+        self,
+        config: RouteConfig,
+    ) -> None:
+        
+        self.router_registry.add_route (
+            **config.__dict__,
+        )
+        
+    async def add_websocket_router (
+        self,
+        config: RouteConfig,
+    ) -> None:
+        
+        self.router_registry.add_websocket_route (
+            **config.__dict__,
+        )

@@ -1,11 +1,9 @@
-import re
 import asyncio
 import socket
 
 from typing import Callable
 
 from SocketIO.handlers.request_handler.request_handler import RequestHandler
-
 from SocketIO.route_registry.router_registry import RouteRegistry
 
 class IORouter:
