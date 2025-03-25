@@ -1,7 +1,9 @@
-class LogstashConfigCreator:
+from SocketIO.interfaces.file_creator_interface.file_creator_interface import FileCreator
+
+class LogstashConfigCreator(FileCreator):
     
     @staticmethod
-    def generate_config (
+    def create_file_text (
         beats_port: int = 5000,
         elasticsearch_host: str = "elasticsearch:9200",
         index_pattern: str = "logstash-%{+YYYY.MM.dd}",
@@ -39,7 +41,7 @@ output {{
         return config
 
     @staticmethod
-    def write_config (
+    def create_file (
         beats_port: int = 5000,
         elasticsearch_host: str = "elasticsearch:9200",
         index_pattern: str = "logstash-%{{+YYYY.MM.dd}}",
@@ -53,7 +55,7 @@ output {{
         :param index_pattern: Index pattern for Elasticsearch output.
         """
         
-        config = LogstashConfigCreator.generate_config (
+        config = LogstashConfigCreator.create_file_text (
             beats_port, 
             elasticsearch_host, 
             index_pattern,

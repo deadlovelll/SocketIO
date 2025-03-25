@@ -1,7 +1,9 @@
-class KibanaConfigCreator:
+from SocketIO.interfaces.file_creator_interface.file_creator_interface import FileCreator
+
+class KibanaConfigCreator(FileCreator):
     
     @staticmethod
-    def generate_config (
+    def create_file_text (
         server_host: str = "0.0.0.0",
         server_port: int = 5601,
         elasticsearch_host: str = "http://elasticsearch:9200",
@@ -36,7 +38,7 @@ elasticsearch.password: "{elasticsearch_password}"
         return config
 
     @staticmethod
-    def write_config (
+    def create_file (
         server_host: str = "0.0.0.0",
         server_port: int = 5601,
         elasticsearch_host: str = "http://elasticsearch:9200",
@@ -57,7 +59,7 @@ elasticsearch.password: "{elasticsearch_password}"
         :param kibana_index: Kibana index name.
         """
         
-        config = KibanaConfigCreator.generate_config (
+        config = KibanaConfigCreator.create_file_text (
             server_host, 
             server_port, 
             elasticsearch_host, 

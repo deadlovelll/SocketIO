@@ -20,7 +20,7 @@ class ELKConfigCreator:
 
         for service_name, creator in services.items():
             try:
-                config_file = creator.write_config(config_path)
+                config_file = creator.create_file(config_path)
             except Exception as e:
                 pass
         

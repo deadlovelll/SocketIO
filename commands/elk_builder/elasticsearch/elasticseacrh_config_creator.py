@@ -1,7 +1,9 @@
-class ElasticsearchConfigCreator:
+from SocketIO.interfaces.file_creator_interface.file_creator_interface import FileCreator
+
+class ElasticsearchConfigCreator(FileCreator):
     
     @staticmethod
-    def generate_config (
+    def create_file_text (
         cluster_name: str = "docker-cluster",
         network_host: str = "0.0.0.0",
         discovery_type: str = "single-node",
@@ -23,7 +25,7 @@ discovery.type: {discovery_type}
         return config
 
     @staticmethod
-    def write_config (
+    def create_file (
         cluster_name: str = "docker-cluster",
         network_host: str = "0.0.0.0",
         discovery_type: str = "single-node",
@@ -38,7 +40,7 @@ discovery.type: {discovery_type}
         :param discovery_type: Discovery type.
         """
         
-        config = ElasticsearchConfigCreator.generate_config (
+        config = ElasticsearchConfigCreator.create_file_text (
             cluster_name, 
             network_host, 
             discovery_type,
