@@ -1,5 +1,6 @@
 import textwrap
 
+from SocketIO.interfaces.file_creator_interface.file_creator_interface import FileCreator
 from SocketIO.commands.docker_commands.docker_definers.dockerignore_definers.dockerifnore_definers import (
     PythonCacheDefiner,
     VenvDefiner,
@@ -14,10 +15,10 @@ from SocketIO.commands.docker_commands.docker_definers.dockerignore_definers.doc
     EnvFilesDefiner
 )
 
-class DockerignoreBuilder:
+class DockerIgnoreCreator(FileCreator):
     
     @staticmethod
-    def create_dockerignorefile_text (
+    def create_file_text (
         python_cache: bool,
         virtual_environment: bool,
         system_spec_files: bool,
@@ -83,7 +84,7 @@ class DockerignoreBuilder:
         return textwrap.dedent(content).strip()
     
     @staticmethod
-    def create_dockerignore_file (
+    def create_file (
         python_cache: bool = True,
         virtual_environment: bool = True,
         system_spec_files: bool = True,
@@ -133,7 +134,7 @@ class DockerignoreBuilder:
         """
         
         with open('.dockerignore', 'w') as f:
-            f.write(DockerignoreBuilder.create_dockerignorefile_text (
+            f.write(DockerIgnoreCreator.create_dockerignorefile_text (
                 python_cache,
                 virtual_environment,
                 system_spec_files,
