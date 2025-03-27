@@ -1,77 +1,183 @@
-class GitIgnoreVenvDefiner:
+from commands.git_commands.base_definers.base_gitignore_definer import BaseGitIgnoreDefiner
+
+class GitIgnoreVenvDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        venv: bool,
     ) -> str:
-        pass
+        
+        if venv:
+            return super().add_ignorance (
+                'venv/',
+                'env/',
+                '.venv/',
+                'ENV/',
+            )
+        return ''
+            
     
-class GitIgnoreLogsDefiner:
+class GitIgnoreLogsDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        logs: bool,
     ) -> str:
-        pass
+        
+        if logs:
+            return super().add_ignorance (
+                '*.log',
+                '*.sqlite3',
+                '*.db',
+                '*.sql',
+            )
+        return ''
     
-class GitIgnorePackagingDefiner:
+class GitIgnorePackagingDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        packaging: bool,
     ) -> str:
-        pass
+        
+        if packaging:
+            return super().add_ignorance (
+                'build/',
+                'dist/',
+                '*.egg-info/',
+                'pip-wheel-metadata/',
+            )
+        return ''
     
-class GitIgnoreOsSpecificFilesDefiner:
+class GitIgnoreOsSpecificFilesDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        os_specific: bool,
     ) -> str:
-        pass
+        
+        if os_specific:
+            return super().add_ignorance (
+                '.DS_Store',
+                'Thumbs.db',
+            )
+        return ''
     
-class GitIgnoreIDEFilesDefiner:
+class GitIgnoreIDEFilesDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        ide_files: bool,
     ) -> str:
-        pass
+        
+        if ide_files:
+            return super().add_ignorance (
+                '.idea/',
+                '.vscode/',
+                '*.swp',
+                '*.swo',
+                '*.swn',
+            )
+        return ''
     
-class GitIgnoreCoverageDefiner:
+class GitIgnoreCoverageDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        coverage: bool,
     ) -> str:
-        pass
-    
-class GitIgnoreDockerDefiner:
+        
+        if coverage:
+            return super().add_ignorance (
+                '.coverage',
+                'htmlcov/',
+                'coverage.xml',
+            )
+        return ''
+            
+class GitIgnoreCachesDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        caches: bool,
     ) -> str:
-        pass
+        
+        if caches:
+            return super().add_ignorance (
+                '.cache/',
+                '*.mypy_cache/',
+                '.pytest_cache/',
+            )
+        return ''
     
-class GitIgnoreGRPCDefiner:
+class GitIgnoreDockerDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        docker: bool,
     ) -> str:
-        pass
+        
+        if docker:
+            return super().add_ignorance (
+                'docker-compose.override.yml',
+                '*.dockerfile',
+                '*.tar',
+            )
+        return ''
     
-class GitIgnoreJupyterCopyBookDefiner:
+class GitIgnoreGRPCDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        grpc: bool,
     ) -> str:
-        pass
+        
+        if grpc:
+            return super().add_ignorance (
+                '*_pb2.py',
+                '*_pb2_grpc.py',
+            )
+        return ''
+    
+class GitIgnoreJupyterCopyBookDefiner(BaseGitIgnoreDefiner):
+    
+    def define (
+        self,
+        jupyter_cp: bool,
+    ) -> str:
+        
+        if jupyter_cp:
+            return super().add_ignorance (
+                '.ipynb_checkpoints/',
+            )
+        return ''
     
 
-class GitIgnoreTestingDefiner:
+class GitIgnoreTestingDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        testing: bool,
     ) -> str:
-        pass
+        
+        if testing:
+            return super().add_ignorance (
+                'test-reports/',
+                'tests/__pycache__/',
+            )
     
-class GitIgnoreSecurityDefiner:
+class GitIgnoreSecurityDefiner(BaseGitIgnoreDefiner):
     
     def define (
         self,
+        security: bool,
     ) -> str:
-        pass
+        
+        if security:
+            return super().add_ignorance (
+                '.env',
+                '.env.*',
+                'config.yaml',
+                'secrets.json',
+                'secrets.env',
+            )

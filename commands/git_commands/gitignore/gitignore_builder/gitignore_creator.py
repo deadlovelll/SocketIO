@@ -11,7 +11,8 @@ from SocketIO.commands.git_commands.gitignore.gitignore_definers.gitignore_defin
     GitIgnoreGRPCDefiner,
     GitIgnoreJupyterCopyBookDefiner,
     GitIgnoreTestingDefiner,
-    GitIgnoreSecurityDefiner
+    GitIgnoreSecurityDefiner,
+    GitIgnoreCachesDefiner,
 )
 
 class GitIgnoreCreator:
@@ -25,6 +26,7 @@ class GitIgnoreCreator:
         os_specific: bool,
         ide_files: bool,
         coverage: bool,
+        caches: bool,
         docker: bool,
         grpc: bool,
         jupyter_cp: bool,
@@ -39,6 +41,7 @@ class GitIgnoreCreator:
             GitIgnoreOsSpecificFilesDefiner.define(os_specific),
             GitIgnoreIDEFilesDefiner.define(ide_files),
             GitIgnoreCoverageDefiner.define(coverage),
+            GitIgnoreCachesDefiner.define(caches),
             GitIgnoreDockerDefiner.define(docker),
             GitIgnoreGRPCDefiner.define(grpc),
             GitIgnoreJupyterCopyBookDefiner.define(jupyter_cp),
@@ -58,6 +61,7 @@ class GitIgnoreCreator:
         os_specific: bool,
         ide_files: bool,
         coverage: bool,
+        caches: bool,
         docker: bool,
         grpc: bool,
         jupyter_cp: bool,
@@ -74,6 +78,7 @@ class GitIgnoreCreator:
                 os_specific,
                 ide_files,
                 coverage,
+                caches,
                 docker,
                 grpc,
                 jupyter_cp,
