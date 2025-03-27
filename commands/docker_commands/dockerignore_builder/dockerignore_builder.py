@@ -1,7 +1,7 @@
 import textwrap
 
-from SocketIO.interfaces.file_creator_interface.file_creator_interface import FileCreator
-from SocketIO.commands.docker_commands.docker_definers.dockerignore_definers.dockerifnore_definers import (
+from interfaces.file_creator_interface.file_creator_interface import FileCreator
+from commands.docker_commands.docker_definers.dockerignore_definers.dockerifnore_definers import (
     PythonCacheDefiner,
     VenvDefiner,
     SystemSpecsDefiner,

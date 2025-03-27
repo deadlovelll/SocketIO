@@ -1,5 +1,5 @@
-from SocketIO.route_registry.router_registry import RouteRegistry
-from SocketIO.configs.route_config.route_config import RouteConfig
+from route_registry.router_registry import RouteRegistry
+from configs.route_config.route_config import RouteConfig
 
 class SocketIORouter:
     

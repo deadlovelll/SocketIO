@@ -1,14 +1,14 @@
 import textwrap
 
-from SocketIO.commands.docker_commands.docker_definers.dockerfile_definers.dockerfile_definers import (
+from commands.docker_commands.docker_definers.dockerfile_definers.dockerfile_definers import (
     PythonVesionDefiner,
     SystemDependenciesDefiner,
     PoetryDefiner,
     UserSecurityDefiner,
     ExposedPortsDefiner,
 )
-from SocketIO.commands.docker_commands.dockerfile.dockerfile_validator.dockerfile_validator import DockerfileValidator
-from SocketIO.interfaces.file_creator_interface.file_creator_interface import FileCreator
+from commands.docker_commands.dockerfile.dockerfile_validator.dockerfile_validator import DockerfileValidator
+from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
 class DockerfileCreator(FileCreator):
 

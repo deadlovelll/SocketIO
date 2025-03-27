@@ -9,12 +9,14 @@ class GitIgnoreByteCodeDefiner(BaseGitIgnoreDefiner):
         
         if bytecode_files:
             return super().add_ignorance (
-                '__pycache__/',
-                '*.py[cod]',
-                '*$py.class',
-                '*.pyc',
-                '*.pyd',
-                '*.pyo',
+                [
+                    '__pycache__/',
+                    '*.py[cod]',
+                    '*$py.class',
+                    '*.pyc',
+                    '*.pyd',
+                    '*.pyo',
+                ]
             )
         return ''
 
@@ -28,10 +30,12 @@ class GitIgnoreVenvDefiner(BaseGitIgnoreDefiner):
         
         if venv:
             return super().add_ignorance (
-                'venv/',
-                'env/',
-                '.venv/',
-                'ENV/',
+                [
+                    'venv/',
+                    'env/',
+                    '.venv/',
+                    'ENV/',
+                ]
             )
         return ''
             
@@ -45,10 +49,12 @@ class GitIgnoreLogsDefiner(BaseGitIgnoreDefiner):
         
         if logs:
             return super().add_ignorance (
-                '*.log',
-                '*.sqlite3',
-                '*.db',
-                '*.sql',
+                [
+                    '*.log',
+                    '*.sqlite3',
+                    '*.db',
+                    '*.sql',
+                ]
             )
         return ''
     
@@ -62,10 +68,12 @@ class GitIgnorePackagingDefiner(BaseGitIgnoreDefiner):
         
         if packaging:
             return super().add_ignorance (
-                'build/',
-                'dist/',
-                '*.egg-info/',
-                'pip-wheel-metadata/',
+                [
+                    'build/',
+                    'dist/',
+                    '*.egg-info/',
+                    'pip-wheel-metadata/',
+                ]
             )
         return ''
     
@@ -79,8 +87,10 @@ class GitIgnoreOsSpecificFilesDefiner(BaseGitIgnoreDefiner):
         
         if os_specific:
             return super().add_ignorance (
-                '.DS_Store',
-                'Thumbs.db',
+                [
+                    '.DS_Store',
+                    'Thumbs.db',
+                ]
             )
         return ''
     
@@ -94,11 +104,13 @@ class GitIgnoreIDEFilesDefiner(BaseGitIgnoreDefiner):
         
         if ide_files:
             return super().add_ignorance (
-                '.idea/',
-                '.vscode/',
-                '*.swp',
-                '*.swo',
-                '*.swn',
+                [
+                    '.idea/',
+                    '.vscode/',
+                    '*.swp',
+                    '*.swo',
+                    '*.swn',
+                ]
             )
         return ''
     
@@ -112,9 +124,11 @@ class GitIgnoreCoverageDefiner(BaseGitIgnoreDefiner):
         
         if coverage:
             return super().add_ignorance (
-                '.coverage',
-                'htmlcov/',
-                'coverage.xml',
+                [
+                    '.coverage',
+                    'htmlcov/',
+                    'coverage.xml',
+                ]
             )
         return ''
             
@@ -128,9 +142,11 @@ class GitIgnoreCachesDefiner(BaseGitIgnoreDefiner):
         
         if caches:
             return super().add_ignorance (
-                '.cache/',
-                '*.mypy_cache/',
-                '.pytest_cache/',
+                [
+                    '.cache/',
+                    '*.mypy_cache/',
+                    '.pytest_cache/',
+                ]
             )
         return ''
     
@@ -144,9 +160,11 @@ class GitIgnoreDockerDefiner(BaseGitIgnoreDefiner):
         
         if docker:
             return super().add_ignorance (
-                'docker-compose.override.yml',
-                '*.dockerfile',
-                '*.tar',
+                [
+                    'docker-compose.override.yml',
+                    '*.dockerfile',
+                    '*.tar',    
+                ]
             )
         return ''
     
@@ -160,8 +178,10 @@ class GitIgnoreGRPCDefiner(BaseGitIgnoreDefiner):
         
         if grpc:
             return super().add_ignorance (
-                '*_pb2.py',
-                '*_pb2_grpc.py',
+                [
+                    '*_pb2.py',
+                    '*_pb2_grpc.py',
+                ]
             )
         return ''
     
@@ -175,7 +195,9 @@ class GitIgnoreJupyterCopyBookDefiner(BaseGitIgnoreDefiner):
         
         if jupyter_cp:
             return super().add_ignorance (
-                '.ipynb_checkpoints/',
+                [
+                    '.ipynb_checkpoints/',
+                ]
             )
         return ''
     
@@ -189,8 +211,10 @@ class GitIgnoreTestingDefiner(BaseGitIgnoreDefiner):
         
         if testing:
             return super().add_ignorance (
-                'test-reports/',
-                'tests/__pycache__/',
+                [
+                    'test-reports/',
+                    'tests/__pycache__/',
+                ]
             )
     
     
@@ -203,9 +227,11 @@ class GitIgnoreSecurityDefiner(BaseGitIgnoreDefiner):
         
         if security:
             return super().add_ignorance (
-                '.env',
-                '.env.*',
-                'config.yaml',
-                'secrets.json',
-                'secrets.env',
+                [
+                    '.env',
+                    '.env.*',
+                    'config.yaml',
+                    'secrets.json',
+                    'secrets.env',
+                ]
             )

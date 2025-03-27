@@ -1,6 +1,7 @@
 class BaseGitIgnoreDefiner:
     
     def add_ignorance (
+        self,
         ignorance: list[str],
     ) -> str:
         

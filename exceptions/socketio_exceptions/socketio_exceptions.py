@@ -1,4 +1,4 @@
-from SocketIO.exceptions.base_exception.socketio_exception import SocketIOException
+from exceptions.base_exception.socketio_exception import SocketIOException
 
 class SocketIOInproperPortError(SocketIOException):
     

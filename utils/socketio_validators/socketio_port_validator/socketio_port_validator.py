@@ -1,4 +1,4 @@
-from SocketIO.exceptions.socketio_exceptions.socketio_exceptions import (
+from exceptions.socketio_exceptions.socketio_exceptions import (
     SocketIOForbieddenPortError,
     SocketIOInproperPortError
 )

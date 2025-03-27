@@ -3,7 +3,7 @@ import socket
 
 from typing import Callable
 
-from SocketIO.exceptions.handler_exceptions.invalid_rest_operation_type import InvalidRestOperationType
+from exceptions.handler_exceptions.invalid_rest_operation_type import InvalidRestOperationType
 
 class HTTPHandler:
     

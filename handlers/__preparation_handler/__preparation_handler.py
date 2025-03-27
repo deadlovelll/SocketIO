@@ -3,7 +3,7 @@ import signal
 import socket
 import threading
 
-from SocketIO.file_wacther.file_watcher import FileWatcher
+from file_wacther.file_watcher import FileWatcher
 
 class PreparationHandler:
     

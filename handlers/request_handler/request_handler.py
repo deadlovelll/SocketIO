@@ -2,10 +2,10 @@ import asyncio
 import socket
 from urllib.parse import urlparse
 
-from SocketIO.handlers.http_handler.http_handler import HTTPHandler
-from SocketIO.handlers.websocket_handler.websocket_handler import WebsocketHandler
+from handlers.http_handler.http_handler import HTTPHandler
+from handlers.websocket_handler.websocket_handler import WebsocketHandler
 
-from SocketIO.parsers.request_parser.request_parser import RequestParser
+from parsers.request_parser.request_parser import RequestParser
 
 class RequestHandler:
     

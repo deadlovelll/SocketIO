@@ -1,10 +1,11 @@
 import sys
 import json
 
-from SocketIO.commands.grpc_creator.grpc_creator import GRPCCreator
-from SocketIO.commands.docker_commands.dockerfile.dockerfile_creator.dockerfile_creator import DockerfileCreator
-from SocketIO.commands.docker_commands.dockerignore_builder.dockerignore_builder import DockerIgnoreCreator
-from SocketIO.commands.elk_builder.elk.elk_config_creator import ELKConfigCreator
+from commands.grpc_creator.grpc_creator import GRPCCreator
+from commands.docker_commands.dockerfile.dockerfile_creator.dockerfile_creator import DockerfileCreator
+from commands.docker_commands.dockerignore_builder.dockerignore_builder import DockerIgnoreCreator
+from commands.elk_builder.elk.elk_config_creator import ELKConfigCreator
+from commands.git_commands.gitignore.gitignore_builder.gitignore_creator import GitIgnoreCreator
 
 class CommandController:
     
@@ -13,6 +14,7 @@ class CommandController:
         'createdockerfile': DockerfileCreator.create_file,
         'createdockerignore': DockerIgnoreCreator.create_file,
         'createelastic': ELKConfigCreator.create_elk_config,
+        'creategitignore': GitIgnoreCreator.create_file,
     }
     
     @staticmethod

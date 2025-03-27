@@ -1,4 +1,4 @@
-from SocketIO.utils.os_detector.base_os_detector.base_os_detector import BaseOSDetector
+from utils.os_detector.base_os_detector.base_os_detector import BaseOSDetector
 
 class WindowsDetector(BaseOSDetector):
     

@@ -1,4 +1,4 @@
-from SocketIO.interfaces.file_creator_interface.file_creator_interface import FileCreator
+from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
 class LogstashConfigCreator(FileCreator):
     
