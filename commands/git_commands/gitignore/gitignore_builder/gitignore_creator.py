@@ -1,5 +1,7 @@
 import textwrap
 
+from typing import Dict
+
 from SocketIO.commands.git_commands.gitignore.gitignore_definers.gitignore_definers import (
     GitIgnoreVenvDefiner,
     GitIgnoreLogsDefiner,
@@ -13,76 +15,40 @@ from SocketIO.commands.git_commands.gitignore.gitignore_definers.gitignore_defin
     GitIgnoreTestingDefiner,
     GitIgnoreSecurityDefiner,
     GitIgnoreCachesDefiner,
+    GitIgnoreByteCodeDefiner
 )
 
 class GitIgnoreCreator:
     
     @staticmethod
     def create_file_text (
-        bc: bool,
-        venv: bool,
-        logs: bool,
-        packaging: bool,
-        os_specific: bool,
-        ide_files: bool,
-        coverage: bool,
-        caches: bool,
-        docker: bool,
-        grpc: bool,
-        jupyter_cp: bool,
-        testing: bool,
-        security: bool,
+        options: Dict[str, bool]
     ) -> str:
         
+        definers = {
+            "bytecode_files": GitIgnoreByteCodeDefiner,
+            "venv": GitIgnoreVenvDefiner,
+            "logs": GitIgnoreLogsDefiner,
+            "packaging": GitIgnorePackagingDefiner,
+            "os_specific": GitIgnoreOsSpecificFilesDefiner,
+            "ide_files": GitIgnoreIDEFilesDefiner,
+            "coverage": GitIgnoreCoverageDefiner,
+            "caches": GitIgnoreCachesDefiner,
+            "docker": GitIgnoreDockerDefiner,
+            "grpc": GitIgnoreGRPCDefiner,
+            "jupyter_cp": GitIgnoreJupyterCopyBookDefiner,
+            "testing": GitIgnoreTestingDefiner,
+            "security": GitIgnoreSecurityDefiner,
+        }
+        
         sections = [
-            GitIgnoreVenvDefiner.define(venv),
-            GitIgnoreLogsDefiner.define(logs),
-            GitIgnorePackagingDefiner.define(packaging),
-            GitIgnoreOsSpecificFilesDefiner.define(os_specific),
-            GitIgnoreIDEFilesDefiner.define(ide_files),
-            GitIgnoreCoverageDefiner.define(coverage),
-            GitIgnoreCachesDefiner.define(caches),
-            GitIgnoreDockerDefiner.define(docker),
-            GitIgnoreGRPCDefiner.define(grpc),
-            GitIgnoreJupyterCopyBookDefiner.define(jupyter_cp),
-            GitIgnoreTestingDefiner.define(testing),
-            GitIgnoreSecurityDefiner.define(security),
+            definers[key].define(value) for key, value in options.items() if value
         ]
         
-        content = "\n\n".join(filter(None, sections))
-
-        return textwrap.dedent(content).strip()
+        return "\n\n".join(filter(None, sections)).strip()
     
-    def create (
-        bc: bool,
-        venv: bool,
-        logs: bool,
-        packaging: bool,
-        os_specific: bool,
-        ide_files: bool,
-        coverage: bool,
-        caches: bool,
-        docker: bool,
-        grpc: bool,
-        jupyter_cp: bool,
-        testing: bool,
-        security: bool,
-    ) -> None:
-        
-        with open('.dockerignore', 'w') as f:
-            f.write(GitIgnoreCreator.create_file_text (
-                bc,
-                venv,
-                logs,
-                packaging,
-                os_specific,
-                ide_files,
-                coverage,
-                caches,
-                docker,
-                grpc,
-                jupyter_cp,
-                testing,
-                security,
-            ))
-        print(f".gitignore has been created.")
+    @staticmethod
+    def create(**options: bool) -> None:
+        with open('.gitignore', 'w') as f:
+            f.write(GitIgnoreCreator.create_file_text(options))
+        print(".gitignore has been created.")

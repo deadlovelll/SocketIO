@@ -1,5 +1,24 @@
 from commands.git_commands.base_definers.base_gitignore_definer import BaseGitIgnoreDefiner
 
+class GitIgnoreByteCodeDefiner(BaseGitIgnoreDefiner):
+    
+    def define (
+        self,
+        bytecode_files: bool,
+    ) -> str:
+        
+        if bytecode_files:
+            return super().add_ignorance (
+                '__pycache__/',
+                '*.py[cod]',
+                '*$py.class',
+                '*.pyc',
+                '*.pyd',
+                '*.pyo',
+            )
+        return ''
+
+
 class GitIgnoreVenvDefiner(BaseGitIgnoreDefiner):
     
     def define (
@@ -33,6 +52,7 @@ class GitIgnoreLogsDefiner(BaseGitIgnoreDefiner):
             )
         return ''
     
+    
 class GitIgnorePackagingDefiner(BaseGitIgnoreDefiner):
     
     def define (
@@ -49,6 +69,7 @@ class GitIgnorePackagingDefiner(BaseGitIgnoreDefiner):
             )
         return ''
     
+    
 class GitIgnoreOsSpecificFilesDefiner(BaseGitIgnoreDefiner):
     
     def define (
@@ -62,6 +83,7 @@ class GitIgnoreOsSpecificFilesDefiner(BaseGitIgnoreDefiner):
                 'Thumbs.db',
             )
         return ''
+    
     
 class GitIgnoreIDEFilesDefiner(BaseGitIgnoreDefiner):
     
@@ -80,6 +102,7 @@ class GitIgnoreIDEFilesDefiner(BaseGitIgnoreDefiner):
             )
         return ''
     
+    
 class GitIgnoreCoverageDefiner(BaseGitIgnoreDefiner):
     
     def define (
@@ -94,6 +117,7 @@ class GitIgnoreCoverageDefiner(BaseGitIgnoreDefiner):
                 'coverage.xml',
             )
         return ''
+            
             
 class GitIgnoreCachesDefiner(BaseGitIgnoreDefiner):
     
@@ -110,6 +134,7 @@ class GitIgnoreCachesDefiner(BaseGitIgnoreDefiner):
             )
         return ''
     
+    
 class GitIgnoreDockerDefiner(BaseGitIgnoreDefiner):
     
     def define (
@@ -125,6 +150,7 @@ class GitIgnoreDockerDefiner(BaseGitIgnoreDefiner):
             )
         return ''
     
+    
 class GitIgnoreGRPCDefiner(BaseGitIgnoreDefiner):
     
     def define (
@@ -138,6 +164,7 @@ class GitIgnoreGRPCDefiner(BaseGitIgnoreDefiner):
                 '*_pb2_grpc.py',
             )
         return ''
+    
     
 class GitIgnoreJupyterCopyBookDefiner(BaseGitIgnoreDefiner):
     
@@ -165,6 +192,7 @@ class GitIgnoreTestingDefiner(BaseGitIgnoreDefiner):
                 'test-reports/',
                 'tests/__pycache__/',
             )
+    
     
 class GitIgnoreSecurityDefiner(BaseGitIgnoreDefiner):
     
