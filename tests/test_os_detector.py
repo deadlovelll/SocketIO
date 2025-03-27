@@ -1,7 +1,7 @@
 import unittest 
 from unittest.mock import patch, mock_open
 
-from utils.os_detector.os_detector.os_detector import OSDetector
+from SocketIO.utils.os_detector.os_detector.os_detector import OSDetector
 
 class TestOsDetector(unittest.TestCase):
     
