@@ -54,7 +54,7 @@ elasticsearch.password: "{config.elasticsearch_password}"
         config = KibanaConfig(**options)
         
         configuration = KibanaConfigCreator.create_file_text (
-            config
+            config,
         )
         
         with open('config/elk/kibana.yml', "w") as f:

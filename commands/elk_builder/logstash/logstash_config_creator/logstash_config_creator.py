@@ -1,12 +1,12 @@
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
+from commands.elk_builder.logstash.logstash_config.logstash_config import LogstashConfig
+
 class LogstashConfigCreator(FileCreator):
     
     @staticmethod
     def create_file_text (
-        beats_port: int = 5000,
-        elasticsearch_host: str = "elasticsearch:9200",
-        index_pattern: str = "logstash-%{+YYYY.MM.dd}",
+        config: LogstashConfig = LogstashConfig(),
     ) -> str:
         
         """
@@ -18,9 +18,9 @@ class LogstashConfigCreator(FileCreator):
         :return: A string containing the Logstash configuration.
         """
         
-        config = f"""input {{
+        configuration = f"""input {{
   beats {{
-    port => {beats_port}
+    port => {config.beats_port}
   }}
 }}
 
@@ -33,18 +33,16 @@ filter {{
 
 output {{
   elasticsearch {{
-    hosts => ["{elasticsearch_host}"]
-    index => "{index_pattern}"
+    hosts => ["{config.elasticsearch_host}"]
+    index => "{config.index_pattern}"
   }}
 }}
 """
-        return config
+        return configuration
 
     @staticmethod
     def create_file (
-        beats_port: int = 5000,
-        elasticsearch_host: str = "elasticsearch:9200",
-        index_pattern: str = "logstash-%{{+YYYY.MM.dd}}",
+        **options,
     ) -> None:
         
         """
@@ -55,10 +53,10 @@ output {{
         :param index_pattern: Index pattern for Elasticsearch output.
         """
         
-        config = LogstashConfigCreator.create_file_text (
-            beats_port, 
-            elasticsearch_host, 
-            index_pattern,
+        config = LogstashConfig(**options)
+        
+        configuration = LogstashConfigCreator.create_file_text (
+            config,
         )
         with open('config/elk/logstash.conf', 'w') as f:
-            f.write(config)
+            f.write(configuration)
