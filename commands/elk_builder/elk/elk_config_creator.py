@@ -1,6 +1,6 @@
 import os
 
-from commands.elk_builder.elasticsearch.elasticseacrh_config_creator import ElasticsearchConfigCreator
+from SocketIO.commands.elk_builder.elasticsearch.elasticsearch_config_creator.elasticseacrh_config_creator import ElasticsearchConfigCreator
 from commands.elk_builder.kibana.kibana_config_creator import KibanaConfigCreator
 from commands.elk_builder.logstash.logstash_config_creator import LogstashConfigCreator
 

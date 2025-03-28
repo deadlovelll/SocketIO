@@ -1,12 +1,12 @@
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
+from commands.elk_builder.elasticsearch.elasticsearch_config.elasticsearch_config import ElastisearchConfig
+
 class ElasticsearchConfigCreator(FileCreator):
     
     @staticmethod
     def create_file_text (
-        cluster_name: str = "docker-cluster",
-        network_host: str = "0.0.0.0",
-        discovery_type: str = "single-node",
+        config: ElastisearchConfig = ElastisearchConfig(),
     ) -> str:
         
         """
@@ -18,17 +18,15 @@ class ElasticsearchConfigCreator(FileCreator):
         :return: A string containing the Elasticsearch configuration.
         """
         
-        config = f"""cluster.name: "{cluster_name}"
-network.host: {network_host}
-discovery.type: {discovery_type}
+        configuration = f"""cluster.name: "{config.cluster_name}"
+network.host: {config.network_host}
+discovery.type: {config.discovery_type}
 """
-        return config
+        return configuration
 
     @staticmethod
     def create_file (
-        cluster_name: str = "docker-cluster",
-        network_host: str = "0.0.0.0",
-        discovery_type: str = "single-node",
+        **options,
     ) -> None:
         
         """
@@ -40,10 +38,10 @@ discovery.type: {discovery_type}
         :param discovery_type: Discovery type.
         """
         
-        config = ElasticsearchConfigCreator.create_file_text (
-            cluster_name, 
-            network_host, 
-            discovery_type,
+        config = ElastisearchConfig(**options)
+        
+        configuration = ElasticsearchConfigCreator.create_file_text (
+            config,
         )
         with open('config/elk/elasticsearch.yml', "w") as f:
-            f.write(config)     
+            f.write(configuration)     
