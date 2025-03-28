@@ -1,15 +1,12 @@
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
+from commands.elk_builder.kibana.kibana_config.kibana_config import KibanaConfig
+
 class KibanaConfigCreator(FileCreator):
     
     @staticmethod
     def create_file_text (
-        server_host: str = "0.0.0.0",
-        server_port: int = 5601,
-        elasticsearch_host: str = "http://elasticsearch:9200",
-        elasticsearch_username: str = "",
-        elasticsearch_password: str = "",
-        kibana_index: str = ".kibana",
+        config: KibanaConfig = KibanaConfig(),
     ) -> str:
         
         """
@@ -24,27 +21,22 @@ class KibanaConfigCreator(FileCreator):
         :return: A string containing the Kibana configuration.
         """
         
-        config = f"""server.host: "{server_host}"
-server.port: {server_port}
-elasticsearch.hosts: ["{elasticsearch_host}"]
-kibana.index: "{kibana_index}"
+        configuration = f"""server.host: "{config.server_host}"
+server.port: {config.server_port}
+elasticsearch.hosts: ["{config.elasticsearch_host}"]
+kibana.index: "{config.kibana_index}"
 """
 
-        if elasticsearch_username and elasticsearch_password:
-            config += f"""elasticsearch.username: "{elasticsearch_username}"
-elasticsearch.password: "{elasticsearch_password}"
+        if config.elasticsearch_username and config.elasticsearch_password:
+            configuration += f"""elasticsearch.username: "{config.elasticsearch_username}"
+elasticsearch.password: "{config.elasticsearch_password}"
 """
 
-        return config
+        return configuration
 
     @staticmethod
     def create_file (
-        server_host: str = "0.0.0.0",
-        server_port: int = 5601,
-        elasticsearch_host: str = "http://elasticsearch:9200",
-        elasticsearch_username: str = "",
-        elasticsearch_password: str = "",
-        kibana_index: str = ".kibana",
+        **options,
     ) -> None:
         
         """
@@ -59,14 +51,11 @@ elasticsearch.password: "{elasticsearch_password}"
         :param kibana_index: Kibana index name.
         """
         
-        config = KibanaConfigCreator.create_file_text (
-            server_host, 
-            server_port, 
-            elasticsearch_host, 
-            elasticsearch_username, 
-            elasticsearch_password, 
-            kibana_index,
+        config = KibanaConfig(**options)
+        
+        configuration = KibanaConfigCreator.create_file_text (
+            config
         )
         
         with open('config/elk/kibana.yml', "w") as f:
-            f.write(config)
+            f.write(configuration)
