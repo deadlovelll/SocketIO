@@ -3,9 +3,9 @@ import json
 
 from commands.grpc_creator.grpc_creator import GRPCCreator
 from commands.docker_commands.dockerfile.dockerfile_creator.dockerfile_creator import DockerfileCreator
-from commands.docker_commands.dockerignore_builder.dockerignore_builder import DockerIgnoreCreator
+from commands.docker_commands.dockerignore.dockerignore_builder.dockerignore_builder import DockerIgnoreCreator
 from commands.elk_builder.elk.elk_config_creator import ELKConfigCreator
-from commands.git_commands.gitignore.gitignore_builder.gitignore_creator import GitIgnoreCreator
+from commands.git_commands.gitignore.gitignore_creator.gitignore_creator import GitIgnoreCreator
 
 class CommandController:
     

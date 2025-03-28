@@ -7,7 +7,6 @@ from commands.docker_commands.docker_definers.dockerfile_definers.dockerfile_def
     UserSecurityDefiner,
     ExposedPortsDefiner,
 )
-from commands.docker_commands.dockerfile.dockerfile_validator.dockerfile_validator import DockerfileValidator
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
 from commands.docker_commands.dockerfile.dockerfile_config.dockerfile_config import DockerfileConfig
@@ -65,14 +64,6 @@ CMD ["python", "{config.entrypoint}"]
     ) -> None:
         
         config = DockerfileConfig(**options)
-        
-        DockerfileValidator.verify_dockerfile_args (
-            config.python_version,
-            config.use_alpine,
-            config.ports,
-            config.entrypoint,
-            config.grpc_enabled,
-        )
         
         with open(config.filename, 'w') as f:
             f.write(DockerfileCreator.create (
