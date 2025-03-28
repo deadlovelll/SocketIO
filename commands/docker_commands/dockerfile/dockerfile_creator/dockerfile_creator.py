@@ -10,40 +10,33 @@ from commands.docker_commands.docker_definers.dockerfile_definers.dockerfile_def
 from commands.docker_commands.dockerfile.dockerfile_validator.dockerfile_validator import DockerfileValidator
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
+from commands.docker_commands.dockerfile.dockerfile_config.dockerfile_config import DockerfileConfig
+
 class DockerfileCreator(FileCreator):
 
     @staticmethod
     def create_file_text (
-        python_version: str = 'latest',
-        use_alpine: bool = False,
-        install_system_deps: bool = True,
-        poetry: bool = True,
-        ports: list[int] = [4000],
-        entrypoint: str = 'main.py',
-        use_nonroot_user: bool = True,
-        grpc_enabled: bool = False,
-        in_env: bool = False,
-        os_type: str = None,
+        config: DockerfileConfig,
     ) -> str:
         
         python_version = PythonVesionDefiner.define (
-            python_version, 
-            use_alpine,
+            config.python_version, 
+            config.use_alpine,
         )
         system_deps = SystemDependenciesDefiner.define (
-            install_system_deps, 
-            os_type,
+            config.install_system_deps, 
+            config.os_type,
         )
         poetry = PoetryDefiner.define (
-            poetry, 
-            in_env,
+            config.poetry, 
+            config.in_env,
         )
         user_security = UserSecurityDefiner.define (
-            use_nonroot_user,
+            config.use_nonroot_user,
         )
         exposed_ports = ExposedPortsDefiner.define (
-            ports, 
-            grpc_enabled,
+            config.ports, 
+            config.grpc_enabled,
         )
         
         return textwrap.dedent (
@@ -62,44 +55,27 @@ COPY --from=builder / /
 {user_security}
 {exposed_ports}
 
-CMD ["python", "{entrypoint}"]
+CMD ["python", "{config.entrypoint}"]
         """
         )
 
     @staticmethod
     def create_file (
-        filename: str = 'Dockerfile',
-        python_version: str = 'latest',
-        use_alpine: bool = False,
-        install_system_deps: bool = True,
-        poetry: bool = True,
-        ports: list[int] = [4000],
-        entrypoint: str = 'main.py',
-        use_nonroot_user: bool = True,
-        grpc_enabled: bool = False,
-        in_env: bool = False,
-        os_type: str = None
+        **options,
     ) -> None:
         
+        config = DockerfileConfig(**options)
+        
         DockerfileValidator.verify_dockerfile_args (
-            python_version,
-            use_alpine,
-            ports,
-            entrypoint,
-            grpc_enabled,
+            config.python_version,
+            config.use_alpine,
+            config.ports,
+            config.entrypoint,
+            config.grpc_enabled,
         )
         
-        with open(filename, 'w') as f:
+        with open(config.filename, 'w') as f:
             f.write(DockerfileCreator.create (
-                python_version, 
-                use_alpine, 
-                install_system_deps, 
-                poetry, 
-                ports, 
-                entrypoint, 
-                use_nonroot_user, 
-                grpc_enabled,
-                in_env,
-                os_type,
+                config
             ))
-        print(f"Dockerfile '{filename}' has been created.")
+        print(f"Dockerfile '{config.filename}' has been created.")

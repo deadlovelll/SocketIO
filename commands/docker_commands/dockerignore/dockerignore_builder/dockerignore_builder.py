@@ -15,21 +15,13 @@ from commands.docker_commands.docker_definers.dockerignore_definers.dockerifnore
     EnvFilesDefiner
 )
 
+from commands.docker_commands.dockerignore.dockerignore_config.dockerignore_config import DockerIgnoreConfig
+
 class DockerIgnoreCreator(FileCreator):
     
     @staticmethod
     def create_file_text (
-        python_cache: bool,
-        virtual_environment: bool,
-        system_spec_files: bool,
-        logs: bool,
-        test_coverage: bool,
-        git: bool,
-        docker: bool,
-        poetry,
-        compiled_files: bool,
-        documentation,
-        env_files: bool,
+        config: DockerIgnoreConfig,
     ) -> str:
         
         """
@@ -66,17 +58,17 @@ class DockerIgnoreCreator(FileCreator):
         """
         
         sections = [
-            PythonCacheDefiner.define(python_cache),
-            VenvDefiner.define(virtual_environment),
-            SystemSpecsDefiner.define(system_spec_files),
-            LogsDefine.define(logs),
-            TestCoverageDefiner.define(test_coverage),
-            GitAttributesDefiner.define(git),
-            DockerFilesDefiner.define(docker),
-            PoetryDefiner.define(poetry),
-            CompiledFiledDefiner.define(compiled_files),
-            DocumentationDefiner.define(documentation),
-            EnvFilesDefiner.define(env_files),
+            PythonCacheDefiner.define(config.python_cache),
+            VenvDefiner.define(config.virtual_environment),
+            SystemSpecsDefiner.define(config.system_spec_files),
+            LogsDefine.define(config.logs),
+            TestCoverageDefiner.define(config.test_coverage),
+            GitAttributesDefiner.define(config.git),
+            DockerFilesDefiner.define(config.docker),
+            PoetryDefiner.define(config.poetry),
+            CompiledFiledDefiner.define(config.compiled_files),
+            DocumentationDefiner.define(config.documentation),
+            EnvFilesDefiner.define(config.env_files),
         ]
         
         content = "\n\n".join(filter(None, sections))
@@ -85,17 +77,7 @@ class DockerIgnoreCreator(FileCreator):
     
     @staticmethod
     def create_file (
-        python_cache: bool = True,
-        virtual_environment: bool = True,
-        system_spec_files: bool = True,
-        logs: bool = False,
-        test_coverage: bool = True,
-        git: bool = False,
-        docker: bool = False,
-        poetry: bool = False,
-        compiled_files: bool = True,
-        documentation: bool = True,
-        env_files: bool = False,
+        **options,
     ) -> None:
         
         """
@@ -133,18 +115,10 @@ class DockerIgnoreCreator(FileCreator):
             None: This method writes the .dockerignore file to disk.
         """
         
+        config = DockerIgnoreConfig(**options)
+        
         with open('.dockerignore', 'w') as f:
             f.write(DockerIgnoreCreator.create_dockerignorefile_text (
-                python_cache,
-                virtual_environment,
-                system_spec_files,
-                logs,
-                test_coverage,
-                git,
-                docker,
-                poetry,
-                compiled_files,
-                documentation,
-                env_files,
+                config,
             ))
         print(f".dockerignore has been created.")
