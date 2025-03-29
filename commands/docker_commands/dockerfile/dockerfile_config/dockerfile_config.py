@@ -23,6 +23,7 @@ class DockerfileConfig:
     ) -> None:
         
         DockerfileValidator.verify_dockerfile_args (
+            self.filename,
             self.python_version,
             self.use_alpine,
             self.ports,

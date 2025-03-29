@@ -1,5 +1,23 @@
 from exceptions.base_exception.socketio_exception import SocketIOException
 
+class DockerfileInvalidFileName(SocketIOException):
+    
+    def __init__ (
+        self, 
+        filename: str,
+    ) -> None:
+        
+        message = f"""
+\n
+{"#" * 75}
+#  ERROR: Invalid dockerfile name '{filename}'.                                  #
+#  All Dockerfiles should start with 'Dockerfile'.                        #
+#  Please specify a valid file name.                                      #
+{"#" * 75}
+        """
+        
+        super().__init__(message)
+
 class DockerfileInproperPortError(SocketIOException):
     
     def __init__ (

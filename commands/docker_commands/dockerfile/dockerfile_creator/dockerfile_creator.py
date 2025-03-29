@@ -66,7 +66,7 @@ CMD ["python", "{config.entrypoint}"]
         config = DockerfileConfig(**options)
         
         with open(config.filename, 'w') as f:
-            f.write(DockerfileCreator.create (
+            f.write(DockerfileCreator.create_file_text (
                 config
             ))
         print(f"Dockerfile '{config.filename}' has been created.")

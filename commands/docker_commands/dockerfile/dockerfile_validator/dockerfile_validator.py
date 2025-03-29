@@ -8,18 +8,24 @@ from exceptions.dockerfile_exceptions.dockerfile_exceptions import (
     DockerfileNoSuchPythonVersionExists,
     DockerfilePyFileExtensionsRequired,
     DockerfileNoGRPCServiceEnabled,
+    DockerfileInvalidFileName,
 )
 
 class DockerfileValidator:
     
     @staticmethod
     def verify_dockerfile_args (
+        filename: str,
         python_version: str,
         use_alpine: bool,
         ports: list[int],
         entrypoint: str,
         grpc_enabled: bool,
-    ):
+    ) -> None:
+        
+        DockerfileValidator.verify_file_name (
+            filename,
+        )
         
         DockerfileValidator.verify_python_version (
             python_version, 
@@ -37,6 +43,14 @@ class DockerfileValidator:
         DockerfileValidator.verify_grpc_enabled (
             grpc_enabled,
         )
+        
+    @staticmethod
+    def verify_file_name (
+        filename: str,
+    ) -> None:
+        
+        if 'Dockerfile' not in filename:
+            raise DockerfileInvalidFileName(filename)
     
     @staticmethod
     def verify_python_version (
