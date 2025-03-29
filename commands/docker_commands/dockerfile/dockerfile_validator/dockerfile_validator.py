@@ -23,26 +23,17 @@ class DockerfileValidator:
         grpc_enabled: bool,
     ) -> None:
         
-        DockerfileValidator.verify_file_name (
-            filename,
-        )
-        
-        DockerfileValidator.verify_python_version (
-            python_version, 
-            use_alpine,
-        )
-        
-        DockerfileValidator.verify_port_validity (
-            ports,
-        )
-        
-        DockerfileValidator.verify_entrypoint_exists (
-            entrypoint,
-        )
-        
-        DockerfileValidator.verify_grpc_enabled (
-            grpc_enabled,
-        )
+        validators = {
+            'verify_file_name': filename,
+            'verify_python_version': (python_version, use_alpine),
+            'verify_port_validity': ports,
+            'verify_entrypoint_exists': entrypoint,
+            'verify_grpc_enabled': grpc_enabled,
+        }
+
+        for method, args in validators.items():
+            func = getattr(DockerfileValidator, method)
+            func(*args if isinstance(args, tuple) else (args,))
         
     @staticmethod
     def verify_file_name (
