@@ -35,8 +35,7 @@ class PreCommitHooksConfig:
     pretty_format_json: bool = False
     
     @staticmethod
-    def get_latest_version (
-    ) -> str:
+    def get_latest_version() -> str:
         
         api_url = "https://api.github.com/repos/pre-commit/pre-commit-hooks/releases/latest"
         
