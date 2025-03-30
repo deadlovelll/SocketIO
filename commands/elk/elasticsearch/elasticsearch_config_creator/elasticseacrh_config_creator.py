@@ -1,6 +1,6 @@
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
-from commands.elk_builder.elasticsearch.elasticsearch_config.elasticsearch_config import ElastisearchConfig
+from commands.elk.elasticsearch.elasticsearch_config.elasticsearch_config import ElastisearchConfig
 
 class ElasticsearchConfigCreator(FileCreator):
     

@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-from commands.git_commands.gitignore.gitignore_definers.gitignore_definers import (
+from commands.git.gitignore.gitignore_definers.gitignore_definers import (
     GitIgnoreVenvDefiner,
     GitIgnoreLogsDefiner,
     GitIgnorePackagingDefiner,

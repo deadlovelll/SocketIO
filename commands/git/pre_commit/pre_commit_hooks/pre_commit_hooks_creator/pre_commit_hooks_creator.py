@@ -30,9 +30,10 @@ class PreCommitHooksCreator(FileCreator):
     ) -> None:
         
         config = PreCommitHooksConfig(**options)
-        with open('.pre-commit-config.yaml', 'w') as f:
+        text = PreCommitHooksCreator.create_file_text(config)
+        with open('.pre-commit-config.yaml', 'a+') as f:
             yaml.dump (
-                config, 
+                text, 
                 f, 
                 default_flow_style=False, 
                 sort_keys=False,

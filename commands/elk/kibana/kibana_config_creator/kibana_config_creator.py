@@ -1,6 +1,6 @@
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
-from commands.elk_builder.kibana.kibana_config.kibana_config import KibanaConfig
+from commands.elk.kibana.kibana_config.kibana_config import KibanaConfig
 
 class KibanaConfigCreator(FileCreator):
     

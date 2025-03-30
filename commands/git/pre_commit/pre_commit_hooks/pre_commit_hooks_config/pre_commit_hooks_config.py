@@ -37,7 +37,7 @@ class PreCommitHooksConfig:
     @staticmethod
     def get_latest_version() -> str:
         
-        api_url = "https://api.github.com/repos/pre-commit/pre-commit-hooks/releases/latest"
+        api_url = 'https://api.github.com/repos/pre-commit/pre-commit-hooks/releases/latest'
         
         try:
             response = requests.get(api_url, timeout=5)
@@ -45,8 +45,8 @@ class PreCommitHooksConfig:
             return response.json().get('tag_name')
         
         except (requests.RequestException, KeyError):
-            print("Warning: Failed to fetch required version. Using default version v4.0.1")
-            return "v4.0.1"
+            print('Warning: Failed to fetch required version. Using default version v4.0.1')
+            return 'v4.0.1'
     
     def __post_init__ (
         self,

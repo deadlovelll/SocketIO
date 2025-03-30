@@ -1,4 +1,4 @@
-from commands.git_commands.base_definers.base_gitignore_definer import BaseGitIgnoreDefiner
+from commands.git.base_definers.base_gitignore_definer import BaseGitIgnoreDefiner
 
 class GitIgnoreByteCodeDefiner(BaseGitIgnoreDefiner):
     

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from commands.docker_commands.dockerfile.dockerfile_validator.dockerfile_validator import DockerfileValidator
+from commands.docker.dockerfile.dockerfile_validator.dockerfile_validator import DockerfileValidator
 
 @dataclass
 class DockerfileConfig:

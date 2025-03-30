@@ -1,6 +1,6 @@
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
-from commands.elk_builder.logstash.logstash_config.logstash_config import LogstashConfig
+from commands.elk.logstash.logstash_config.logstash_config import LogstashConfig
 
 class LogstashConfigCreator(FileCreator):
     
