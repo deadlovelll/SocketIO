@@ -5,7 +5,7 @@ from exceptions.pre_commit_exceptions.pre_commit_exceptions import InvalidPreCom
 class PreCommitHooksValidator:
     
     @staticmethod
-    def verify_pre_commit_hooks_args (
+    def verify (
         version: str,
     ) -> None:
         

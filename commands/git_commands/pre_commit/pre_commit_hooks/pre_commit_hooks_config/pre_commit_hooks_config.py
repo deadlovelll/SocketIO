@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
-from typing import List, Optional
-
 import requests
+
+from commands.git_commands.pre_commit.pre_commit_hooks.pre_commit_hooks_validator.pre_commit_hooks_validator import PreCommitHooksValidator
 
 @dataclass
 class PreCommitHooksConfig:
@@ -47,3 +47,11 @@ class PreCommitHooksConfig:
         except (requests.RequestException, KeyError):
             print("Warning: Failed to fetch required version. Using default version v4.0.1")
             return "v4.0.1"
+    
+    def __post_init__ (
+        self,
+    ) -> None:
+        
+        PreCommitHooksValidator.verify (
+            self.rev,
+        )
