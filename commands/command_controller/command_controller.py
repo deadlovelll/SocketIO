@@ -34,23 +34,23 @@ class CommandController:
         arguments_map = {}
         
         for arg in args:
-            key_value = arg.lstrip("--").split("=", 1) 
+            key_value = arg.lstrip('--').split('=', 1) 
             key = key_value[0]
             value = key_value[1] if len(key_value) > 1 else None
 
             if value:
-                if value.lower() in ["true", "false"]:  
-                    value = value.lower() == "true"
-                elif value.startswith("[") and value.endswith("]"):  
+                if value.lower() in ['true', 'false']:  
+                    value = value.lower() == 'true'
+                elif value.startswith('[') and value.endswith(']'):  
                     value = json.loads(value) 
-                elif "," in value:  
+                elif ',' in value:  
                     value = [
                         int(v.strip()) 
-                        if v.strip().lstrip("-").isdigit() 
+                        if v.strip().lstrip('-').isdigit() 
                         else v.strip() 
-                        for v in value.split(",")
+                        for v in value.split(',')
                     ]
-                elif value.lstrip("-").isdigit():  
+                elif value.lstrip('-').isdigit():  
                     value = [int(value)]
             arguments_map[key] = value
         

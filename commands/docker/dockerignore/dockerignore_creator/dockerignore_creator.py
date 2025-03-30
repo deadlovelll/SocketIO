@@ -118,7 +118,7 @@ class DockerIgnoreCreator(FileCreator):
         config = DockerIgnoreConfig(**options)
         
         with open('.dockerignore', 'w') as f:
-            f.write(DockerIgnoreCreator.create_dockerignorefile_text (
+            f.write(DockerIgnoreCreator.create_file (
                 config,
             ))
         print(f".dockerignore has been created.")
