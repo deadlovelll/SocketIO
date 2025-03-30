@@ -1,7 +1,7 @@
 import textwrap
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
-from commands.docker_commands.docker_definers.dockerignore_definers.dockerifnore_definers import (
+from commands.docker.docker_definers.dockerignore_definers.dockerifnore_definers import (
     PythonCacheDefiner,
     VenvDefiner,
     SystemSpecsDefiner,
@@ -15,7 +15,7 @@ from commands.docker_commands.docker_definers.dockerignore_definers.dockerifnore
     EnvFilesDefiner
 )
 
-from commands.docker_commands.dockerignore.dockerignore_config.dockerignore_config import DockerIgnoreConfig
+from commands.docker.dockerignore.dockerignore_config.dockerignore_config import DockerIgnoreConfig
 
 class DockerIgnoreCreator(FileCreator):
     

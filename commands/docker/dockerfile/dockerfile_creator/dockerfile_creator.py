@@ -1,6 +1,6 @@
 import textwrap
 
-from commands.docker_commands.docker_definers.dockerfile_definers.dockerfile_definers import (
+from commands.docker.docker_definers.dockerfile_definers.dockerfile_definers import (
     PythonVesionDefiner,
     SystemDependenciesDefiner,
     PoetryDefiner,
@@ -9,7 +9,7 @@ from commands.docker_commands.docker_definers.dockerfile_definers.dockerfile_def
 )
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
-from commands.docker_commands.dockerfile.dockerfile_config.dockerfile_config import DockerfileConfig
+from commands.docker.dockerfile.dockerfile_config.dockerfile_config import DockerfileConfig
 
 class DockerfileCreator(FileCreator):
 

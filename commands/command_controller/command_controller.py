@@ -1,11 +1,12 @@
 import sys
 import json
 
-from commands.grpc_creator.grpc_creator import GRPCCreator
-from commands.docker_commands.dockerfile.dockerfile_creator.dockerfile_creator import DockerfileCreator
-from commands.docker_commands.dockerignore.dockerignore_builder.dockerignore_builder import DockerIgnoreCreator
-from commands.elk_builder.elk.elk_config_creator import ELKConfigCreator
-from commands.git_commands.gitignore.gitignore_creator.gitignore_creator import GitIgnoreCreator
+from commands.grpc.grpc_creator import GRPCCreator
+from commands.docker.dockerfile.dockerfile_creator.dockerfile_creator import DockerfileCreator
+from commands.docker.dockerignore.dockerignore_creator.dockerignore_creator import DockerIgnoreCreator
+from commands.elk.elk.elk_config_creator import ELKConfigCreator
+from commands.git.gitignore.gitignore_creator.gitignore_creator import GitIgnoreCreator
+from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_creator.pre_commit_hooks_creator import PreCommitHooksCreator
 
 class CommandController:
     
@@ -15,6 +16,7 @@ class CommandController:
         'createdockerignore': DockerIgnoreCreator.create_file,
         'createelastic': ELKConfigCreator.create_elk_config,
         'creategitignore': GitIgnoreCreator.create_file,
+        'createprecommithooks': PreCommitHooksCreator.create_file,
     }
     
     @staticmethod
