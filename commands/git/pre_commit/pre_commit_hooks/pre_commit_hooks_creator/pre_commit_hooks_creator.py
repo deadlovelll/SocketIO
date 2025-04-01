@@ -34,9 +34,10 @@ class PreCommitHooksCreator(FileCreator):
         text_dump = PreCommitHooksCreator.prepare_text_dump (
             **options,    
         )
-        pre_commit_file = Path('../.pre-commit-config.yaml')
+        root = Path(__file__).resolve().parents[6]
+        pre_commit_file = root / '.pre-commit-config.yaml'
         
-        if pre_commit_file.exists():
+        if not pre_commit_file.exists():
             PreCommitHooksCreator.create(text_dump)
         else:
             PreCommitHooksCreator.update(text_dump)
@@ -61,22 +62,22 @@ class PreCommitHooksCreator(FileCreator):
         text_dump: dict,
     ) -> None:
         
-        with open('.pre-commit-config.yaml', "r") as f:
+        with open('.pre-commit-config.yaml', 'r') as f:
             config = yaml.safe_load(f) or {}
         
         config.setdefault('repos', [])
         
         updated = False
-        for i, repo in enumerate(config["repos"]):
-            if repo.get("repo") == text_dump.get("repo"):
-                config["repos"][i] = text_dump
+        for i, repo in enumerate(config['repos']):
+            if repo.get('repo') == text_dump.get('repo'):
+                config['repos'][i] = text_dump
                 updated = True
                 break
 
         if not updated:
-            config["repos"].append(text_dump)
+            config['repos'].append(text_dump)
 
-        with open('.pre-commit-config.yaml', "w") as f:
+        with open('.pre-commit-config.yaml', 'w') as f:
             yaml.dump (
                 config, 
                 f, 
