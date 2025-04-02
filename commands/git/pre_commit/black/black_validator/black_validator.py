@@ -1,5 +1,7 @@
 import requests
 
+from exceptions.black_exceptions.black_exceptions import InvalidBlackVersion
+
 class BlackValidator:
 
     @staticmethod
@@ -8,7 +10,7 @@ class BlackValidator:
     ) -> None:
         
         validators = {
-            'verify_pre_commit_hooks_version': version,
+            'verify_black_version': version,
         }
         
         for method, args in validators.items():
@@ -16,7 +18,7 @@ class BlackValidator:
             func(*args if isinstance(args, tuple) else (args,))
     
     @staticmethod
-    def verify_pre_commit_hooks_version (
+    def verify_black_version (
         version: str,
     ) -> bool:
         
@@ -26,4 +28,4 @@ class BlackValidator:
             return response.json().get('message') != 'Not Found'
         
         except requests.RequestException:
-            raise InvalidPreCommitHooksVersion(version)
+            raise InvalidBlackVersion(version)
