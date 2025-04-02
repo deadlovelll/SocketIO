@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
-import requests
 
 from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_validator.pre_commit_hooks_validator import PreCommitHooksValidator
+from commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
 
 @dataclass
 class BlackConfig:
@@ -17,13 +17,10 @@ class BlackConfig:
     skip_string_normalization: bool
     check: bool
     diff: bool
-    
-    @staticmethod
-    def get_latest_version() -> str:
-        pass
-    
+        
     def __post_init__ (
         self,
     ) -> None:
         
-        pass
+        owner_repo = self.url.split("https://github.com/")[1]
+        self.rev = LastReleaseFetcher.fetch(owner_repo)

@@ -2,15 +2,16 @@ from dataclasses import dataclass, field
 import requests
 
 from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_validator.pre_commit_hooks_validator import PreCommitHooksValidator
+from commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
 
 @dataclass
 class PreCommitHooksConfig:
     url: str = field (
         init=False, 
-        default='https://github.com/pre-commit/pre-commit-hooks'
+        default='https://github.com/pre-commit/pre-commit-hooks',
     )
     rev: str = field (
-        default_factory=lambda: PreCommitHooksConfig.get_latest_version()
+        init=False,
     )
     trailing_whitespace: bool = True
     end_of_file_fixer: bool = True
@@ -34,24 +35,6 @@ class PreCommitHooksConfig:
     name_tests_test: bool = False
     pretty_format_json: bool = False
     
-    @staticmethod
-    def get_latest_version() -> str:
-        
-        api_url = 'https://api.github.com/repos/pre-commit/pre-commit-hooks/releases/latest'
-        
-        try:
-            response = requests.get(api_url, timeout=5)
-            response.raise_for_status()
-            return response.json().get('tag_name')
-        
-        except (requests.RequestException, KeyError):
-            print('Warning: Failed to fetch required version. Using default version v4.0.1')
-            return 'v4.0.1'
-    
-    def __post_init__ (
-        self,
-    ) -> None:
-        
-        PreCommitHooksValidator.verify (
-            self.rev,
-        )
+    def __post_init__(self):
+        owner_repo = self.url.split("https://github.com/")[1]
+        self.rev = LastReleaseFetcher.fetch(owner_repo)
