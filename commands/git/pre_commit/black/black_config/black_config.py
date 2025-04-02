@@ -1,17 +1,15 @@
 from dataclasses import dataclass, field
 
-from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_validator.pre_commit_hooks_validator import PreCommitHooksValidator
+from commands.git.pre_commit.black.black_validator.black_validator import BlackValidator
 from commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
 
 @dataclass
 class BlackConfig:
     url: str = field (
         init=False, 
-        default='https://github.com/psf/black'
+        default='https://github.com/git '
     )
-    rev: str = field (
-        default_factory=lambda: BlackConfig.get_latest_version()
-    )
+    rev: str = None
     line_length: str
     target_version: str
     skip_string_normalization: bool
@@ -22,5 +20,8 @@ class BlackConfig:
         self,
     ) -> None:
         
-        owner_repo = self.url.split("https://github.com/")[1]
-        self.rev = LastReleaseFetcher.fetch(owner_repo)
+        if not self.rev:
+            owner_repo = self.url.split("https://github.com/")[1]
+            self.rev = LastReleaseFetcher.fetch(owner_repo)
+        else:
+            BlackValidator.verify_black_version(self.rev)
