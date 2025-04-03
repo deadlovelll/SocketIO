@@ -38,7 +38,7 @@ class BlackCreator(FileCreator):
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
-        if not pre_commit_file.exists():git a
+        if not pre_commit_file.exists():
             BlackCreator.create(text_dump)
         else:
             BlackCreator.update(text_dump)

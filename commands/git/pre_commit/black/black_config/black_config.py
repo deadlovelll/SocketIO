@@ -7,7 +7,7 @@ from commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFe
 class BlackConfig:
     url: str = field (
         init=False, 
-        default='https://github.com/git '
+        default='https://github.com/psf/black',
     )
     rev: str = None
     line_length: str
