@@ -5,7 +5,7 @@ from typing import List, Optional
 class IsortConfig:
     url: str = field (
         init=False, 
-        default='https://github.com/psf/black',
+        default='https://github.com/PyCQA/isort',
     )
     rev: str = None
     
