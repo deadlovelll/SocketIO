@@ -9,20 +9,47 @@ from commands.git.pre_commit.black.black_config.black_config import BlackConfig
 class BlackCreator(FileCreator):
     
     @staticmethod
+    def generate_black_args (
+        config: BlackConfig,
+    ) -> list[str]:
+        
+        args = [
+            f'--line-length={config.line_length}',
+            f'--target-version={config.target_version}',
+        ]
+
+        flag_map = {
+            'skip_string_normalization': '--skip-string-normalization',
+            'skip_magic_trailing_comma': '--skip-magic-trailing-comma',
+            'check': '--check',
+            'diff': '--diff',
+            'preview': '--preview',
+            'verbose': '--verbose',
+            'quiet': '--quiet',
+            'fast': '--fast',
+        }
+
+        for attr, flag in flag_map.items():
+            if getattr(config, attr):
+                args.append(flag)
+
+        return args
+    
+    @staticmethod
     def create_file_text (
         config: BlackConfig = BlackConfig(),
     ) -> str:
         
-        hooks = [
-            {'id': hook} for hook, enabled in config.__dict__.items()
-            if isinstance(enabled, bool) and enabled
-        ]
+        hooks = BlackCreator.generate_black_args(config)
         return {
             'repos': [
                 {
                     'repo': config.url, 
                     'rev': config.rev, 
-                    'hooks': hooks,
+                    'hooks': {
+                        'id': 'black',
+                        'args': hooks
+                    },
                 }
             ]
         }
