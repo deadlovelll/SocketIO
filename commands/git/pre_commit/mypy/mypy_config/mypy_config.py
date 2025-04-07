@@ -16,5 +16,3 @@ class MypyConfig:
     show_error_codes: bool = True
     warn_unused_ignores: bool = True
     exclude: Optional[str] = None
-    
-    ef 

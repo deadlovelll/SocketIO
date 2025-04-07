@@ -15,7 +15,7 @@ class MypyCreator(FileCreator):
     ) -> str:
         
         hooks = [
-            {'id': hook} for hook, enabled in config.__dict__.items()
+            f'--{hook}' for hook, enabled in config.__dict__.items()
             if isinstance(enabled, bool) and enabled
         ]
         return {
@@ -23,7 +23,10 @@ class MypyCreator(FileCreator):
                 {
                     'repo': config.url, 
                     'rev': config.rev, 
-                    'hooks': hooks,
+                    'hooks': {
+                        'id': 'mypy',
+                        'args': hooks,
+                    },
                 }
             ]
         }
