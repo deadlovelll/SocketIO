@@ -7,7 +7,7 @@ class LastReleaseFetcher:
         repo_name,
     ) -> str:
         
-        api_url = 'https://api.github.com/repos' + repo_name + '/releases/latest'
+        api_url = 'https://api.github.com/repos/' + repo_name + '/releases/latest'
         
         try:
             response = requests.get(api_url, timeout=5)
