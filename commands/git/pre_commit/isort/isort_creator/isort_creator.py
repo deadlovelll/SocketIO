@@ -71,7 +71,7 @@ class IsortCreator(FileCreator):
         
         updated = False
         for i, repo in enumerate(config['repos']):
-            if repo.get('repo') == text_dump.get('repo'):
+            if repo.get('repo') == text_dump['repos'][0]['repo']:
                 config['repos'][i] = text_dump
                 updated = True
                 break
