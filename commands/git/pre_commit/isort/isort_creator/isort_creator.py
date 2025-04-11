@@ -72,12 +72,12 @@ class IsortCreator(FileCreator):
         updated = False
         for i, repo in enumerate(config['repos']):
             if repo.get('repo') == text_dump['repos'][0]['repo']:
-                config['repos'][i] = text_dump
+                config['repos'][i] = text_dump['repos'][0]
                 updated = True
                 break
 
         if not updated:
-            config['repos'].append(text_dump)
+            config['repos'].append(text_dump['repos'][0])
 
         with open('.pre-commit-config.yaml', 'w') as f:
             yaml.dump (
