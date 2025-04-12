@@ -50,7 +50,7 @@ class BlackCreator(FileCreator):
                         'id': 'black',
                         'args': hooks
                     },
-                }
+                },
             ]
         }
     

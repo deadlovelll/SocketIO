@@ -75,7 +75,7 @@ class PreCommitHooksCreator(FileCreator):
                 break
 
         if not updated:
-            config['repos'].append(text_dump)
+            config['repos'].append(text_dump['repos'][0])
 
         with open('.pre-commit-config.yaml', 'w') as f:
             yaml.dump (
