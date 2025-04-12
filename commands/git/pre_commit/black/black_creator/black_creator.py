@@ -9,8 +9,28 @@ from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
 class BlackCreator(BaseHookCreator, FileCreator):
     
-    def __init__(self, **options) -> None:
+    def __init__ (
+        self, 
+        **options,
+    ) -> None:
+        
         super().__init__(**options)
+        
+        self.file_map = {
+            True: super().create,
+            False: super().update,
+        }
+        
+        self.flag_map = {
+            'skip_string_normalization': '--skip-string-normalization',
+            'skip_magic_trailing_comma': '--skip-magic-trailing-comma',
+            'check': '--check',
+            'diff': '--diff',
+            'preview': '--preview',
+            'verbose': '--verbose',
+            'quiet': '--quiet',
+            'fast': '--fast',
+        }
     
     @override
     def generate_args (
@@ -23,18 +43,7 @@ class BlackCreator(BaseHookCreator, FileCreator):
             f'--target-version={config.target_version}',
         ]
 
-        flag_map = {
-            'skip_string_normalization': '--skip-string-normalization',
-            'skip_magic_trailing_comma': '--skip-magic-trailing-comma',
-            'check': '--check',
-            'diff': '--diff',
-            'preview': '--preview',
-            'verbose': '--verbose',
-            'quiet': '--quiet',
-            'fast': '--fast',
-        }
-
-        for attr, flag in flag_map.items():
+        for attr, flag in self.flag_map.items():
             if getattr(config, attr):
                 args.append(flag)
 
@@ -72,10 +81,8 @@ class BlackCreator(BaseHookCreator, FileCreator):
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
-        if not pre_commit_file.exists():
-            super().create(text_dump)
-        else:
-            super().update(text_dump)
+        file_exist = pre_commit_file.exists()
+        self.file_map[file_exist](text_dump)
         
     @override
     def prepare_text_dump (
@@ -87,4 +94,11 @@ class BlackCreator(BaseHookCreator, FileCreator):
         text = self.create_file_text(config)
         
         return text
+    
+    @override
+    def execute (
+        self,
+    ) -> None:
+        
+        self.create_file(**self.options)
         

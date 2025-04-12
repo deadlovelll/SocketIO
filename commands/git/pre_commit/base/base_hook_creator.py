@@ -9,25 +9,23 @@ class BaseHookCreator(BaseCommand):
     @abstractmethod
     def generate_args (
         config,
-    ) -> list[str]:
-        
-        pass
+    ) -> list[str]: ...
     
     @abstractmethod
     def create_file_text (
         config,
-    ) -> str:
-        
-        pass
+    ) -> str: ...
     
     @abstractmethod
     def create_file (
         **options,
-    ) -> None:
-        
-        pass
+    ) -> None: ...
     
-    @staticmethod
+    @abstractmethod
+    def prepare_text_dump (
+        **options,
+    ) -> dict[str, Any]: ...
+    
     def create (
         text_dump: str,
     ) -> None:
@@ -69,10 +67,3 @@ class BaseHookCreator(BaseCommand):
                 default_flow_style=False, 
                 sort_keys=False,
             )
-    
-    @abstractmethod
-    def prepare_text_dump (
-        **options,
-    ) -> dict[str, Any]:
-        
-        pass
