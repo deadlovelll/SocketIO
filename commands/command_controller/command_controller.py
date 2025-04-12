@@ -10,7 +10,7 @@ from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_creator.pre_commi
 from commands.git.pre_commit.black.black_creator.black_creator import BlackCreator
 from commands.git.pre_commit.isort.isort_creator.isort_creator import IsortCreator
 from commands.git.pre_commit.mypy.mypy_creator.mypy_creator import MypyCreator
-from commands.git.pre_commit.pre_commit_creator.pre_commit_creator import PreCommitConfigCreator
+from commands.git.pre_commit.pre_commit.pre_commit_creator.pre_commit_creator import PreCommitConfigCreator
 
 class CommandController:
     
@@ -24,7 +24,7 @@ class CommandController:
         'createblackhook': BlackCreator.create_file,
         'createisorthook': IsortCreator.create_file,
         'createmypyhook': MypyCreator.create_file,
-        'createprecommit': PreCommitConfigCreator.ccreate_file,
+        'createprecommit': PreCommitConfigCreator.create_file,
     }
     
     @staticmethod

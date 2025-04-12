@@ -2,14 +2,18 @@ import yaml
 
 from pathlib import Path
 
+from typing import override
+
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.git.pre_commit.black.black_config.black_config import BlackConfig
 
+from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
-class BlackCreator(FileCreator):
+class BlackCreator(BaseHookCreator, FileCreator):
     
     @staticmethod
-    def generate_black_args (
+    @override
+    def generate_args (
         config: BlackConfig,
     ) -> list[str]:
         
@@ -36,11 +40,12 @@ class BlackCreator(FileCreator):
         return args
     
     @staticmethod
+    @override
     def create_file_text (
         config: BlackConfig = BlackConfig(),
     ) -> str:
         
-        hooks = BlackCreator.generate_black_args(config)
+        hooks = BlackCreator.generate_args(config)
         return {
             'repos': [
                 {
@@ -55,6 +60,7 @@ class BlackCreator(FileCreator):
         }
     
     @staticmethod
+    @override
     def create_file (
         **options,
     ) -> None:
@@ -66,54 +72,12 @@ class BlackCreator(FileCreator):
         pre_commit_file = root / '.pre-commit-config.yaml'
         
         if not pre_commit_file.exists():
-            BlackCreator.create(text_dump)
+            BaseHookCreator.create(text_dump)
         else:
-            BlackCreator.update(text_dump)
-            
-    @staticmethod
-    def create (
-        text_dump: str,
-    ) -> None:
-                
-        with open('.pre-commit-config.yaml', 'w') as f:
-            yaml.dump (
-                text_dump, 
-                f,
-                default_flow_style=False, 
-                sort_keys=False,
-            )
-            
-        print(f'.pre-commit-config.yaml has been created.')
+            BaseHookCreator.update(text_dump)
         
     @staticmethod
-    def update (
-        text_dump: dict,
-    ) -> None:
-        
-        with open('.pre-commit-config.yaml', 'r') as f:
-            config = yaml.safe_load(f) or {}
-        
-        config.setdefault('repos', [])
-        
-        updated = False
-        for i, repo in enumerate(config['repos']):
-            if repo.get('repo') == text_dump['repos'][0]['repo']:
-                config['repos'][i] = text_dump['repos'][0]
-                updated = True
-                break
-
-        if not updated:
-            config['repos'].append(text_dump['repos'][0])
-
-        with open('.pre-commit-config.yaml', 'w') as f:
-            yaml.dump (
-                config, 
-                f, 
-                default_flow_style=False, 
-                sort_keys=False,
-            )
-        
-    @staticmethod
+    @override
     def prepare_text_dump (
         **options,
     ) -> dict:
