@@ -1,21 +1,31 @@
 import textwrap
 
+from typing import override
+
+from commands.base_command.base_command import BaseCommand
 from commands.docker.docker_definers.dockerfile_definers.dockerfile_definers import (
+    ExposedPortsDefiner,
+    PoetryDefiner,
     PythonVesionDefiner,
     SystemDependenciesDefiner,
-    PoetryDefiner,
     UserSecurityDefiner,
-    ExposedPortsDefiner,
 )
-from interfaces.file_creator_interface.file_creator_interface import FileCreator
+from commands.docker.dockerfile.dockerfile_config.dockerfile_config import (
+    DockerfileConfig,
+)
+from interfaces.file_creator_interface.file_creator_interface import (
+    FileCreator,
+)
 
-from commands.docker.dockerfile.dockerfile_config.dockerfile_config import DockerfileConfig
 
-class DockerfileCreator(FileCreator):
+class DockerfileCreator(BaseCommand, FileCreator):
+    
+    def __init__(self, **options) -> None:
+        super().__init__(**options)
 
     @staticmethod
     def create_file_text (
-        config: DockerfileConfig,
+        config: DockerfileConfig = DockerfileConfig(),
     ) -> str:
         
         python_version = PythonVesionDefiner.define (
@@ -58,15 +68,20 @@ CMD ["python", "{config.entrypoint}"]
         """
         )
 
-    @staticmethod
     def create_file (
-        **options,
+        self,
     ) -> None:
         
-        config = DockerfileConfig(**options)
+        config = DockerfileConfig(**self.options)
+        text_content = self.create_file_text(config)
         
         with open(config.filename, 'w') as f:
-            f.write(DockerfileCreator.create_file_text (
-                config
-            ))
+            f.write(text_content)
+            
         print(f"Dockerfile '{config.filename}' has been created.")
+        
+    @override
+    def execute(self):
+        self.create_file()
+        
+    
