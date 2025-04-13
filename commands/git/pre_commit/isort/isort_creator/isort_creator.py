@@ -13,6 +13,19 @@ class IsortCreator(BaseHookCreator, FileCreator):
     ) -> None:
         
         super().__init__(**options)
+        
+    @override
+    def generate_args (
+        self,
+        config: IsortConfig = IsortConfig(),
+    ) -> list[str]:
+        
+        hooks = [
+            {'id': hook} for hook, enabled in config.__dict__.items()
+            if isinstance(enabled, bool) and enabled
+        ]
+        
+        return hooks
     
     @override
     def create_file_text (
@@ -20,10 +33,7 @@ class IsortCreator(BaseHookCreator, FileCreator):
         config: IsortConfig = IsortConfig(),
     ) -> str:
         
-        hooks = [
-            {'id': hook} for hook, enabled in config.__dict__.items()
-            if isinstance(enabled, bool) and enabled
-        ]
+        hooks = self.generate_args(config)
         return {
             'repos': [
                 {

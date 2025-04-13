@@ -35,7 +35,7 @@ class BlackCreator(BaseHookCreator, FileCreator):
     @override
     def generate_args (
         self,
-        config: BlackConfig,
+        config: BlackConfig = BlackConfig(),
     ) -> list[str]:
         
         args = [

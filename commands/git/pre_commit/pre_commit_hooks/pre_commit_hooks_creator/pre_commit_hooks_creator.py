@@ -13,16 +13,27 @@ class PreCommitHooksCreator(BaseHookCreator, FileCreator):
     ) -> None:
         
         super().__init__(**options)
-    
+        
     @override
-    def create_file_text (
+    def generate_args (
+        self,
         config: PreCommitHooksConfig = PreCommitHooksConfig(),
-    ) -> str:
+    ) -> list[str]:
         
         hooks = [
             {'id': hook} for hook, enabled in config.__dict__.items()
             if isinstance(enabled, bool) and enabled
         ]
+        
+        return hooks
+    
+    @override
+    def create_file_text (
+        self,
+        config: PreCommitHooksConfig = PreCommitHooksConfig(),
+    ) -> str:
+        
+        hooks = self.generate_args(config)
         return {
             'repos': [
                 {

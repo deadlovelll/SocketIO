@@ -15,6 +15,19 @@ class MypyCreator(BaseHookCreator, FileCreator):
     ) -> None:
         
         super().__init__(**options)
+        
+    @override
+    def generate_args (
+        self,
+        config: MypyConfig = MypyConfig(),
+    ) -> list[str]:
+        
+        hooks = [
+            f'--{hook}' for hook, enabled in config.__dict__.items()
+            if isinstance(enabled, bool) and enabled
+        ]
+        
+        return hooks
     
     @override
     def create_file_text (
@@ -22,10 +35,7 @@ class MypyCreator(BaseHookCreator, FileCreator):
         config: MypyConfig = MypyConfig(),
     ) -> str:
         
-        hooks = [
-            f'--{hook}' for hook, enabled in config.__dict__.items()
-            if isinstance(enabled, bool) and enabled
-        ]
+        hooks = self.generate_args(config)
         return {
             'repos': [
                 {
