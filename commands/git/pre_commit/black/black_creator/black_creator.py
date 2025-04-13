@@ -7,6 +7,7 @@ from commands.git.pre_commit.black.black_config.black_config import BlackConfig
 
 from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
+
 class BlackCreator(BaseHookCreator, FileCreator):
     
     def __init__ (
@@ -20,7 +21,6 @@ class BlackCreator(BaseHookCreator, FileCreator):
             True: super().create,
             False: super().update,
         }
-        
         self.flag_map = {
             'skip_string_normalization': '--skip-string-normalization',
             'skip_magic_trailing_comma': '--skip-magic-trailing-comma',
@@ -72,12 +72,9 @@ class BlackCreator(BaseHookCreator, FileCreator):
     @override
     def create_file (
         self,
-        **options,
     ) -> None:
         
-        text_dump = self.prepare_text_dump (
-            **options,    
-        )
+        text_dump = self.prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
@@ -87,10 +84,9 @@ class BlackCreator(BaseHookCreator, FileCreator):
     @override
     def prepare_text_dump (
         self,
-        **options,
     ) -> dict[str, Any]:
         
-        config = BlackConfig(**options)
+        config = BlackConfig(**self.options)
         text = self.create_file_text(config)
         
         return text
@@ -100,5 +96,5 @@ class BlackCreator(BaseHookCreator, FileCreator):
         self,
     ) -> None:
         
-        self.create_file(**self.options)
+        self.create_file()
         

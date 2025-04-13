@@ -171,4 +171,4 @@ class SocketIO (
         current_process.terminate()
         
 if __name__ == '__main__':
-    CommandController.main()
+    CommandController().run()
