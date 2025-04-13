@@ -1,5 +1,6 @@
 from commands.git.base_definers.base_gitignore_definer import BaseGitIgnoreDefiner
 
+
 class GitIgnoreByteCodeDefiner(BaseGitIgnoreDefiner):
     
     def define (

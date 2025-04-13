@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, override, Type
 
 from commands.git.gitignore.gitignore_definers.gitignore_definers import (
     GitIgnoreVenvDefiner,
@@ -16,14 +16,18 @@ from commands.git.gitignore.gitignore_definers.gitignore_definers import (
     GitIgnoreByteCodeDefiner
 )
 
-class GitIgnoreCreator:
+from commands.base_command.base_command import BaseCommand
+
+class GitIgnoreCreator(BaseCommand):
     
-    @staticmethod
-    def create_file_text (
-        options: Dict[str, bool]
-    ) -> str:
+    def __init__ (
+        self, 
+        **options,
+    ) -> None:
         
-        definers = {
+        super().__init__(**options)
+        
+        self.definers: Dict[str, Type] = {
             'bytecode_files': GitIgnoreByteCodeDefiner,
             'venv': GitIgnoreVenvDefiner,
             'logs': GitIgnoreLogsDefiner,
@@ -38,48 +42,36 @@ class GitIgnoreCreator:
             'testing': GitIgnoreTestingDefiner,
             'security': GitIgnoreSecurityDefiner,
         }
-        
-        sections = [
-            definers[key]().define(value) for key, value in options.items() if value
-        ]
-        
-        return '\n\n'.join(filter(None, sections)).strip()
     
-    @staticmethod
+    def create_file_text (
+        self,
+    ) -> str:
+        
+        sections = []
+
+        for key, value in self.options.items():
+            definer_cls = self.definers.get(key)
+            if definer_cls and value:
+                section = definer_cls().define(value)
+                if section:
+                    sections.append(section)
+
+        return '\n\n'.join(sections).strip()
+    
     def create_file (
-        all: Optional[bool] = False,
-        bytecode_files: bool = True,
-        venv: bool = True,
-        logs: bool = True,
-        packaging: bool = True,
-        os_specific: bool = True,
-        ide_files: bool = True,
-        coverage: bool = False,
-        caches: bool = True,
-        docker: Optional[bool] = False,
-        grpc: Optional[bool] = False,
-        jupyter_cp: Optional[bool] = False,
-        testing: Optional[bool] = False,
-        security: bool = True,
+        self,
     ) -> None:
         
-        options = {
-            'bytecode_files': bytecode_files,
-            'venv': venv,
-            'logs': logs,
-            'packaging': packaging,
-            'os_specific': os_specific,
-            'ide_files': ide_files,
-            'coverage': coverage,
-            'caches': caches,
-            'docker': docker,
-            'grpc': grpc,
-            'jupyter_cp': jupyter_cp,
-            'testing': testing,
-            'security': security,
-        }
+        content = self.create_file_text()
 
         with open('.gitignore', 'w') as f:
-            f.write(GitIgnoreCreator.create_file_text(options))
+            f.write(content)
             
         print('.gitignore has been created.')
+        
+    @override
+    def execute (
+        self,
+    ) -> None:
+        
+        self.create_file()
