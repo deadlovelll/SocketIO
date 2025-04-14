@@ -1,5 +1,4 @@
 import sys
-import json
 
 from typing import Callable, Any
 
@@ -14,11 +13,15 @@ from commands.git.pre_commit.isort.isort_creator.isort_creator import IsortCreat
 from commands.git.pre_commit.mypy.mypy_creator.mypy_creator import MypyCreator
 from commands.git.pre_commit.pre_commit.pre_commit_creator.pre_commit_creator import PreCommitConfigCreator
 
+from commands.command_controller.command_mapper.command_mapper import CommandArgumentMapper
+
 class CommandController:
     
     def __init__ (
         self,
     ) -> None:
+        
+        self.argument_mapper = CommandArgumentMapper()
         
         self.command_map: dict[str, Callable[..., Any]] = {
             'create_grpc_protocol': GRPCCreator.create_grpc_protocol,
@@ -56,32 +59,9 @@ class CommandController:
     def parse_arguments (
         self,
         args: list[str],
-    ) -> dict:
+    ) -> dict[str, Any]:
         
-        arguments_map = {}
-        
-        for arg in args:
-            key_value = arg.lstrip('--').split('=', 1) 
-            key = key_value[0]
-            value = key_value[1] if len(key_value) > 1 else None
-
-            if value:
-                if value.lower() in ['true', 'false']:  
-                    value = value.lower() == 'true'
-                elif value.startswith('[') and value.endswith(']'):  
-                    value = json.loads(value) 
-                elif ',' in value:  
-                    value = [
-                        int(v.strip()) 
-                        if v.strip().lstrip('-').isdigit() 
-                        else v.strip() 
-                        for v in value.split(',')
-                    ]
-                elif value.lstrip('-').isdigit():  
-                    value = [int(value)]
-            arguments_map[key] = value
-        
-        return arguments_map
+        self.argument_mapper.parse_arguments(args)
 
     def print_help (
         self,
