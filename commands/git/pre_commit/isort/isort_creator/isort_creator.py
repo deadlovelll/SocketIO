@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import override
+from typing import Any, override
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.git.pre_commit.isort.isort_config.isort_config import IsortConfig
@@ -49,7 +49,7 @@ class IsortCreator(BaseHookCreator, FileCreator):
         self,
     ) -> None:
         
-        text_dump = IsortCreator.prepare_text_dump()
+        text_dump = self.prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
@@ -61,10 +61,10 @@ class IsortCreator(BaseHookCreator, FileCreator):
     @override
     def prepare_text_dump (
         self,
-    ) -> dict:
+    ) -> dict[str, Any]:
         
         config = IsortConfig(**self.options)
-        text = IsortCreator.create_file_text(config)
+        text = self.create_file_text(config)
         
         return text
     

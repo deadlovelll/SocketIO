@@ -19,7 +19,7 @@ import json
 
 from typing import Any
 
-from command_controller.arg_parser.base.base_parser import BaseArgumentParser
+from commands.command_controller.arg_parser.base.base_parser import BaseArgumentParser
 
 class BoolParser(BaseArgumentParser):
     

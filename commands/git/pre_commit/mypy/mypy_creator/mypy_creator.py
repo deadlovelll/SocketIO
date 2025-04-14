@@ -54,14 +54,14 @@ class MypyCreator(BaseHookCreator, FileCreator):
         self,
     ) -> None:
         
-        text_dump = MypyCreator.prepare_text_dump()
+        text_dump = self.prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
         if not pre_commit_file.exists():
-            MypyCreator.create(text_dump)
+            self.create(text_dump)
         else:
-            MypyCreator.update(text_dump)
+            self.update(text_dump)
     
     @override
     def prepare_text_dump (
@@ -69,7 +69,7 @@ class MypyCreator(BaseHookCreator, FileCreator):
     ) -> dict[str, Any]:
         
         config = MypyConfig(self.options)
-        text = MypyCreator.create_file_text(config)
+        text = self.create_file_text(config)
         
         return text
     

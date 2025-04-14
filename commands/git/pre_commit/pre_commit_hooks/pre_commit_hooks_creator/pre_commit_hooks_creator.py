@@ -49,7 +49,7 @@ class PreCommitHooksCreator(BaseHookCreator, FileCreator):
         self,
     ) -> None:
         
-        text_dump = PreCommitHooksCreator.prepare_text_dump()
+        text_dump = self.prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
@@ -64,7 +64,7 @@ class PreCommitHooksCreator(BaseHookCreator, FileCreator):
     ) -> dict[str, Any]:
         
         config = PreCommitHooksConfig(**self.options)
-        text = PreCommitHooksCreator.create_file_text(config)
+        text = self.create_file_text(config)
         
         return text
     

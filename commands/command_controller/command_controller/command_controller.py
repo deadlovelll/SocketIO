@@ -24,16 +24,16 @@ class CommandController:
         self.argument_mapper = CommandArgumentMapper()
         
         self.command_map: dict[str, Callable[..., Any]] = {
-            'create_grpc_protocol': GRPCCreator.create_grpc_protocol,
-            'createdockerfile': DockerfileCreator.create_file,
-            'createdockerignore': DockerIgnoreCreator.create_file,
-            'createelastic': ELKConfigCreator.create_elk_config,
-            'creategitignore': GitIgnoreCreator.create_file,
-            'createprecommithooks': PreCommitHooksCreator.create_file,
-            'createblackhook': BlackCreator.create_file,
-            'createisorthook': IsortCreator.create_file,
-            'createmypyhook': MypyCreator.create_file,
-            'createprecommit': PreCommitConfigCreator.create_file,
+            # 'create_grpc_protocol': GRPCCreator.create_grpc_protocol,
+            # 'createdockerfile': DockerfileCreator.create_file,
+            # 'createdockerignore': DockerIgnoreCreator.create_file,
+            # 'createelastic': ELKConfigCreator.create_elk_config,
+            # 'creategitignore': GitIgnoreCreator.create_file,
+            'createprecommithooks': PreCommitHooksCreator,
+            'createblackhook': BlackCreator,
+            'createisorthook': IsortCreator,
+            'createmypyhook': MypyCreator,
+            'createprecommit': PreCommitConfigCreator,
         }
     
     def run (
@@ -46,14 +46,15 @@ class CommandController:
 
         command = sys.argv[1]
         args = self.parse_arguments(sys.argv[2:])
+        print(args)
 
         if command not in self.command_map:
             print(f"Unknown command: '{command}'")
             self.print_help()
             return
 
-        handler = self.command_map[command]
-        handler(**args)
+        handler = self.command_map[command](**args)
+        handler.execute()
 
             
     def parse_arguments (
@@ -61,7 +62,7 @@ class CommandController:
         args: list[str],
     ) -> dict[str, Any]:
         
-        self.argument_mapper.parse_arguments(args)
+        return self.argument_mapper.parse_arguments(args)
 
     def print_help (
         self,

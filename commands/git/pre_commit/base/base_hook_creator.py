@@ -27,6 +27,7 @@ class BaseHookCreator(BaseCommand):
     ) -> dict[str, Any]: ...
     
     def create (
+        self,
         text_dump: str,
     ) -> None:
                 

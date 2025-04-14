@@ -6,13 +6,13 @@ from commands.docker.dockerfile.dockerfile_validator.dockerfile_validator import
 @dataclass
 class DockerfileConfig:
     
-    filename: str = "Dockerfile"
-    python_version: str = "latest"
+    filename: str = 'Dockerfile'
+    python_version: str = 'latest'
     use_alpine: bool = False
     install_system_deps: bool = True
     poetry: bool = True
     ports: List[int] = field(default_factory=lambda: [4000])
-    entrypoint: str = "main.py"
+    entrypoint: str = 'main.py'
     use_nonroot_user: bool = True
     grpc_enabled: bool = False
     in_env: bool = False
