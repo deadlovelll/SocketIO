@@ -1,7 +1,5 @@
 from dataclasses import dataclass, field
-import requests
 
-from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_validator.pre_commit_hooks_validator import PreCommitHooksValidator
 from commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
 
 @dataclass

@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
+from commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
+
 @dataclass
 class IsortConfig:
     url: str = field (
@@ -26,5 +28,10 @@ class IsortConfig:
         'pep8'
     ]
     
-    def __post_init__(self):
-        pass
+    def __post_init__ (
+        self,
+    ) -> None:
+        
+        if not self.rev:
+            owner_repo = self.url.split("https://github.com/")[1]
+            self.rev = LastReleaseFetcher.fetch(owner_repo)
