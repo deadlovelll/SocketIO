@@ -16,11 +16,6 @@ class BlackCreator(BaseHookCreator, FileCreator):
     ) -> None:
         
         super().__init__(**options)
-        
-        self.file_map = {
-            True: super().create,
-            False: super().update,
-        }
         self.flag_map = {
             'skip_string_normalization': '--skip-string-normalization',
             'skip_magic_trailing_comma': '--skip-magic-trailing-comma',

@@ -6,6 +6,13 @@ import yaml
 
 class BaseHookCreator(BaseCommand):
     
+    def __init__(self, **options) -> None:
+        super().__init__(**options)
+        self.file_map = {
+            False: self.create,
+            True: self.update,
+        }
+    
     @abstractmethod
     def generate_args (
         config,

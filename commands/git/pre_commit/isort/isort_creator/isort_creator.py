@@ -5,14 +5,8 @@ from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.git.pre_commit.isort.isort_config.isort_config import IsortConfig
 from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
+
 class IsortCreator(BaseHookCreator, FileCreator):
-    
-    def __init__ (
-        self, 
-        **options,
-    ) -> None:
-        
-        super().__init__(**options)
         
     @override
     def generate_args (
@@ -53,10 +47,8 @@ class IsortCreator(BaseHookCreator, FileCreator):
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
-        if not pre_commit_file.exists():
-            super().create(text_dump)
-        else:
-            super().update(text_dump)
+        file_exist = pre_commit_file.exists()
+        self.file_map[file_exist](text_dump)
     
     @override
     def prepare_text_dump (
