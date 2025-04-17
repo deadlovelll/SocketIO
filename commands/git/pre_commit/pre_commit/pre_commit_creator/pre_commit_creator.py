@@ -22,8 +22,8 @@ class PreCommitConfigCreator (
         super().__init__(**options)
     
         self.PRE_COMMIT_MAP = {
-            'precommithooks': PreCommitHooksCreator,
             'black': BlackCreator,
+            'precommithooks': PreCommitHooksCreator,
             'isort': IsortCreator,
             'mypy': MypyCreator,
         }
