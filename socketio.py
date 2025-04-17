@@ -17,6 +17,9 @@ Designed for extensibility and testability, this server architecture does not re
 core of its I/O processing but wraps asynchronous logic where necessary.
 """
 
+from SocketIO.utils.root_configurer.root_configure import RootConfigurer
+RootConfigurer().config()
+
 import asyncio
 import os
 import sys
@@ -37,6 +40,7 @@ from handlers.grpc_handler.grpc_handler import GRPCHandler
 from commands.command_controller.command_controller.command_controller import CommandController
 
 from utils.socketio_validators.socketio_port_validator.socketio_port_validator import SocketIOPortValidator
+
 
 class SocketIO (
     PreparationHandler,
@@ -89,6 +93,8 @@ class SocketIO (
             backlog (int, optional): The maximum number of queued connections. Defaults to 5.
         """
         
+        self.entrypoint_path = os.path.abspath(sys.argv[0])
+        
         self.running = False
         self.host = host
         self.port = SocketIOPortValidator.verify_port_validity(port)
@@ -113,7 +119,7 @@ class SocketIO (
         self.openapi_paths = {}
         
     def _create_property (
-        attr_path: str,
+        attr_path: str, 
     ) -> property:
         
         """
@@ -187,8 +193,8 @@ class SocketIO (
         for task in asyncio.all_tasks():
             task.cancel()
 
-        python = sys.executable
-        os.execv(python, [python] + sys.argv)
+        python = sys.executable 
+        os.execv(python, [python, self.entrypoint_path])  
         
     async def shutdown (
         self,
