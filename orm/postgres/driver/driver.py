@@ -1,5 +1,8 @@
+from typing import Union
+
 import socket
-import struct
+
+from orm.postgres.driver.driver_message_builder import PostgresDriverMessageBuilder
 
 
 class PostgresDriver:
@@ -8,44 +11,35 @@ class PostgresDriver:
         self,
     ) -> None:
         
+        self.message_builder = PostgresDriverMessageBuilder()
+        
         self.host = None
         self.port = None
         self.user = None
         self.password = None
         self.database_name = None
         
-    def _buil_tartup_message(
+    def receive_message (
         self,
-    ) -> bytes:
+    ) -> Union[str, dict]:
         
-        params = {
-            'USER': self.user,
-            'DATABASE': self.database_name,
-        }
-        
-        payload = b''
-        for k, v in params.items():
-            payload += k.encode() + b'\x00' + v.encode() + b'\x00'
-        payload += b'\x00'
-        
-        length = 4+4+len(payload)
-        return struct.pack('!I', length) + struct.pack('!I', 0x00030000) + payload
+        pass
     
-    def _build_password_message(
+    def send_message (
         self,
-    ) -> bytes:
+    ) -> None:
         
-        payload = self.password.encode() + b'\x00'
-        length = 4 + len(payload)
-        return b'p' + struct.pack('!I', length) + payload
+        pass
     
-    def _build_query_message(
-        query: str,
-    ) -> bytes:
+    def establish_connection (
+        self,
+    ) -> None:
         
-        payload = query.encode() + b'\x00'
-        length = 4 + len(payload)
-        return b'Q' + struct.pack('!I', length) + payload
-        
+        conn = socket.create_connection(self.host, self.port)
+        psql_message = self.message_builder.build_startup_message (
+            self.user,
+            self.database_name,
+        )
+        conn.sendall(psql_message)
         
     
