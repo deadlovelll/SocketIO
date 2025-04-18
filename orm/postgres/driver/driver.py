@@ -1,9 +1,13 @@
-from typing import Union
+import os
+import sys
+import struct
+
+from typing import Union, Optional
 
 import socket
 
-from SocketIO.orm.postgres.driver.driver_message_builder import PostgresDriverMessageBuilder
-from SocketIO.orm.postgres.driver.driver_config import PostgresDriverConfig
+from orm.postgres.driver.driver_message_builder import PostgresDriverMessageBuilder
+from orm.postgres.driver.driver_config import PostgresDriverConfig
 
 class PostgresDriver:
     
@@ -22,12 +26,25 @@ class PostgresDriver:
                 
         self.message_builder = PostgresDriverMessageBuilder()
         
+        self.message_type_map = {
+            b'R': 'auth_request',
+            b'K': 'cancel_requests',
+            b'B': 'bind_requests',
+            b'C': 'close_request',
+            
+        }
+        
     def receive_message (
         self,
-    ) -> Union[str, dict]:
+    ) -> Union[Optional[str], Optional[dict]]:
         
         header = self.connection.recv(5)
-        print(header)
+        if len(header) < 5:
+            return None, None
+        msg_type = header[0:1]
+        length = struct.unpack('!I', header[1:5])[0]-4
+        payload = self.connection.recv(length)
+        return msg_type, payload
     
     def send_message (
         self,
@@ -40,15 +57,23 @@ class PostgresDriver:
         self,
     ) -> None:
         
-        self.connection = socket.create_connection(self.host, self.port)
+        self.connection = socket.create_connection((self.host, self.port))
         psql_message = self.message_builder.build_startup_message (
             self.user,
             self.database_name,
         )
         self.send_message(psql_message)
         
+    def consume_messages(
+        self,
+    ) -> None:
+        
+        while True:
+            msg_type, payload = self.receive_message()
+        
 if __name__ == '__main__':
-    d = PostgresDriver('localhost', 5432, 'my_user', 'user', 'my_secure_password')
+    config = PostgresDriverConfig('localhost', 5432, 'my_user', 'user', 'my_secure_password')
+    d = PostgresDriver(config)
     d.establish_connection()
         
     
