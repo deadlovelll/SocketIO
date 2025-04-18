@@ -1,13 +1,18 @@
 import os
-import sys
-import struct
-
-from typing import Union, Optional
-
 import socket
+import struct
+import sys
 
-from orm.postgres.driver.driver_message_builder import PostgresDriverMessageBuilder
+from typing import Optional, Union
+
 from orm.postgres.driver.driver_config import PostgresDriverConfig
+from orm.postgres.driver.driver_message_builder import (
+    PostgresDriverMessageBuilder,
+)
+from orm.postgres.driver.driver_message_handler.driver_message_handler import (
+    PostgresDriverMessageHandler,
+)
+
 
 class PostgresDriver:
     
@@ -25,14 +30,7 @@ class PostgresDriver:
         self.connection = None
                 
         self.message_builder = PostgresDriverMessageBuilder()
-        
-        self.message_type_map = {
-            b'R': 'auth_request',
-            b'K': 'cancel_requests',
-            b'B': 'bind_requests',
-            b'C': 'close_request',
-            
-        }
+        self.message_handler = PostgresDriverMessageHandler()
         
     def receive_message (
         self,
@@ -63,6 +61,7 @@ class PostgresDriver:
             self.database_name,
         )
         self.send_message(psql_message)
+        self.consume_messages()
         
     def consume_messages(
         self,
@@ -70,10 +69,14 @@ class PostgresDriver:
         
         while True:
             msg_type, payload = self.receive_message()
+            status_code = payload.split(b'\x00')[2].decode('utf-8')[1:]
+            self.message_handler.handle(msg_type, payload)
         
-if __name__ == '__main__':
-    config = PostgresDriverConfig('localhost', 5432, 'my_user', 'user', 'my_secure_password')
-    d = PostgresDriver(config)
-    d.establish_connection()
+# if __name__ == '__main__':
+#     config = PostgresDriverConfig('localhost', 5432, 'my_user', 'user', 'my_secure_password')
+#     d = PostgresDriver(config)
+#     d.establish_connection()
+        
+    
         
     
