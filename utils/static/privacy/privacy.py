@@ -1,9 +1,11 @@
 import inspect
 
-def privatemethod(func):
-    def wrapper(*args, **kwargs):
-        caller = inspect.stack()[1].function
-        if caller.startswith('_') or caller == '__init__':
-            return func(*args, **kwargs)
-        raise RuntimeError(f"Method '{func.__name__}' is private and cannot be accessed externally.")
+def privatemethod(method):
+    def wrapper(self, *args, **kwargs):
+        stack = inspect.stack()
+        for frame_info in stack[1:]:
+            caller_self = frame_info.frame.f_locals.get('self')
+            if isinstance(caller_self, self.__class__):
+                return method(self, *args, **kwargs)
+        raise RuntimeError(f"Method '{method.__name__}' is private and cannot be accessed externally.")
     return wrapper
