@@ -1,7 +1,7 @@
 from typing import override
 
-from SocketIO.orm.postgres.driver.sqlstate.sqlstate import SQLSTATE_MESSAGES
-from orm.postgres.driver.driver_message_handler.base_message_hander import PostgresDriverBaseMessageHandler
+from orm.postgres.driver.sqlstate.sqlstate import SQLSTATE_MESSAGES
+from orm.postgres.driver.message_handlers.base.base_message_hander import PostgresDriverBaseMessageHandler
 from exceptions.postgres_exceptions.postgres_exceptions import SocketIOPostgresDriverException
 
 

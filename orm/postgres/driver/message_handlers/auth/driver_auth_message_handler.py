@@ -2,20 +2,24 @@ import struct
 
 from typing import override
 
-from SocketIO.orm.postgres.driver.sqlstate.sqlstate import SQLSTATE_MESSAGES
-from orm.postgres.driver.driver_message_handler.base_message_hander import PostgresDriverBaseMessageHandler
-from exceptions.postgres_exceptions.postgres_exceptions import SocketIOPostgresDriverException
+from orm.postgres.driver.message_handlers.base.base_message_hander import (
+    PostgresDriverBaseMessageHandler,
+)
 
 
 class PostgresDriverAuthMessageHandler (
     PostgresDriverBaseMessageHandler
 ):
     
-    def __init__(self) -> None:
+    def __init__(
+        self,
+    ) -> None:
+        
         super().__init__()
         
         self.status_code_map = {
             0: '',
+            3: ''
         }
     
     @override
