@@ -4,8 +4,9 @@ from orm.postgres.driver.message_handlers.error.driver_error_message_handler imp
 from orm.postgres.driver.message_handlers.auth.driver_auth_message_handler import PostgresDriverAuthMessageHandler
 
 from utils.static.privacy.privacy import privatemethod
+from utils.static.privacy.protected_class import ProtectedClass
 
-class PostgresDriverMessageHandler:
+class PostgresDriverMessageHandler(ProtectedClass):
     
     def __init__ (
         self,
@@ -26,6 +27,9 @@ class PostgresDriverMessageHandler:
             b'N': self._handle_notice_response,
             b'G': self._handle_copy_in_response,
         }
+        
+        self.password = None
+        self.user = None
       
     @privatemethod  
     def _handle_auth (
@@ -33,7 +37,11 @@ class PostgresDriverMessageHandler:
         payload: bytes,
     ) -> None:
         
-        self._auth_handler.handle(payload)
+        return self._auth_handler.handle (
+            payload,
+            self.password,
+            self.user,
+        )
     
     @privatemethod
     def _handle_error (
@@ -103,6 +111,11 @@ class PostgresDriverMessageHandler:
         self,
         msg_type: bytes,
         payload: bytes,
+        password: str,
+        user: str,
     ) -> None:
         
-        self._message_type_map[msg_type](payload)
+        self.password = password
+        self.user = user
+        
+        return self._message_type_map[msg_type](payload)
