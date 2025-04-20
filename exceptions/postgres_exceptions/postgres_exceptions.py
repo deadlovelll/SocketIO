@@ -19,3 +19,23 @@ class SocketIOPostgresDriverException(SocketIOException):
 {'#' * 80}
 """
         super().__init__(message)
+        
+
+class SocketIOPostgresDriverAuthException(SocketIOException):
+    
+    def __init__ (
+        self,
+        unknown_code: str
+    ) -> None:
+        
+        message = f"""
+{'#' * 72}
+# PostgreSQL authentication failed with unknown code: {unknown_code:<6}     #
+#                                                                          #
+# Refer to the full list of PostgreSQL auth codes:                         #
+# → https://www.postgresql.org/docs/current/errcodes-appendix.html         #
+#                                                                          #
+# Tip: This might indicate protocol mismatch or server misconfiguration.  #
+{'#' * 72}
+"""
+        super().__init__(message)
