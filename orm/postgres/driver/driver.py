@@ -5,20 +5,21 @@ import sys
 
 from typing import Optional, Union
 
-from orm.postgres.driver.driver_config import PostgresDriverConfig
-from orm.postgres.driver.driver_message_builder import (
+from orm.postgres.driver.config.driver_config import PostgresDriverConfig
+from orm.postgres.driver.message_builder.driver_message_builder import (
     PostgresDriverMessageBuilder,
 )
-from orm.postgres.driver.driver_message_handler.driver_message_handler import (
+from orm.postgres.driver.message_handlers.driver_message_handler import (
     PostgresDriverMessageHandler,
 )
+from utils.static.privacy.privacy import privatemethod
 
 
 class PostgresDriver:
     
     def __init__ (
         self,
-        driver_config: PostgresDriverConfig = PostgresDriverConfig()
+        driver_config: PostgresDriverConfig,
     ) -> None:
         
         self.host = driver_config.host
@@ -31,8 +32,9 @@ class PostgresDriver:
                 
         self.message_builder = PostgresDriverMessageBuilder()
         self.message_handler = PostgresDriverMessageHandler()
-        
-    def receive_message (
+      
+    @privatemethod  
+    def _receive_message (
         self,
     ) -> Union[Optional[str], Optional[dict]]:
         
@@ -44,13 +46,46 @@ class PostgresDriver:
         payload = self.connection.recv(length)
         return msg_type, payload
     
-    def send_message (
+    @privatemethod
+    def _send_message (
         self,
         message: bytes,
     ) -> None:
         
         self.connection.sendall(message)
+        
+    @privatemethod
+    def _build_query_message (
+        self,
+        query,
+    ):
+        query_bytes = query.encode('utf-8') + b'\x00'
+        byte_length = len(query_bytes) + 4
+        return b'Q' + struct.pack('!I', byte_length) + query_bytes
     
+    @privatemethod
+    def consume_messages (
+        self,
+    ) -> None:
+        
+        print(self.message_handler._message_type_map)
+        
+        while True:
+            msg_type, payload = self._receive_message()
+            result = self.message_handler.handle (
+                msg_type, 
+                payload, 
+                self.password,
+                self.user,
+            )
+            print(msg_type, payload)
+            if result == 'ok':
+                print('nice')
+            elif isinstance(result, bytes):
+                self.connection.sendall(result)
+            elif result == 'abort':
+                break
+            
     def establish_connection (
         self,
     ) -> None:
@@ -59,21 +94,13 @@ class PostgresDriver:
         psql_message = self.message_builder.build_startup_message (
             self.user,
             self.database_name,
+            self.password,
         )
-        self.send_message(psql_message)
+        self._send_message(psql_message)
         self.consume_messages()
         
-    def consume_messages(
-        self,
-    ) -> None:
-        
-        while True:
-            msg_type, payload = self.receive_message()
-            status_code = payload.split(b'\x00')[2].decode('utf-8')[1:]
-            self.message_handler.handle(msg_type, payload)
-        
 # if __name__ == '__main__':
-#     config = PostgresDriverConfig('localhost', 5432, 'my_user', 'user', 'my_secure_password')
+#     config = PostgresDriverConfig('localhost', 5432, 'my_user', 'my_secure_password', 'myapp_db')
 #     d = PostgresDriver(config)
 #     d.establish_connection()
         
