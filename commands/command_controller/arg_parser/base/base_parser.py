@@ -33,7 +33,7 @@ class BaseArgumentParser(ABC):
             bool: True if this parser can handle the value, False otherwise.
         """
         
-        pass
+        ...
 
     @abstractmethod
     def parse (
@@ -51,4 +51,4 @@ class BaseArgumentParser(ABC):
             object: The parsed value, converted into an appropriate Python type.
         """
         
-        pass
+        ...

@@ -42,4 +42,4 @@ class BaseCommand(ABC):
         All subclasses must implement this method.
         """
         
-        pass
+        ...

@@ -1,5 +1,17 @@
+"""
+Dockerignore Definers Module
+
+This module contains classes that help define ignore rules for `.dockerignore` files.
+Each class is responsible for a specific category such as Python cache, virtual environments,
+logs, Docker configuration, Git metadata, documentation, etc.
+
+All definers inherit from both `BaseDockerDefiner` and `BaseDockerignoreDefiner` and provide
+a `define()` method that conditionally returns a string of ignore rules based on a boolean flag.
+"""
+
 from commands.docker.docker_definers.base_definer.base_definer import BaseDockerDefiner
 from commands.docker.docker_definers.base_definer.base_dockerignore_definer import BaseDockerignoreDefiner
+
 
 class PythonCacheDefiner(BaseDockerDefiner, BaseDockerignoreDefiner):
     
@@ -13,6 +25,16 @@ class PythonCacheDefiner(BaseDockerDefiner, BaseDockerignoreDefiner):
         cls,
         python_cache: bool,
     ) -> str:
+        
+        """
+        Generate ignore rules for Python cache files.
+
+        Args:
+            python_cache (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
         
         if python_cache:
             return super().add_ignorance (
@@ -38,6 +60,16 @@ class VenvDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         virtual_environment: bool,
     ) -> str:
         
+        """
+        Generate ignore rules for virtual environments.
+
+        Args:
+            virtual_environment (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
+        
         if virtual_environment:
             return super().add_ignorance (
                 [
@@ -60,6 +92,16 @@ class SystemSpecsDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         cls,
         system_spec_files: bool,
     ) -> str:
+        
+        """
+        Generate ignore rules for system-specific files.
+
+        Args:
+            logs (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
         
         if system_spec_files:
             return super().add_ignorance (
@@ -85,6 +127,16 @@ class LogsDefine(BaseDockerignoreDefiner, BaseDockerDefiner):
         cls,
         logs: bool,
     ) -> str:
+        
+        """
+        Generate ignore rules for logs and temp files.
+
+        Args:
+            logs (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
         
         if logs:
             return super().add_ignorance (
@@ -115,6 +167,16 @@ class TestCoverageDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         test_coverage: bool,
     ) -> str:
         
+        """
+        Generate ignore rules for test coverage files.
+
+        Args:
+            logs (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
+        
         if test_coverage:
             return super().add_ignorance (
                 [
@@ -139,6 +201,16 @@ class GitAttributesDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         cls,
         git: bool,
     ) -> str:
+        
+        """
+        Generate ignore rules for Git-related files.
+
+        Args:
+            logs (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
         
         if git:
             return super().add_ignorance (
@@ -166,6 +238,16 @@ class DockerFilesDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         docker: bool,
     ) -> str:
         
+        """
+        Generate ignore rules for Docker-related files.
+
+        Args:
+            logs (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
+        
         if docker:
             return super().add_ignorance (
                 [
@@ -189,6 +271,16 @@ class PoetryDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         poetry: bool,
     ) -> str:
         
+        """
+        Generate ignore rules for Poetry-related files.
+
+        Args:
+            logs (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
+        
         if poetry:
             return super().add_ignorance (
                 [
@@ -209,6 +301,16 @@ class CompiledFiledDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         cls,
         compiled_files: bool,
     ) -> str:
+        
+        """
+        Generate ignore rules for compiled files and build artifacts.
+
+        Args:
+            logs (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
         
         if compiled_files:
             return super().add_ignorance (
@@ -234,6 +336,16 @@ class DocumentationDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         documentation: bool,
     ) -> str:
         
+        """
+        Generate ignore rules for documentation files.
+
+        Args:
+            logs (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
+        
         if documentation:
             return super().add_ignorance (
                 [
@@ -257,6 +369,16 @@ class EnvFilesDefiner(BaseDockerignoreDefiner, BaseDockerDefiner):
         cls,
         env_files: bool,
     ) -> str:
+        
+        """
+        Generate ignore rules for environment files.
+
+        Args:
+            logs (bool): Whether to include the rules.
+
+        Returns:
+            str: Dockerignore-compatible string of rules.
+        """
         
         if env_files:
             return super().add_ignorance (

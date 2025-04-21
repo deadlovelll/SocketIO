@@ -4,4 +4,4 @@ class BaseGitDefiner(ABC):
     
     @abstractmethod
     def define():
-        pass
+        ...
