@@ -1,5 +1,14 @@
+"""
+OS Detector Module
+
+Provides a unified interface to detect the current operating system.
+Maps system identifiers to specific detector classes.
+"""
+
 import platform
 
+from utils.static.privacy.privacy import privatemethod
+from utils.static.privacy.protected_class import ProtectedClass
 from utils.os_detector.base_os_detector.base_os_detector import BaseOSDetector
 from utils.os_detector.detectors.detectors import (
     WindowsDetector,
@@ -8,43 +17,51 @@ from utils.os_detector.detectors.detectors import (
     UnknownOSDetector,
 )
 
-class OSDetector:
+
+class OSDetector(ProtectedClass):
     
     """
-    The OSDetector class encapsulates the logic to choose the appropriate
-    OS detector based on the current platform.
+    OSDetector encapsulates the logic to select the appropriate OS detector
+    class based on the current platform.
+
+    It provides a unified `detect()` method that returns the name of the
+    current operating system or distribution.
     """
-    
+
     def __init__ (
         self,
     ) -> None:
         
-        self.os_map = {
-            'windows': WindowsDetector,
-            'darwin': MacOSDetector,
-            'linux': LinuxDetector,
-        }
+        """
+        Initializes the OSDetector by selecting the appropriate OS detection strategy
+        based on the current platform.system().
+        """
         
-        self.system = platform.system().lower()
-        self.detector = self._select_detector()
-        
-        self.os_map = {
+        self._os_map = {
             'windows': WindowsDetector,
             'darwin': MacOSDetector,
             'linux': LinuxDetector,
         }
 
+        self._system = platform.system().lower()
+        self._detector: BaseOSDetector = self._select_detector()
+
+    @privatemethod
     def _select_detector (
         self,
     ) -> BaseOSDetector:
         
         """
-        Chooses the appropriate OS detector class based on the system type.
+        Internal method to select an appropriate detector class
+        for the current OS.
+
+        Returns:
+            BaseOSDetector: An instance of the appropriate OS detector.
         """
         
         try:
-            return self.os_map[self.system]()
-        except Exception:
+            return self._os_map[self._system]()
+        except KeyError:
             return UnknownOSDetector()
 
     def detect (
@@ -52,7 +69,10 @@ class OSDetector:
     ) -> str:
         
         """
-        Delegates the detection to the selected OS detector.
+        Detects the name of the current operating system.
+
+        Returns:
+            str: A string representing the detected OS or distribution.
         """
         
-        return self.detector.detect()
+        return self._detector.detect()
