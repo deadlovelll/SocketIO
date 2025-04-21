@@ -40,7 +40,7 @@ class PostgresDriverAuthMessageHandler (
     """
 
     @privatemethod
-    def _get_md5_encoded_password(
+    def _get_md5_encoded_password (
         self,
         user: str,
         password: str,
@@ -64,7 +64,7 @@ class PostgresDriverAuthMessageHandler (
         return ('md5' + step2 + '\0').encode()
 
     @privatemethod
-    def _get_encoded_password(
+    def _get_encoded_password (
         self,
         password: str,
     ) -> bytes:

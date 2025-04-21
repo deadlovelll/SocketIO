@@ -13,7 +13,6 @@ class ProtectedClass:
     ) -> Any:
         
         if name.startswith('_') and not name.startswith('__'):
-            import inspect
             stack = inspect.stack()
             try:
                 caller_frame = stack[1].frame
