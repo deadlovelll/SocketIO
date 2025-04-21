@@ -1,8 +1,22 @@
-from interfaces.file_creator_interface.file_creator_interface import FileCreator
+"""
+Kibana Configuration Creator Module
 
+This module defines a class responsible for generating and writing
+a `kibana.yml` configuration file based on the provided configuration options.
+"""
+
+from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.elk.kibana.kibana_config.kibana_config import KibanaConfig
 
+
 class KibanaConfigCreator(FileCreator):
+    
+    """
+    Creates a `kibana.yml` configuration file based on the specified `KibanaConfig`.
+
+    This includes Elasticsearch connection settings, Kibana server host/port, 
+    and authentication options if provided.
+    """
     
     @staticmethod
     def create_file_text (
@@ -12,13 +26,11 @@ class KibanaConfigCreator(FileCreator):
         """
         Generates the Kibana configuration as a string.
 
-        :param server_host: Host for the Kibana server (default: "0.0.0.0").
-        :param server_port: Port for Kibana (default: 5601).
-        :param elasticsearch_host: URL of the Elasticsearch instance.
-        :param elasticsearch_username: Username for Elasticsearch authentication (optional).
-        :param elasticsearch_password: Password for Elasticsearch authentication (optional).
-        :param kibana_index: Kibana index name (default: ".kibana").
-        :return: A string containing the Kibana configuration.
+        Args:
+            config (KibanaConfig): Configuration parameters for Kibana.
+
+        Returns:
+            str: A string representing the contents of the `kibana.yml` file.
         """
         
         configuration = f"""server.host: "{config.server_host}"
@@ -42,13 +54,11 @@ elasticsearch.password: "{config.elasticsearch_password}"
         """
         Writes the generated Kibana configuration to a file.
 
-        :param file_path: Path to the file where the configuration should be written.
-        :param server_host: Host for the Kibana server.
-        :param server_port: Port for Kibana.
-        :param elasticsearch_host: URL of the Elasticsearch instance.
-        :param elasticsearch_username: Username for Elasticsearch authentication (optional).
-        :param elasticsearch_password: Password for Elasticsearch authentication (optional).
-        :param kibana_index: Kibana index name.
+        Args:
+            options (dict): Keyword arguments that match the fields of KibanaConfig.
+
+        Returns:
+            None
         """
         
         config = KibanaConfig(**options)

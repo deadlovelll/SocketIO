@@ -1,21 +1,36 @@
-from interfaces.file_creator_interface.file_creator_interface import FileCreator
+"""
+Logstash Configuration Creator
 
+This module defines the `LogstashConfigCreator` class used to generate
+a valid `logstash.conf` configuration file for Logstash based on user-defined options.
+"""
+
+from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.elk.logstash.logstash_config.logstash_config import LogstashConfig
 
 class LogstashConfigCreator(FileCreator):
+  
+    """
+    Logstash configuration file creator.
+
+    This class provides static methods for generating and writing
+    a valid `logstash.conf` file with input, filter, and output stages,
+    tailored for use with Filebeat and Elasticsearch.
+    """
     
     @staticmethod
-    def create_file_text (
+    def create_file_text(
         config: LogstashConfig = LogstashConfig(),
     ) -> str:
-        
+      
         """
         Generates the Logstash configuration as a string.
 
-        :param beats_port: Port on which Logstash listens for beats input.
-        :param elasticsearch_host: Host (and port) for Elasticsearch.
-        :param index_pattern: Index pattern for Elasticsearch output.
-        :return: A string containing the Logstash configuration.
+        Args:
+            config (LogstashConfig): The configuration dataclass for Logstash.
+
+        Returns:
+            str: A formatted Logstash configuration file content.
         """
         
         configuration = f"""input {{
@@ -41,22 +56,22 @@ output {{
         return configuration
 
     @staticmethod
-    def create_file (
+    def create_file(
         **options,
     ) -> None:
-        
+      
         """
-        Writes the generated Logstash configuration to a file.
+        Writes the generated Logstash configuration to `config/elk/logstash.conf`.
 
-        :param beats_port: Port on which Logstash listens for beats input.
-        :param elasticsearch_host: Host (and port) for Elasticsearch.
-        :param index_pattern: Index pattern for Elasticsearch output.
+        Args:
+            **options: Arbitrary keyword arguments used to initialize `LogstashConfig`.
+
+        Returns:
+            None
         """
         
         config = LogstashConfig(**options)
-        
-        configuration = LogstashConfigCreator.create_file_text (
-            config,
-        )
+        content = LogstashConfigCreator.create_file_text(config)
+
         with open('config/elk/logstash.conf', 'w') as f:
-            f.write(configuration)
+            f.write(content)

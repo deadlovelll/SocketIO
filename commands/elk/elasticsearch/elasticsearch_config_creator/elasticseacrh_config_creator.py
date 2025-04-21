@@ -1,12 +1,23 @@
-from interfaces.file_creator_interface.file_creator_interface import FileCreator
+"""
+Elasticsearch Config Creator Module
 
-from commands.elk.elasticsearch.elasticsearch_config.elasticsearch_config import ElastisearchConfig
+Provides functionality to generate and write an Elasticsearch configuration file
+based on user-defined options.
+"""
+
+from interfaces.file_creator_interface.file_creator_interface import FileCreator
+from commands.elk.elasticsearch.elasticsearch_config.elasticsearch_config import ElasticsearchConfig
+
 
 class ElasticsearchConfigCreator(FileCreator):
     
+    """
+    Creates an Elasticsearch configuration file from provided options.
+    """
+    
     @staticmethod
     def create_file_text (
-        config: ElastisearchConfig = ElastisearchConfig(),
+        config: ElasticsearchConfig = ElasticsearchConfig(),
     ) -> str:
         
         """
@@ -38,7 +49,7 @@ discovery.type: {config.discovery_type}
         :param discovery_type: Discovery type.
         """
         
-        config = ElastisearchConfig(**options)
+        config = ElasticsearchConfig(**options)
         
         configuration = ElasticsearchConfigCreator.create_file_text (
             config,
