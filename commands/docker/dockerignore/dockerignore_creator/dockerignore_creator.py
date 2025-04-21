@@ -1,3 +1,15 @@
+"""
+DockerIgnoreCreator Module
+
+This module defines the `DockerIgnoreCreator` class responsible for generating
+a `.dockerignore` file for a project based on user-defined flags. Each flag
+represents a category of files or directories to exclude from the Docker context.
+
+The module supports various definer classes, each responsible for providing 
+specific ignore patterns such as Python cache, virtual environments, logs,
+Docker/Poetry configs, compiled files, and more.
+"""
+
 import textwrap
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
@@ -12,12 +24,21 @@ from commands.docker.docker_definers.dockerignore_definers.dockerifnore_definers
     PoetryDefiner,
     CompiledFiledDefiner,
     DocumentationDefiner,
-    EnvFilesDefiner
+    EnvFilesDefiner,
 )
 
 from commands.docker.dockerignore.dockerignore_config.dockerignore_config import DockerIgnoreConfig
 
+
 class DockerIgnoreCreator(FileCreator):
+    
+    """
+    DockerIgnoreCreator generates a `.dockerignore` file based on configuration flags.
+
+    This class uses various definer classes to selectively include ignore patterns 
+    for files and directories typically excluded from Docker build contexts. 
+    It supports both static and dynamic configuration via the `DockerIgnoreConfig` dataclass.
+    """
     
     @staticmethod
     def create_file_text (
