@@ -1,11 +1,39 @@
+"""
+This module defines custom exceptions for handling errors related to 
+SocketIO operations and specific errors related to the Black code formatter.
+
+Exceptions:
+    - InvalidBlackVersion: A specific exception raised when an invalid 
+      version of the Black formatter is specified.
+"""
+
 from exceptions.base_exception.socketio_exception import SocketIOException
+
 
 class InvalidBlackVersion(SocketIOException):
     
+    """
+    Exception raised when an invalid version of the Black formatter is specified.
+
+    This exception is raised when the user provides an invalid or non-existent 
+    version of the Black code formatter. The message provides guidance on how 
+    to resolve the issue by checking the valid versions available.
+    """
+
     def __init__ (
         self, 
         version: str,
     ) -> None:
+        
+        """
+        Initializes the InvalidBlackVersion exception with a custom error message.
+
+        Args:
+            version (str): The invalid version of the Black formatter that caused the exception.
+
+        Raises:
+            SocketIOException: Inherits from the base `SocketIOException` class.
+        """
         
         message = f"""
 {'#' * 80}
