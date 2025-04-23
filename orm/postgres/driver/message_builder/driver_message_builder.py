@@ -3,13 +3,6 @@ PostgreSQL Driver Message Builder
 
 This module provides the `PostgresDriverMessageBuilder` class, responsible for constructing
 low-level protocol-compliant byte messages used in communication with a PostgreSQL server.
-
-It supports building:
-- Startup message
-- Password authentication message
-- Query execution message
-
-Each message follows the PostgreSQL frontend/backend protocol format.
 """
 
 import struct

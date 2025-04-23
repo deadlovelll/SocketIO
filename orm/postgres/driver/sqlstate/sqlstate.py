@@ -1,3 +1,12 @@
+"""
+SQLSTATE Error Codes and Lookup Module
+
+This module contains a dictionary of SQLSTATE error codes and their corresponding messages.
+The SQLSTATE codes are standardized error codes used in SQL databases to indicate specific 
+types of errors. The `get_sql_error_message` function is provided to allow for easy lookup 
+of an error message based on the given SQLSTATE error code.
+"""
+
 SQLSTATE_MESSAGES = {
     '00000': 'successful completion',
     '01000': 'warning',

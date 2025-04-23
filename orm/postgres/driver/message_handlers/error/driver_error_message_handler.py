@@ -4,10 +4,6 @@ Postgres Error Message Handler
 This module defines a handler for PostgreSQL error messages
 received via the low-level protocol. It parses the SQLSTATE code
 from the payload and raises a structured exception.
-
-Used in:
-    - Low-level PostgreSQL client drivers
-    - Binary protocol parsers
 """
 
 from typing import override

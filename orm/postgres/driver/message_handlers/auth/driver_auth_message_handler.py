@@ -5,10 +5,6 @@ This module defines the logic for processing authentication-related messages
 from the PostgreSQL wire protocol. It handles multiple authentication methods,
 such as plaintext and MD5-based authentication, and encapsulates logic to 
 produce correct response payloads for each method.
-
-Classes:
-    - PostgresDriverAuthMessageHandler: Processes authentication messages and
-      returns appropriate responses or raises exceptions if authentication fails.
 """
 
 import hashlib
