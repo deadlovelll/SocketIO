@@ -1,11 +1,40 @@
+"""
+This module defines custom exceptions for handling Dockerfile-related errors
+within the SocketIO framework.
+
+Exceptions:
+    - DockerfileInvalidFileName: Raised when the specified Dockerfile has an invalid name.
+    - DockerfileInproperPortError: Raised when an invalid port number is provided in the Dockerfile.
+    - DockerfileForbieddenPortError: Raised when a system-reserved port is used in the Dockerfile.
+    - DockerfileNoSuchEntrypoint: Raised when the entrypoint file in the Dockerfile is not found.
+    - DockerfileNoSuchPythonVersionExists: Raised when the specified Python version is not available on Docker Hub.
+    - DockerfilePyFileExtensionsRequired: Raised when a Python file does not have the required `.py` extension.
+    - DockerfileNoGRPCServiceEnabled: Raised when no gRPC service is enabled in the Dockerfile.
+"""
+
 from exceptions.base_exception.socketio_exception import SocketIOException
+
 
 class DockerfileInvalidFileName(SocketIOException):
     
+    """
+    Exception raised when the specified Dockerfile has an invalid name.
+    """
+
     def __init__ (
         self, 
         filename: str,
     ) -> None:
+        
+        """
+        Initializes the DockerfileInvalidFileName with a custom error message.
+
+        Args:
+            filename (str): The invalid Dockerfile name.
+
+        Raises:
+            SocketIOException: Inherits from the base `SocketIOException` class.
+        """
         
         message = f"""
 \n
@@ -18,12 +47,27 @@ class DockerfileInvalidFileName(SocketIOException):
         
         super().__init__(message)
 
+
 class DockerfileInproperPortError(SocketIOException):
     
+    """
+    Exception raised when an invalid port number is provided in the Dockerfile.
+    """
+
     def __init__ (
         self, 
-        port: str
+        port: str,
     ) -> None:
+        
+        """
+        Initializes the DockerfileInproperPortError with a custom error message.
+
+        Args:
+            port (str): The invalid port number.
+
+        Raises:
+            SocketIOException: Inherits from the base `SocketIOException` class.
+        """
         
         message = f"""
 \n
@@ -35,13 +79,28 @@ class DockerfileInproperPortError(SocketIOException):
         """
 
         super().__init__(message)
-        
+
+
 class DockerfileForbieddenPortError(SocketIOException):
     
+    """
+    Exception raised when a system-reserved port is used in the Dockerfile.
+    """
+
     def __init__ (
         self, 
-        port: str
+        port: str,
     ) -> None:
+        
+        """
+        Initializes the DockerfileForbieddenPortError with a custom error message.
+
+        Args:
+            port (str): The system-reserved port number.
+
+        Raises:
+            SocketIOException: Inherits from the base `SocketIOException` class.
+        """
         
         message = f"""
 \n
@@ -53,13 +112,28 @@ class DockerfileForbieddenPortError(SocketIOException):
         """
         
         super().__init__(message)
-        
+
+
 class DockerfileNoSuchEntrypoint(SocketIOException):
     
+    """
+    Exception raised when the specified entrypoint file in the Dockerfile is not found.
+    """
+
     def __init__ (
         self, 
         filename: str,
     ) -> None:
+        
+        """
+        Initializes the DockerfileNoSuchEntrypoint with a custom error message.
+
+        Args:
+            filename (str): The entrypoint file name that was not found.
+
+        Raises:
+            SocketIOException: Inherits from the base `SocketIOException` class.
+        """
         
         message = f"""
 \n
@@ -68,14 +142,30 @@ class DockerfileNoSuchEntrypoint(SocketIOException):
 #  Please verify that the file exists and is correctly referenced.        #
 {"#" * 75}
         """
-        super().__init__(message)
         
+        super().__init__(message)
+
+
 class DockerfileNoSuchPythonVersionExists(SocketIOException):
     
+    """
+    Exception raised when the specified Python version is not available on Docker Hub.
+    """
+
     def __init__ (
         self, 
         python_version: str,
     ) -> None:
+        
+        """
+        Initializes the DockerfileNoSuchPythonVersionExists with a custom error message.
+
+        Args:
+            python_version (str): The Python version that was not found.
+
+        Raises:
+            SocketIOException: Inherits from the base `SocketIOException` class.
+        """
         
         message = f"""
 \n
@@ -88,12 +178,24 @@ class DockerfileNoSuchPythonVersionExists(SocketIOException):
         """
         
         super().__init__(message)
-        
+
+
 class DockerfilePyFileExtensionsRequired(SocketIOException):
     
+    """
+    Exception raised when a Python file does not have the required `.py` extension.
+    """
+
     def __init__ (
         self,
     ) -> None:
+        
+        """
+        Initializes the DockerfilePyFileExtensionsRequired with a custom error message.
+
+        Raises:
+            SocketIOException: Inherits from the base `SocketIOException` class.
+        """
         
         message = f"""
 \n
@@ -105,10 +207,24 @@ class DockerfilePyFileExtensionsRequired(SocketIOException):
         """
         
         super().__init__(message)
-        
+
+
 class DockerfileNoGRPCServiceEnabled(SocketIOException):
     
-    def __init__(self) -> None:
+    """
+    Exception raised when no gRPC service is enabled in the Dockerfile.
+    """
+
+    def __init__ (
+        self,
+    ) -> None:
+        
+        """
+        Initializes the DockerfileNoGRPCServiceEnabled with a custom error message.
+
+        Raises:
+            SocketIOException: Inherits from the base `SocketIOException` class.
+        """
         
         message = f"""
 \n
