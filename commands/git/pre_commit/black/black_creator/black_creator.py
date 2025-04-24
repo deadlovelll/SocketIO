@@ -1,19 +1,39 @@
-from pathlib import Path
+"""
+Module for generating or updating a pre-commit hook configuration for the Black formatter.
 
+This module provides the `BlackCreator` class which integrates with the pre-commit framework.
+It dynamically constructs configuration for the Black Python formatter using options provided
+via `BlackConfig`, and implements hook creation logic inherited from `BaseHookCreator`.
+"""
+
+from pathlib import Path
 from typing import override, Any
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.git.pre_commit.black.black_config.black_config import BlackConfig
-
 from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
 
 class BlackCreator(BaseHookCreator, FileCreator):
     
+    """
+    Hook creator for the Black Python formatter.
+
+    Inherits from `BaseHookCreator` and implements methods to generate arguments,
+    configuration content, and handle creation or updating of `.pre-commit-config.yaml`.
+    """
+    
     def __init__ (
         self, 
-        **options,
+        **options: Any,
     ) -> None:
+        
+        """
+        Initializes a new instance of the BlackCreator with CLI-style flag mapping.
+
+        Args:
+            **options: Configuration options passed to BlackConfig.
+        """
         
         super().__init__(**options)
         self.flag_map = {
@@ -33,6 +53,16 @@ class BlackCreator(BaseHookCreator, FileCreator):
         config: BlackConfig = BlackConfig(),
     ) -> list[str]:
         
+        """
+        Generates command-line arguments for the Black hook based on provided config.
+
+        Args:
+            config (BlackConfig): Configuration instance for Black.
+
+        Returns:
+            list[str]: List of CLI flags to pass to the pre-commit hook.
+        """
+        
         args = [
             f'--line-length={config.line_length}',
             f'--target-version={config.target_version}',
@@ -49,6 +79,16 @@ class BlackCreator(BaseHookCreator, FileCreator):
         self,
         config: BlackConfig = BlackConfig(),
     ) -> str:
+        
+        """
+        Constructs the YAML content for the Black pre-commit hook.
+
+        Args:
+            config (BlackConfig): Configuration instance for Black.
+
+        Returns:
+            dict[str, Any]: A dictionary representation of the pre-commit YAML content.
+        """
         
         hooks = self.generate_args(config)
         return {
@@ -69,6 +109,10 @@ class BlackCreator(BaseHookCreator, FileCreator):
         self,
     ) -> None:
         
+        """
+        Creates or updates the `.pre-commit-config.yaml` file at the project root.
+        """
+        
         text_dump = self.prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
@@ -81,6 +125,13 @@ class BlackCreator(BaseHookCreator, FileCreator):
         self,
     ) -> dict[str, Any]:
         
+        """
+        Prepares the YAML-compatible dictionary for the Black hook configuration.
+
+        Returns:
+            dict[str, Any]: YAML-serializable content for pre-commit.
+        """
+        
         config = BlackConfig(**self.options)
         text = self.create_file_text(config)
         
@@ -90,6 +141,10 @@ class BlackCreator(BaseHookCreator, FileCreator):
     def execute (
         self,
     ) -> None:
+        
+        """
+        Main entry point to execute the hook file generation process.
+        """
         
         self.create_file()
         
