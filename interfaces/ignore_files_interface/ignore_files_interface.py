@@ -8,6 +8,7 @@ is intended to be implemented by subclasses to define how files are marked as ig
 
 from abc import ABC, abstractmethod
 
+
 class IgnoreFileDefiner:
     
     """
@@ -38,4 +39,4 @@ class IgnoreFileDefiner:
         - NotImplementedError: If called directly on the base class.
         """
         
-        pass
+        ...

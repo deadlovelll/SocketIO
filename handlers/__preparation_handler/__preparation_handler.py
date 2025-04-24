@@ -1,9 +1,26 @@
+"""
+Module for handling the preparation and setup of a SocketIO server.
+
+This module contains the `PreparationHandler` class, which is responsible for preparing the server 
+by performing several key tasks:
+  - Registering signal handlers for graceful shutdown.
+  - Binding a TCP socket to the specified host and port.
+  - Displaying a welcome message with server details.
+  - Starting a file observer to watch for file changes and trigger a server restart.
+
+The `PreparationHandler` class assumes the existence of several attributes in the consuming class, 
+such as host, port, backlog, running flag, and methods for restarting and shutting down the server.
+"""
+
 import asyncio
 import signal
 import socket
 import threading
 
 from file_wacther.file_watcher import FileWatcher
+
+from utils.static.privacy.privacy import privatemethod
+
 
 class PreparationHandler:
     
@@ -44,12 +61,13 @@ class PreparationHandler:
             Exception: Propagates any exceptions raised during the preparation steps.
         """
         
-        await self.__register_signal_handlers()
-        await self.__bind_socket()
-        await self.__print_hello_message()
-        await self.__start_file_observer()
+        await self._register_signal_handlers()
+        await self._bind_socket()
+        await self._print_hello_message()
+        await self._start_file_observer()
     
-    async def __register_signal_handlers (
+    @privatemethod
+    async def _register_signal_handlers (
         self,
     ) -> None:
         
@@ -70,8 +88,9 @@ class PreparationHandler:
                 sig, 
                 lambda: asyncio.create_task(self.shutdown(sig))
             )
-        
-    async def __bind_socket (
+    
+    @privatemethod
+    async def _bind_socket (
         self,
     ) -> None:
         
@@ -103,8 +122,9 @@ class PreparationHandler:
             (self.host, self.port)
         )
         self.server_socket.listen(self.backlog)
-        
-    async def __print_hello_message (
+    
+    @privatemethod 
+    async def _print_hello_message (
         self,
     ) -> None:
         
@@ -113,8 +133,9 @@ class PreparationHandler:
         if getattr(self, 'grpc_port', None):
             print(f"gRPC Server running on {self.host}:{self.grpc_port}")
         print('Quit the server with CONTROL-C.')
-        
-    async def __start_file_observer (
+    
+    @privatemethod  
+    async def _start_file_observer (
         self,
     ) -> None:
         

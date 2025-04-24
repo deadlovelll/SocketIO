@@ -31,4 +31,4 @@ class BaseOSDetector(ABC):
             str: The name of the detected operating system (e.g., 'ubuntu', 'macos', 'windows').
         """
         
-        pass
+        ...

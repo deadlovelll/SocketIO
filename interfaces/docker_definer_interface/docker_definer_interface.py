@@ -11,6 +11,7 @@ logic required for the application.
 
 from abc import ABC, abstractstaticmethod
 
+
 class BaseDockerDefiner(ABC):
     
     """
@@ -37,4 +38,4 @@ class BaseDockerDefiner(ABC):
         volumes, and any other configurations relevant to the container.
         """
         
-        pass
+        ...

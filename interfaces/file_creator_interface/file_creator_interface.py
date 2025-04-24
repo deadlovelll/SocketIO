@@ -12,6 +12,7 @@ how the file's content is generated and how the file itself is created.
 
 from abc import ABC, abstractstaticmethod
 
+
 class FileCreator(ABC):
     
     """
@@ -48,7 +49,7 @@ class FileCreator(ABC):
         - NotImplementedError: If called directly on the base class.
         """
         
-        pass
+        ...
     
     @abstractstaticmethod
     def create_file(
@@ -67,4 +68,4 @@ class FileCreator(ABC):
         - NotImplementedError: If called directly on the base class.
         """
         
-        pass
+        ...
