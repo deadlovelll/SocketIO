@@ -1,3 +1,11 @@
+"""
+This module defines the PreCommitHooksCreator class responsible for generating
+a `.pre-commit-config.yaml` section using the official `pre-commit-hooks` repository.
+
+It dynamically builds the list of enabled hooks based on a provided configuration
+(PreCommitHooksConfig) and writes the configuration file if necessary.
+"""
+
 from pathlib import Path
 from typing import Any, override
 
@@ -6,13 +14,33 @@ from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_config.pre_commit_hooks_config import PreCommitHooksConfig
 
 
-class PreCommitHooksCreator(BaseHookCreator, FileCreator):
+class PreCommitHooksCreator (
+    BaseHookCreator, 
+    FileCreator,
+):
+    
+    """
+    Creates a section for `pre-commit-hooks` in the `.pre-commit-config.yaml` file.
+
+    This class builds a list of enabled hooks based on PreCommitHooksConfig,
+    fetches the latest version tag, and writes or updates the configuration file.
+    """
         
     @override
     def generate_args (
         self,
         config: PreCommitHooksConfig = PreCommitHooksConfig(),
-    ) -> list[str]:
+    ) -> list[dict[str, Any]]:
+        
+        """
+        Generates a list of hooks to be included in the config, based on enabled options.
+
+        Args:
+            config (PreCommitHooksConfig): Configuration for standard hooks.
+
+        Returns:
+            list[dict]: A list of dictionaries containing hook IDs to include.
+        """
         
         hooks = [
             {'id': hook} for hook, enabled in config.__dict__.items()
@@ -25,7 +53,17 @@ class PreCommitHooksCreator(BaseHookCreator, FileCreator):
     def create_file_text (
         self,
         config: PreCommitHooksConfig = PreCommitHooksConfig(),
-    ) -> str:
+    ) -> dict[str, Any]:
+        
+        """
+        Constructs the YAML content for the `.pre-commit-config.yaml` file.
+
+        Args:
+            config (PreCommitHooksConfig): Hook configuration options.
+
+        Returns:
+            dict[str, Any]: YAML content to be dumped.
+        """
         
         hooks = self.generate_args(config)
         return {
@@ -43,6 +81,13 @@ class PreCommitHooksCreator(BaseHookCreator, FileCreator):
         self,
     ) -> None:
         
+        """
+        Creates or updates the `.pre-commit-config.yaml` file.
+
+        This method resolves the project root, prepares the text to dump,
+        and delegates file creation or update based on file existence.
+        """
+        
         text_dump = self.prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
@@ -55,6 +100,13 @@ class PreCommitHooksCreator(BaseHookCreator, FileCreator):
         self,
     ) -> dict[str, Any]:
         
+        """
+        Prepares the text to be dumped into the YAML file by initializing the config.
+
+        Returns:
+            dict[str, Any]: Parsed YAML content ready for file creation.
+        """
+        
         config = PreCommitHooksConfig(**self.options)
         text = self.create_file_text(config)
         
@@ -64,6 +116,13 @@ class PreCommitHooksCreator(BaseHookCreator, FileCreator):
     def execute (
         self,
     ) -> None:
+        
+        """
+        Executes the full hook creation process.
+
+        This includes preparing configuration, generating hook data,
+        and writing the final file.
+        """
         
         self.create_file()
         
