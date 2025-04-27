@@ -7,6 +7,8 @@ message (e.g., authentication, error, query result) is processed by a correspond
 method. These methods are mapped to specific message types using the `_message_type_map` dictionary.
 """
 
+import struct
+
 from typing import Dict, Callable
 
 from orm.postgres.driver.message_handlers.error.driver_error_message_handler import PostgresDriverErrorMessageHandler
@@ -110,12 +112,13 @@ class PostgresDriverMessageHandler(ProtectedClass):
     @privatemethod
     def _handle_ready_for_query (
         self,
-        payload: bytes
-    ):
+        payload: bytes,
+    ) -> str:
     
         """Handles 'Ready For Query' messages."""
         
-        pass
+        return 'break'
+        
     
     @privatemethod
     def _handle_row_description (
@@ -125,7 +128,16 @@ class PostgresDriverMessageHandler(ProtectedClass):
         
         """Handles 'Row Description' messages."""
         
-        pass
+        column_count = struct.unpack('!H', payload[0:2])[0]
+        columns = []
+        offset = 2  
+        for _ in range(column_count):
+            column_name_length = struct.unpack('!H', payload[offset:offset + 2])[0]
+            column_name = payload[offset + 2:offset + 2 + column_name_length].decode('utf-8')
+            columns.append(column_name)
+            offset += 2 + column_name_length  
+        print(f"Row Description: {columns}")
+        return columns  
     
     @privatemethod
     def _handle_data_row (
@@ -135,7 +147,16 @@ class PostgresDriverMessageHandler(ProtectedClass):
         
         """Handles 'Data Row' messages."""
         
-        pass
+        row_data = []
+        offset = 0
+        for column_data in payload:
+            if column_data is None:
+                row_data.append(None)
+            else:
+                row_data.append(column_data.decode('utf-8')) 
+        
+        print(f"Data Row: {row_data}")
+        return row_data
     
     @privatemethod
     def _handle_command_complete (
