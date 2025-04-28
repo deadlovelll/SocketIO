@@ -2,6 +2,9 @@ import os
 import socket
 import struct
 import sys
+import time
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 
 from typing import Optional, Union
 
@@ -46,45 +49,67 @@ class PostgresDriver:
         payload = self.connection.recv(length)
         return msg_type, payload
     
-    @privatemethod
-    def _send_message (
+    def send_message (
         self,
-        message: bytes,
+        message: str,
     ) -> None:
         
-        self.connection.sendall(message)
-        
+        query = self._build_query_message(message)
+        self.connection.sendall(query)
+    
     @privatemethod
     def _build_query_message (
         self,
         query,
-    ):
+    ) -> bytes:
+        
         query_bytes = query.encode('utf-8') + b'\x00'
         byte_length = len(query_bytes) + 4
         return b'Q' + struct.pack('!I', byte_length) + query_bytes
     
-    @privatemethod
     def consume_messages (
         self,
     ) -> None:
         
-        print(self.message_handler._message_type_map)
-        
         while True:
             msg_type, payload = self._receive_message()
+            print(msg_type, payload)
+            if msg_type is None:
+                break
             result = self.message_handler.handle (
-                msg_type, 
-                payload, 
+                msg_type,
+                payload,
                 self.password,
                 self.user,
             )
-            print(msg_type, payload)
-            if result == 'ok':
-                print('nice')
-            elif isinstance(result, bytes):
+
+            if isinstance(result, bytes):
                 self.connection.sendall(result)
-            elif result == 'abort':
+            elif result == 'ready':
+                rows = self.message_handler.get_data_rows()
+                return rows
+    
+    @privatemethod       
+    def _consume_until_ready (
+        self,
+    ) -> None:
+        
+        while True:
+            msg_type, payload = self._receive_message()
+            if msg_type is None:
                 break
+            
+            result = self.message_handler.handle (
+                msg_type,
+                payload,
+                self.password,
+                self.user,
+            )
+            
+            if isinstance(result, bytes):
+                self.connection.sendall(result)
+            elif result == 'break':  
+                return
             
     def establish_connection (
         self,
@@ -96,13 +121,17 @@ class PostgresDriver:
             self.database_name,
             self.password,
         )
-        self._send_message(psql_message)
-        self.consume_messages()
-        
-# if __name__ == '__main__':
-#     config = PostgresDriverConfig('localhost', 5432, 'my_user', 'my_secure_password', 'myapp_db')
-#     d = PostgresDriver(config)
-#     d.establish_connection()
+        self.send_message(psql_message)
+        self._consume_until_ready()
+
+if __name__ == '__main__':
+    config = PostgresDriverConfig('localhost', 5432, 'my_user', 'my_secure_password', 'myapp_db')
+    d = PostgresDriver(config)
+    d.establish_connection()
+    d.send_message('SELECT 1;')
+    d.send_message('SELECT 1;')
+    result = d.consume_messages()
+    print(result)
         
     
         
