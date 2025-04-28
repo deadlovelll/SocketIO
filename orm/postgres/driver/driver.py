@@ -51,18 +51,16 @@ class PostgresDriver:
     
     def send_message (
         self,
-        message: str,
+        message: bytes,
     ) -> None:
         
-        query = self._build_query_message(message)
-        self.connection.sendall(query)
+        self._ensure_connection()
+        self.connection.sendall(message)
     
-    @privatemethod
-    def _build_query_message (
+    def build_query_message (
         self,
         query,
-    ) -> bytes:
-        
+    ):
         query_bytes = query.encode('utf-8') + b'\x00'
         byte_length = len(query_bytes) + 4
         return b'Q' + struct.pack('!I', byte_length) + query_bytes
@@ -99,7 +97,7 @@ class PostgresDriver:
             if msg_type is None:
                 break
             
-            result = self.message_handler.handle (
+            result = self.message_handler.handle(
                 msg_type,
                 payload,
                 self.password,
@@ -116,22 +114,60 @@ class PostgresDriver:
     ) -> None:
         
         self.connection = socket.create_connection((self.host, self.port))
-        psql_message = self.message_builder.build_startup_message (
+        psql_message = self.message_builder.build_startup_message(
             self.user,
             self.database_name,
             self.password,
         )
         self.send_message(psql_message)
         self._consume_until_ready()
+        
+    @privatemethod
+    def _ensure_connection (
+        self,
+    ) -> None:
+        
+        if self.connection is None:
+            self.establish_connection()
+        
+    def close_connection (
+        self,
+    ) -> None:
+        
+        if self.connection is not None:
+            self.connection.close()
+            self.connection = None
+            
+    def reconnect (
+        self,
+    ) -> None:
+        
+        self.close_connection()
+        self.establish_connection()
+            
+    def __enter__ (
+        self,
+    ) -> None:
+        
+        self._ensure_connection()
+        return self
+    
+    def __exit__ (
+        self, exc_type, exc_val, exc_tb,
+    ) -> None:
+        
+        self.close_connection()
 
 if __name__ == '__main__':
     config = PostgresDriverConfig('localhost', 5432, 'my_user', 'my_secure_password', 'myapp_db')
     d = PostgresDriver(config)
     d.establish_connection()
-    d.send_message('SELECT 1;')
-    d.send_message('SELECT 1;')
+    query = d.build_query_message('SELECT 1;')
+    d.send_message(query)
+    d.send_message(query)
     result = d.consume_messages()
     print(result)
+    d.close_connection()
         
     
         
