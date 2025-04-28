@@ -9,7 +9,7 @@ method. These methods are mapped to specific message types using the `_message_t
 
 import struct
 
-from typing import Dict, Callable
+from typing import Any, Dict, Callable
 
 from orm.postgres.driver.message_handlers.error.driver_error_message_handler import PostgresDriverErrorMessageHandler
 from orm.postgres.driver.message_handlers.auth.driver_auth_message_handler import PostgresDriverAuthMessageHandler
@@ -68,6 +68,22 @@ class PostgresDriverMessageHandler(ProtectedClass):
         
         self.password = None
         self.user = None
+        
+        self._data_rows = []
+        self._columns = []
+        
+    def cleanup (
+        self,
+    ) -> None:
+        
+        self._data_rows = []
+        self._columns = []
+        
+    def get_data_rows (
+        self,
+    ) -> list[Any]:
+        
+        return self._data_rows
       
     @privatemethod  
     def _handle_auth (
@@ -124,39 +140,38 @@ class PostgresDriverMessageHandler(ProtectedClass):
     def _handle_row_description (
         self,
         payload: bytes
-    ):
+    ) -> None:
         
         """Handles 'Row Description' messages."""
         
         column_count = struct.unpack('!H', payload[0:2])[0]
-        columns = []
-        offset = 2  
+        offset = 2
+
         for _ in range(column_count):
-            column_name_length = struct.unpack('!H', payload[offset:offset + 2])[0]
-            column_name = payload[offset + 2:offset + 2 + column_name_length].decode('utf-8')
-            columns.append(column_name)
-            offset += 2 + column_name_length  
-        print(f"Row Description: {columns}")
-        return columns  
+            end = payload.find(b'\x00', offset)
+            if end == -1:
+                raise ValueError("Malformed RowDescription: no null terminator for column name")
+            name = payload[offset:end].decode('utf-8')
+            self._columns.append(name)
+            offset = end + 1
+            offset += 18
+        print(self._columns)
     
     @privatemethod
     def _handle_data_row (
         self,
         payload: bytes
-    ):
+    ) -> None:
         
         """Handles 'Data Row' messages."""
         
-        row_data = []
-        offset = 0
         for column_data in payload:
             if column_data is None:
-                row_data.append(None)
+                self._data_rows.append(None)
             else:
-                row_data.append(column_data.decode('utf-8')) 
+                self._data_rows.append(column_data) 
         
-        print(f"Data Row: {row_data}")
-        return row_data
+        print(f"Data Row: {self._data_rows}")
     
     @privatemethod
     def _handle_command_complete (
