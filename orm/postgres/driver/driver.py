@@ -1,10 +1,5 @@
-import os
 import socket
 import struct
-import sys
-import time
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../')))
 
 from typing import Optional, Union
 
@@ -137,7 +132,7 @@ class PostgresDriver:
         if self.connection is not None:
             self.connection.close()
             self.connection = None
-            
+     
     def reconnect (
         self,
     ) -> None:
@@ -157,17 +152,6 @@ class PostgresDriver:
     ) -> None:
         
         self.close_connection()
-
-if __name__ == '__main__':
-    config = PostgresDriverConfig('localhost', 5432, 'my_user', 'my_secure_password', 'myapp_db')
-    d = PostgresDriver(config)
-    d.establish_connection()
-    query = d.build_query_message('SELECT 1;')
-    d.send_message(query)
-    d.send_message(query)
-    result = d.consume_messages()
-    print(result)
-    d.close_connection()
         
     
         
