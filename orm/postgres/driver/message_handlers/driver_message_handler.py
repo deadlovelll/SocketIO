@@ -69,8 +69,14 @@ class PostgresDriverMessageHandler(ProtectedClass):
         self.password = None
         self.user = None
         
+        self._backend_pid = None
+        self._backend_secret = None
+        
+        self._session_parameters = {}
+        
         self._data_rows = []
         self._columns = []
+        self._notices = []
         
     def cleanup (
         self,
@@ -155,7 +161,6 @@ class PostgresDriverMessageHandler(ProtectedClass):
             self._columns.append(name)
             offset = end + 1
             offset += 18
-        print(self._columns)
     
     @privatemethod
     def _handle_data_row (
@@ -165,19 +170,30 @@ class PostgresDriverMessageHandler(ProtectedClass):
         
         """Handles 'Data Row' messages."""
         
-        for column_data in payload:
-            if column_data is None:
-                self._data_rows.append(None)
+        column_count = struct.unpack('!H', payload[:2])[0]
+        offset = 2
+        row = {}
+
+        for idx in range(column_count):
+            col_len = struct.unpack('!I', payload[offset:offset+4])[0]
+            offset += 4
+
+            if col_len == -1:
+                value = None
             else:
-                self._data_rows.append(column_data) 
+                value = payload[offset:offset+col_len].decode('utf-8')
+                offset += col_len
+
+            column_name = self._columns[idx] if idx < len(self._columns) else f"col_{idx}"
+            row[column_name] = value
         
-        print(f"Data Row: {self._data_rows}")
+        self._data_rows.append(row)
     
     @privatemethod
     def _handle_command_complete (
         self,
         payload: bytes
-    ):
+    ) -> None:
         
         """Handles 'Command Complete' messages."""
         
@@ -187,37 +203,51 @@ class PostgresDriverMessageHandler(ProtectedClass):
     def _handle_parameter_status (
         self,
         payload: bytes
-    ):
+    ) -> None:
         
         """Handles 'Parameter Status' messages."""
         
-        pass
-    
+        parts = payload.split(b'\x00')
+        if len(parts) >= 2:
+            name = parts[0].decode('utf-8')
+            value = parts[1].decode('utf-8')
+            self._session_parameters[name] = value.split(',')
+        
     @privatemethod
     def _handle_backend_key_data (
         self,
         payload: bytes
-    ):
+    ) -> None:
         
         """Handles 'Backend Key Data' messages."""
         
-        pass
+        self._backend_pid, \
+        self._backend_secret = struct.unpack('!II', payload)
     
     @privatemethod
     def _handle_notice_response (
         self,
         payload: bytes
-    ):
+    ) -> None:
         
         """Handles 'Notice Response' messages."""
         
-        pass
+        offset = 0
+        notice = {}
+        while payload[offset:offset+1] != b'\x00':
+            code = payload[offset:offset+1]
+            offset += 1
+            end = payload.index(b'\x00', offset)
+            value = payload[offset:end].decode('utf-8')
+            notice[code] = value
+            offset = end + 1
+        self._notices.append(notice)
     
     @privatemethod
     def _handle_copy_in_response (
         self,
         payload: bytes
-    ):
+    ) -> None:
         
         """Handles 'Copy In Response' messages."""
         
