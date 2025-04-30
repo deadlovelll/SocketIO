@@ -32,7 +32,7 @@ class PostgresDriver:
         self.message_handler = PostgresDriverMessageHandler()
       
     @privatemethod  
-    def _receive_message (
+    async def _receive_message (
         self,
     ) -> Union[Optional[str], Optional[dict]]:
         
@@ -44,29 +44,29 @@ class PostgresDriver:
         payload = self.connection.recv(length)
         return msg_type, payload
     
-    def send_message (
+    async def send_message (
         self,
         message: bytes,
     ) -> None:
         
-        self._ensure_connection()
+        await self._ensure_connection()
         self.connection.sendall(message)
     
-    def build_query_message (
+    async def build_query_message (
         self,
         query,
-    ):
+    ) -> bytes:
+        
         query_bytes = query.encode('utf-8') + b'\x00'
         byte_length = len(query_bytes) + 4
         return b'Q' + struct.pack('!I', byte_length) + query_bytes
     
-    def consume_messages (
+    async def consume_messages (
         self,
     ) -> None:
         
         while True:
             msg_type, payload = self._receive_message()
-            print(msg_type, payload)
             if msg_type is None:
                 break
             result = self.message_handler.handle (
@@ -83,7 +83,7 @@ class PostgresDriver:
                 return rows
     
     @privatemethod       
-    def _consume_until_ready (
+    async def _consume_until_ready (
         self,
     ) -> None:
         
@@ -104,7 +104,7 @@ class PostgresDriver:
             elif result == 'break':  
                 return
             
-    def establish_connection (
+    async def establish_connection (
         self,
     ) -> None:
         
@@ -114,31 +114,31 @@ class PostgresDriver:
             self.database_name,
             self.password,
         )
-        self.send_message(psql_message)
-        self._consume_until_ready()
+        await self.send_message(psql_message)
+        await self._consume_until_ready()
         
     @privatemethod
-    def _ensure_connection (
+    async def _ensure_connection (
         self,
     ) -> None:
         
         if self.connection is None:
-            self.establish_connection()
+            await self.establish_connection()
         
-    def close_connection (
+    async def close_connection (
         self,
     ) -> None:
         
         if self.connection is not None:
-            self.connection.close()
+            await self.connection.close()
             self.connection = None
      
-    def reconnect (
+    async def reconnect (
         self,
     ) -> None:
         
-        self.close_connection()
-        self.establish_connection()
+        await self.close_connection()
+        await self.establish_connection()
             
     def __enter__ (
         self,
