@@ -1,5 +1,6 @@
 from orm.postgres.model.fields.field import Field
 
+
 class VarChar(Field):
     
     def __init__ (
@@ -30,3 +31,7 @@ class CharacterVarying(Field):
         self.length = length
         self.non_null = non_null
         self.default = default
+        
+
+class BitVarying(Field):
+    pass

@@ -1,5 +1,5 @@
 from orm.postgres.model.fields.field import Field
 
 
-class Enum(Field):
+class Bytea(Field):
     pass
