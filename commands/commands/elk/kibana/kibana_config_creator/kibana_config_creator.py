@@ -6,7 +6,7 @@ a `kibana.yml` configuration file based on the provided configuration options.
 """
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
-from commands.elk.kibana.kibana_config.kibana_config import KibanaConfig
+from commands.commands.elk.kibana.kibana_config.kibana_config import KibanaConfig
 
 
 class KibanaConfigCreator(FileCreator):

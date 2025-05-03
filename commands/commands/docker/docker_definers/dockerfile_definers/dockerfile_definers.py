@@ -7,7 +7,7 @@ port exposure, user security, and dependency installation (via Poetry or pip).
 """
 
 import textwrap
-from commands.docker.docker_definers.base_definer.base_definer import BaseDockerDefiner
+from commands.commands.docker.docker_definers.base_definer.base_definer import BaseDockerDefiner
 from utils.os_detector.os_detector.os_detector import OSDetector
 
 

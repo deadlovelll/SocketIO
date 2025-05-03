@@ -9,7 +9,7 @@ formatting preferences, and compatibility with `black` and other profiles.
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
+from commands.commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
 
 
 @dataclass

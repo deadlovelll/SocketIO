@@ -10,8 +10,8 @@ from pathlib import Path
 from typing import Any, override
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
-from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
-from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_config.pre_commit_hooks_config import PreCommitHooksConfig
+from commands.commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
+from commands.commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_config.pre_commit_hooks_config import PreCommitHooksConfig
 
 from utils.static.privacy import (
     privatemethod,

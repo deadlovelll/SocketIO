@@ -9,8 +9,8 @@ from pathlib import Path
 from typing import Any, override
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
-from commands.git.pre_commit.mypy.mypy_config.mypy_config import MypyConfig
-from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
+from commands.commands.git.pre_commit.mypy.mypy_config.mypy_config import MypyConfig
+from commands.commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
 
 from utils.static.privacy import (

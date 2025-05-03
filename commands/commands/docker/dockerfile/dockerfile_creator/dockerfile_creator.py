@@ -10,14 +10,14 @@ import textwrap
 from typing import override
 
 from commands.base_command.base_command import BaseCommand
-from commands.docker.docker_definers.dockerfile_definers.dockerfile_definers import (
+from commands.commands.docker.docker_definers.dockerfile_definers.dockerfile_definers import (
     ExposedPortsDefiner,
     PoetryDefiner,
     PythonVesionDefiner,
     SystemDependenciesDefiner,
     UserSecurityDefiner,
 )
-from commands.docker.dockerfile.dockerfile_config.dockerfile_config import DockerfileConfig
+from commands.commands.docker.dockerfile.dockerfile_config.dockerfile_config import DockerfileConfig
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
 from utils.static.privacy import (

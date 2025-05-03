@@ -10,9 +10,9 @@ import os
 from typing import override
 
 from commands.base_command.base_command import BaseCommand
-from commands.elk.elasticsearch.elasticsearch_config_creator.elasticseacrh_config_creator import ElasticsearchConfigCreator
-from commands.elk.kibana.kibana_config_creator.kibana_config_creator import KibanaConfigCreator
-from commands.elk.logstash.logstash_config_creator.logstash_config_creator import LogstashConfigCreator
+from commands.commands.elk.elasticsearch.elasticsearch_config_creator.elasticseacrh_config_creator import ElasticsearchConfigCreator
+from commands.commands.elk.kibana.kibana_config_creator.kibana_config_creator import KibanaConfigCreator
+from commands.commands.elk.logstash.logstash_config_creator.logstash_config_creator import LogstashConfigCreator
 
 from utils.static.privacy import (
     privatemethod,

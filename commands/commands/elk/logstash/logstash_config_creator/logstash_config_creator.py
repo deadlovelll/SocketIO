@@ -6,7 +6,7 @@ a valid `logstash.conf` configuration file for Logstash based on user-defined op
 """
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
-from commands.elk.logstash.logstash_config.logstash_config import LogstashConfig
+from commands.commands.elk.logstash.logstash_config.logstash_config import LogstashConfig
 
 class LogstashConfigCreator(FileCreator):
   

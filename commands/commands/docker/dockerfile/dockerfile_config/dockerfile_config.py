@@ -15,7 +15,7 @@ Validation is performed automatically on initialization via `DockerfileValidator
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from commands.docker.dockerfile.dockerfile_validator.dockerfile_validator import DockerfileValidator
+from commands.commands.docker.dockerfile.dockerfile_validator.dockerfile_validator import DockerfileValidator
 
 
 @dataclass

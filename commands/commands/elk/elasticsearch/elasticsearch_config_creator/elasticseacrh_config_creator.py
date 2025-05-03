@@ -6,7 +6,7 @@ based on user-defined options.
 """
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
-from commands.elk.elasticsearch.elasticsearch_config.elasticsearch_config import ElasticsearchConfig
+from commands.commands.elk.elasticsearch.elasticsearch_config.elasticsearch_config import ElasticsearchConfig
 
 
 class ElasticsearchConfigCreator(FileCreator):

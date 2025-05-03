@@ -9,8 +9,8 @@ All definers inherit from both `BaseDockerDefiner` and `BaseDockerignoreDefiner`
 a `define()` method that conditionally returns a string of ignore rules based on a boolean flag.
 """
 
-from commands.docker.docker_definers.base_definer.base_definer import BaseDockerDefiner
-from commands.docker.docker_definers.base_definer.base_dockerignore_definer import BaseDockerignoreDefiner
+from commands.commands.docker.docker_definers.base_definer.base_definer import BaseDockerDefiner
+from commands.commands.docker.docker_definers.base_definer.base_dockerignore_definer import BaseDockerignoreDefiner
 
 
 class PythonCacheDefiner(BaseDockerDefiner, BaseDockerignoreDefiner):

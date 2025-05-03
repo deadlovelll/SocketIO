@@ -8,7 +8,7 @@ trailing whitespace trimming, YAML/JSON validation, debug statement detection, e
 
 from dataclasses import dataclass, field
 
-from commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
+from commands.commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
 
 
 @dataclass

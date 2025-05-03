@@ -13,8 +13,8 @@ from pathlib import Path
 from typing import Any, override
 
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
-from commands.git.pre_commit.isort.isort_config.isort_config import IsortConfig
-from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
+from commands.commands.git.pre_commit.isort.isort_config.isort_config import IsortConfig
+from commands.commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
 from utils.static.privacy import (
     privatemethod,

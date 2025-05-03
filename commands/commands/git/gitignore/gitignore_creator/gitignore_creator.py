@@ -9,7 +9,7 @@ and generates the corresponding ignore patterns.
 
 from typing import Any, Dict, override, Type
 
-from commands.git.gitignore.gitignore_definers.gitignore_definers import (
+from commands.commands.git.gitignore.gitignore_definers.gitignore_definers import (
     GitIgnoreVenvDefiner,
     GitIgnoreLogsDefiner,
     GitIgnorePackagingDefiner,

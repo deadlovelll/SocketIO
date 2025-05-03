@@ -10,7 +10,7 @@ fine-grained options for controlling the type checking behavior.
 from dataclasses import dataclass, field
 from typing import Optional
 
-from commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
+from commands.commands.git.last_release_fetcher.last_release_fetcher import LastReleaseFetcher
 
 
 @dataclass

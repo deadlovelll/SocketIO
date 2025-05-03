@@ -1,4 +1,4 @@
-from orm.postgres.model.fields.field import Field
+from SocketIO.orm.postgres.model.fields.base.field import Field
 
 class XML(Field):
     pass
