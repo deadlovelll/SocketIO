@@ -8,6 +8,7 @@ from utils.os_detector.detectors.detectors import (
     UnknownOSDetector,
 )
 
+
 class TestDetectors(unittest.TestCase):
     
     def test_windows_detector (
