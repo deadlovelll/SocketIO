@@ -16,10 +16,16 @@ from commands.git.pre_commit.pre_commit.pre_commit_config.pre_commit_config impo
 from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_creator.pre_commit_hooks_creator import PreCommitHooksCreator
 from commands.base_command.base_command import BaseCommand
 
+from utils.static.privacy import (
+    privatemethod,
+    ProtectedClass,
+)
+
 
 class PreCommitConfigCreator (
     BaseCommand, 
     FileCreator,
+    ProtectedClass,
 ):
     
     """
@@ -48,14 +54,15 @@ class PreCommitConfigCreator (
         
         super().__init__(**options)
     
-        self.PRE_COMMIT_MAP = {
+        self._PRE_COMMIT_MAP = {
             'black': BlackCreator,
             'precommithooks': PreCommitHooksCreator,
             'isort': IsortCreator,
             'mypy': MypyCreator,
         }
 
-    def create_file (
+    @privatemethod
+    def _create_file (
         self,
     ) -> None:
         
@@ -69,7 +76,7 @@ class PreCommitConfigCreator (
         
         config = PreCommitConfig(**self.options)
 
-        for key, creator in self.PRE_COMMIT_MAP.items():
+        for key, creator in self._PRE_COMMIT_MAP.items():
             if getattr(config, key, False):
                 creator(**self.options).execute()
     
@@ -83,4 +90,4 @@ class PreCommitConfigCreator (
         calling the `create_file` method.
         """
         
-        self.create_file()
+        self._create_file()

@@ -13,8 +13,17 @@ from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.git.pre_commit.black.black_config.black_config import BlackConfig
 from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
+from utils.static.privacy import (
+    privatemethod,
+    ProtectedClass
+)
 
-class BlackCreator(BaseHookCreator, FileCreator):
+
+class BlackCreator (
+    BaseHookCreator, 
+    FileCreator,
+    ProtectedClass,
+):
     
     """
     Hook creator for the Black Python formatter.
@@ -36,7 +45,7 @@ class BlackCreator(BaseHookCreator, FileCreator):
         """
         
         super().__init__(**options)
-        self.flag_map = {
+        self._flag_map = {
             'skip_string_normalization': '--skip-string-normalization',
             'skip_magic_trailing_comma': '--skip-magic-trailing-comma',
             'check': '--check',
@@ -48,7 +57,8 @@ class BlackCreator(BaseHookCreator, FileCreator):
         }
     
     @override
-    def generate_args (
+    @privatemethod
+    def _generate_args (
         self,
         config: BlackConfig = BlackConfig(),
     ) -> list[str]:
@@ -68,14 +78,15 @@ class BlackCreator(BaseHookCreator, FileCreator):
             f'--target-version={config.target_version}',
         ]
 
-        for attr, flag in self.flag_map.items():
+        for attr, flag in self._flag_map.items():
             if getattr(config, attr):
                 args.append(flag)
 
         return args
     
     @override
-    def create_file_text (
+    @privatemethod
+    def _create_file_text (
         self,
         config: BlackConfig = BlackConfig(),
     ) -> str:
@@ -90,7 +101,7 @@ class BlackCreator(BaseHookCreator, FileCreator):
             dict[str, Any]: A dictionary representation of the pre-commit YAML content.
         """
         
-        hooks = self.generate_args(config)
+        hooks = self._generate_args(config)
         return {
             'repos': [
                 {
@@ -105,7 +116,8 @@ class BlackCreator(BaseHookCreator, FileCreator):
         }
     
     @override
-    def create_file (
+    @privatemethod
+    def _create_file (
         self,
     ) -> None:
         
@@ -113,7 +125,7 @@ class BlackCreator(BaseHookCreator, FileCreator):
         Creates or updates the `.pre-commit-config.yaml` file at the project root.
         """
         
-        text_dump = self.prepare_text_dump()
+        text_dump = self._prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
@@ -121,7 +133,8 @@ class BlackCreator(BaseHookCreator, FileCreator):
         self.file_map[file_exist](text_dump)
         
     @override
-    def prepare_text_dump (
+    @privatemethod
+    def _prepare_text_dump (
         self,
     ) -> dict[str, Any]:
         
@@ -133,7 +146,7 @@ class BlackCreator(BaseHookCreator, FileCreator):
         """
         
         config = BlackConfig(**self.options)
-        text = self.create_file_text(config)
+        text = self._create_file_text(config)
         
         return text
     
@@ -146,5 +159,5 @@ class BlackCreator(BaseHookCreator, FileCreator):
         Main entry point to execute the hook file generation process.
         """
         
-        self.create_file()
+        self._create_file()
         

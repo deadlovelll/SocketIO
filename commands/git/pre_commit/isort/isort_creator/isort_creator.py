@@ -16,6 +16,10 @@ from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.git.pre_commit.isort.isort_config.isort_config import IsortConfig
 from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
+from utils.static.privacy import (
+    privatemethod,
+)
+
 
 class IsortCreator(BaseHookCreator, FileCreator):
     
@@ -30,7 +34,8 @@ class IsortCreator(BaseHookCreator, FileCreator):
     """
         
     @override
-    def generate_args (
+    @privatemethod
+    def _generate_args (
         self,
         config: IsortConfig = IsortConfig(),
     ) -> list[str]:
@@ -53,7 +58,8 @@ class IsortCreator(BaseHookCreator, FileCreator):
         return hooks
     
     @override
-    def create_file_text (
+    @privatemethod
+    def _create_file_text (
         self,
         config: IsortConfig = IsortConfig(),
     ) -> str:
@@ -80,7 +86,8 @@ class IsortCreator(BaseHookCreator, FileCreator):
         }
     
     @override
-    def create_file (
+    @privatemethod
+    def _create_file (
         self,
     ) -> None:
         
@@ -88,7 +95,7 @@ class IsortCreator(BaseHookCreator, FileCreator):
         Create or update the `.pre-commit-config.yaml` file with isort config.
         """
         
-        text_dump = self.prepare_text_dump()
+        text_dump = self._prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
@@ -96,7 +103,8 @@ class IsortCreator(BaseHookCreator, FileCreator):
         self.file_map[file_exist](text_dump)
     
     @override
-    def prepare_text_dump (
+    @privatemethod
+    def _prepare_text_dump (
         self,
     ) -> dict[str, Any]:
         
@@ -108,7 +116,7 @@ class IsortCreator(BaseHookCreator, FileCreator):
         """
         
         config = IsortConfig(**self.options)
-        text = self.create_file_text(config)
+        text = self._create_file_text(config)
         
         return text
     
@@ -121,5 +129,5 @@ class IsortCreator(BaseHookCreator, FileCreator):
         Entry point for executing the hook creation logic.
         """
         
-        self.create_file()
+        self._create_file()
         

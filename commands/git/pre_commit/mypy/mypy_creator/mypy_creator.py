@@ -13,6 +13,11 @@ from commands.git.pre_commit.mypy.mypy_config.mypy_config import MypyConfig
 from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 
 
+from utils.static.privacy import (
+    privatemethod,
+)
+
+
 class MypyCreator(BaseHookCreator, FileCreator):
     
     """
@@ -24,7 +29,8 @@ class MypyCreator(BaseHookCreator, FileCreator):
     """
         
     @override
-    def generate_args (
+    @privatemethod
+    def _generate_args (
         self,
         config: MypyConfig = MypyConfig(),
     ) -> list[str]:
@@ -47,7 +53,8 @@ class MypyCreator(BaseHookCreator, FileCreator):
         return hooks
     
     @override
-    def create_file_text (
+    @privatemethod
+    def _create_file_text (
         self,
         config: MypyConfig = MypyConfig(),
     ) -> dict[str, Any]:
@@ -62,7 +69,7 @@ class MypyCreator(BaseHookCreator, FileCreator):
             dict[str, Any]: Dictionary representing the YAML structure for Mypy.
         """
         
-        hooks = self.generate_args(config)
+        hooks = self._generate_args(config)
         return {
             'repos': [
                 {
@@ -77,7 +84,8 @@ class MypyCreator(BaseHookCreator, FileCreator):
         }
     
     @override
-    def create_file (
+    @privatemethod
+    def _create_file (
         self,
     ) -> None:
         
@@ -87,7 +95,7 @@ class MypyCreator(BaseHookCreator, FileCreator):
         This method checks if the file exists and decides whether to create or update.
         """
         
-        text_dump = self.prepare_text_dump()
+        text_dump = self._prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
@@ -95,7 +103,8 @@ class MypyCreator(BaseHookCreator, FileCreator):
         self.file_map[file_exist](text_dump)
     
     @override
-    def prepare_text_dump (
+    @privatemethod
+    def _prepare_text_dump (
         self,
     ) -> dict[str, Any]:
         
@@ -107,7 +116,7 @@ class MypyCreator(BaseHookCreator, FileCreator):
         """
         
         config = MypyConfig(self.options)
-        text = self.create_file_text(config)
+        text = self._create_file_text(config)
         
         return text
     

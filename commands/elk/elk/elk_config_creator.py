@@ -7,19 +7,28 @@ Elasticsearch, Logstash, and Kibana.
 
 import os
 
+from typing import override
+
+from commands.base_command.base_command import BaseCommand
 from commands.elk.elasticsearch.elasticsearch_config_creator.elasticseacrh_config_creator import ElasticsearchConfigCreator
 from commands.elk.kibana.kibana_config_creator.kibana_config_creator import KibanaConfigCreator
 from commands.elk.logstash.logstash_config_creator.logstash_config_creator import LogstashConfigCreator
 
+from utils.static.privacy import (
+    privatemethod,
+)
 
-class ELKConfigCreator:
+
+class ELKConfigCreator(BaseCommand):
     
     """
     Orchestrates the generation of configuration files for all ELK stack components.
     """
     
-    @staticmethod
-    def create_elk_config() -> None:
+    @privatemethod
+    def _create_elk_config (
+        self,
+    ) -> None:
         
         """
         Creates the necessary configuration files for Elasticsearch, Logstash, and Kibana.
@@ -46,3 +55,10 @@ class ELKConfigCreator:
         os.environ['ELK_SERVICE_ENABLED'] = 1
 
         print('ELK config successfully created!')
+        
+    @override
+    def execute (
+        self,
+    ) -> None:
+        
+        self._create_elk_config()

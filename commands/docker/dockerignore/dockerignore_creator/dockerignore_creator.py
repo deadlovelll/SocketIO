@@ -12,6 +12,8 @@ Docker/Poetry configs, compiled files, and more.
 
 import textwrap
 
+from typing import override
+
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.docker.docker_definers.dockerignore_definers.dockerifnore_definers import (
     PythonCacheDefiner,
@@ -28,9 +30,19 @@ from commands.docker.docker_definers.dockerignore_definers.dockerifnore_definers
 )
 
 from commands.docker.dockerignore.dockerignore_config.dockerignore_config import DockerIgnoreConfig
+from commands.base_command.base_command import BaseCommand
+
+from utils.static.privacy import (
+    privatemethod,
+    ProtectedClass
+)
 
 
-class DockerIgnoreCreator(FileCreator):
+class DockerIgnoreCreator (
+    FileCreator, 
+    BaseCommand,
+    ProtectedClass,
+):
     
     """
     DockerIgnoreCreator generates a `.dockerignore` file based on configuration flags.
@@ -40,8 +52,16 @@ class DockerIgnoreCreator(FileCreator):
     It supports both static and dynamic configuration via the `DockerIgnoreConfig` dataclass.
     """
     
-    @staticmethod
-    def create_file_text (
+    def __init__ (
+        self, 
+        **options,
+    ) -> None:
+        
+        super().__init__(**options)
+    
+    @privatemethod
+    def _create_file_text (
+        self,
         config: DockerIgnoreConfig,
     ) -> str:
         
@@ -96,9 +116,9 @@ class DockerIgnoreCreator(FileCreator):
 
         return textwrap.dedent(content).strip()
     
-    @staticmethod
-    def create_file (
-        **options,
+    @privatemethod
+    def _create_file (
+        self,
     ) -> None:
         
         """
@@ -136,10 +156,17 @@ class DockerIgnoreCreator(FileCreator):
             None: This method writes the .dockerignore file to disk.
         """
         
-        config = DockerIgnoreConfig(**options)
+        config = DockerIgnoreConfig(*self.options)
         
         with open('.dockerignore', 'w') as f:
-            f.write(DockerIgnoreCreator.create_file (
+            f.write(self._create_file_text (
                 config,
             ))
         print(f".dockerignore has been created.")
+        
+    @override
+    def execute (
+        self,
+    ) -> None:
+        
+        self._create_file()

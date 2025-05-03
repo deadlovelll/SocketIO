@@ -15,20 +15,26 @@ from commands.git.pre_commit.pre_commit.pre_commit_creator.pre_commit_creator im
 
 from commands.command_controller.command_mapper.command_mapper import CommandArgumentMapper
 
-class CommandController:
+from utils.static.privacy import (
+    privatemethod,
+    ProtectedClass,
+)
+
+
+class CommandController(ProtectedClass):
     
     def __init__ (
         self,
     ) -> None:
         
-        self.argument_mapper = CommandArgumentMapper()
+        self._argument_mapper = CommandArgumentMapper()
         
-        self.command_map: dict[str, Callable[..., Any]] = {
-            'create_grpc_protocol': GRPCCreator.create_grpc_protocol,
-            'createdockerfile': DockerfileCreator.create_file,
-            'createdockerignore': DockerIgnoreCreator.create_file,
-            'createelastic': ELKConfigCreator.create_elk_config,
-            'creategitignore': GitIgnoreCreator.execute,
+        self._command_map: dict[str, Callable[..., Any]] = {
+            'create_grpc_protocol': GRPCCreator,
+            'createdockerfile': DockerfileCreator,
+            'createdockerignore': DockerIgnoreCreator,
+            'createelastic': ELKConfigCreator,
+            'creategitignore': GitIgnoreCreator,
             'createprecommithooks': PreCommitHooksCreator,
             'createblackhook': BlackCreator,
             'createisorthook': IsortCreator,
@@ -41,30 +47,30 @@ class CommandController:
     ) -> None:
         
         if len(sys.argv) < 2:
-            self.print_help()
+            self._print_help()
             return
 
         command = sys.argv[1]
-        args = self.parse_arguments(sys.argv[2:])
-        print(args)
+        args = self._parse_arguments(sys.argv[2:])
 
-        if command not in self.command_map:
+        if command not in self._command_map:
             print(f"Unknown command: '{command}'")
-            self.print_help()
+            self._print_help()
             return
 
-        handler = self.command_map[command](**args)
+        handler = self._command_map[command](**args)
         handler.execute()
 
-            
-    def parse_arguments (
+    @privatemethod      
+    def _parse_arguments (
         self,
         args: list[str],
     ) -> dict[str, Any]:
         
-        return self.argument_mapper.parse_arguments(args)
+        return self._argument_mapper.parse_arguments(args)
 
-    def print_help (
+    @privatemethod
+    def _print_help (
         self,
     ) -> None:
         

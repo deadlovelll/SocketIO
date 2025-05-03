@@ -10,8 +10,14 @@ import subprocess
 import os
 import textwrap
 
+from typing import override
 
-class GRPCCreator:
+from commands.base_command.base_command import BaseCommand
+
+from utils.static.privacy.privacy import privatemethod
+
+
+class GRPCCreator(BaseCommand):
     
     """
     GRPCCreator provides static methods to generate and compile gRPC `.proto` files.
@@ -19,8 +25,10 @@ class GRPCCreator:
     and stub compilation using `grpc_tools.protoc`.
     """
     
-    @staticmethod
-    def create_grpc_protocol() -> None:
+    @privatemethod
+    def _create_grpc_protocol (
+        self,
+    ) -> None:
         
         """
         Executes the complete gRPC setup workflow:
@@ -29,12 +37,14 @@ class GRPCCreator:
         - Compiles the `.proto` file to generate Python stubs.
         """
         
-        GRPCCreator.create_grpc_stub_directory()
-        GRPCCreator.create_grpc_proto_file()
-        GRPCCreator.compile_grpc_proto_file()
+        self._create_grpc_stub_directory()
+        self._create_grpc_proto_file()
+        self._compile_grpc_proto_file()
     
-    @staticmethod   
-    def create_grpc_proto_file() -> None:
+    @privatemethod
+    def _create_grpc_proto_file (
+        self,
+    ) -> None:
         
         """
         Creates the `grpc_stub` directory if it doesn't already exist.
@@ -67,8 +77,10 @@ class GRPCCreator:
 
         print("socketio.proto file has been created.")
     
-    @staticmethod
-    def compile_grpc_proto_file() -> None:
+    @privatemethod
+    def _compile_grpc_proto_file (
+        self,
+    ) -> None:
         
         """
         Generates a default `socketio.proto` file for a basic Echo gRPC service.
@@ -87,12 +99,21 @@ class GRPCCreator:
         )
         
         print("socketio.proto file has been compiled.")
-        
-    @staticmethod
-    def create_grpc_stub_directory() -> None:
+    
+    @privatemethod
+    def _create_grpc_stub_directory (
+        self,
+    ) -> None:
         
         """
         Compiles the `socketio.proto` file to generate Python stubs using grpc_tools.protoc.
         """
         
         os.mkdir('./grpc_stub')
+    
+    @override
+    def execute (
+        self,
+    ) -> None:
+        
+        self._create_grpc_protocol()

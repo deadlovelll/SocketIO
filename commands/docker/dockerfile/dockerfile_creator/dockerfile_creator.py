@@ -20,8 +20,17 @@ from commands.docker.docker_definers.dockerfile_definers.dockerfile_definers imp
 from commands.docker.dockerfile.dockerfile_config.dockerfile_config import DockerfileConfig
 from interfaces.file_creator_interface.file_creator_interface import FileCreator
 
+from utils.static.privacy import (
+    privatemethod,
+    ProtectedClass,
+)
 
-class DockerfileCreator(BaseCommand, FileCreator):
+
+class DockerfileCreator (
+    BaseCommand, 
+    FileCreator, 
+    ProtectedClass,
+):
     
     """
     Creates a Dockerfile using configurable options.
@@ -45,9 +54,10 @@ class DockerfileCreator(BaseCommand, FileCreator):
         
         super().__init__(**options)
 
-    @staticmethod
-    def create_file_text(
-        config: DockerfileConfig = DockerfileConfig(),
+    @privatemethod
+    def _create_file_text (
+        self,
+        config: DockerfileConfig,
     ) -> str:
         
         """
@@ -100,7 +110,8 @@ CMD ["python", "{config.entrypoint}"]
             """
         )
 
-    def create_file (
+    @privatemethod
+    def _create_file (
         self,
     ) -> None:
         
@@ -109,7 +120,7 @@ CMD ["python", "{config.entrypoint}"]
         """
         
         config = DockerfileConfig(**self.options)
-        text_content = self.create_file_text(config)
+        text_content = self._create_file_text(config)
 
         with open(config.filename, 'w') as f:
             f.write(text_content)
@@ -125,4 +136,4 @@ CMD ["python", "{config.entrypoint}"]
         Executes the Dockerfile creation command.
         """
         
-        self.create_file()
+        self._create_file()

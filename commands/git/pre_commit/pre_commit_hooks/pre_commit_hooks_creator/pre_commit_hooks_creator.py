@@ -13,10 +13,16 @@ from interfaces.file_creator_interface.file_creator_interface import FileCreator
 from commands.git.pre_commit.base.base_hook_creator import BaseHookCreator
 from commands.git.pre_commit.pre_commit_hooks.pre_commit_hooks_config.pre_commit_hooks_config import PreCommitHooksConfig
 
+from utils.static.privacy import (
+    privatemethod,
+    ProtectedClass,
+)
+
 
 class PreCommitHooksCreator (
     BaseHookCreator, 
     FileCreator,
+    ProtectedClass,
 ):
     
     """
@@ -25,9 +31,10 @@ class PreCommitHooksCreator (
     This class builds a list of enabled hooks based on PreCommitHooksConfig,
     fetches the latest version tag, and writes or updates the configuration file.
     """
-        
+    
     @override
-    def generate_args (
+    @privatemethod
+    def _generate_args (
         self,
         config: PreCommitHooksConfig = PreCommitHooksConfig(),
     ) -> list[dict[str, Any]]:
@@ -50,7 +57,8 @@ class PreCommitHooksCreator (
         return hooks
     
     @override
-    def create_file_text (
+    @privatemethod
+    def _create_file_text (
         self,
         config: PreCommitHooksConfig = PreCommitHooksConfig(),
     ) -> dict[str, Any]:
@@ -65,7 +73,7 @@ class PreCommitHooksCreator (
             dict[str, Any]: YAML content to be dumped.
         """
         
-        hooks = self.generate_args(config)
+        hooks = self._generate_args(config)
         return {
             'repos': [
                 {
@@ -77,7 +85,8 @@ class PreCommitHooksCreator (
         }
     
     @override
-    def create_file (
+    @privatemethod
+    def _create_file (
         self,
     ) -> None:
         
@@ -88,7 +97,7 @@ class PreCommitHooksCreator (
         and delegates file creation or update based on file existence.
         """
         
-        text_dump = self.prepare_text_dump()
+        text_dump = self._prepare_text_dump()
         root = Path(__file__).resolve().parents[6]
         pre_commit_file = root / '.pre-commit-config.yaml'
         
@@ -96,6 +105,7 @@ class PreCommitHooksCreator (
         self.file_map[file_exist](text_dump)
     
     @override
+    @privatemethod
     def prepare_text_dump (
         self,
     ) -> dict[str, Any]:
@@ -108,7 +118,7 @@ class PreCommitHooksCreator (
         """
         
         config = PreCommitHooksConfig(**self.options)
-        text = self.create_file_text(config)
+        text = self._create_file_text(config)
         
         return text
     
