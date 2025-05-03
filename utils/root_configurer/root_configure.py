@@ -9,8 +9,6 @@ for module imports.
 import os
 import sys
 
-from utils.static.privacy.privacy import privatemethod
-
 
 class RootConfigurer:
     
@@ -21,7 +19,6 @@ class RootConfigurer:
     that the root is included in `sys.path` to allow absolute imports.
     """
 
-    @privatemethod
     def _set_root (
         self,
     ) -> None:
