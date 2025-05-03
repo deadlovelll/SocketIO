@@ -38,6 +38,9 @@ class SocketIOPortValidator:
             SocketIOInproperPortError: If the port is not between 0 and 65535.
         """
         
+        if not isinstance(port, int):
+            raise SocketIOInproperPortError(port)
+        
         forbidden_ports = list(range(0, 1024)) 
         dynamic_ports = list(range(49152, 65536))
         
