@@ -19,7 +19,7 @@ class BasePsqlModel(metaclass=PsqlModelMeta):
         query = f"""
         SELECT * 
         FROM {self._meta['table_name']} 
-        WHERE {where_clause} LIMIT 1
+        WHERE {where_clause} LIMIT 1;
         """
         values = tuple(filters.values())
         
@@ -32,7 +32,20 @@ class BasePsqlModel(metaclass=PsqlModelMeta):
         query = f"""
         SELECT * 
         FROM {self._meta['table_name']} 
-        WHERE {where_clause} LIMIT 1
+        WHERE {where_clause} LIMIT 1;
+        """
+        values = tuple(filters.values())
+        
+    def selectMany (
+        self, 
+        **filters,
+    ) -> None:
+        
+        where_clause = " AND ".join(f"{k} = %s" for k in filters)
+        query = f"""
+        SELECT * 
+        FROM {self._meta['table_name']} 
+        WHERE {where_clause};
         """
         values = tuple(filters.values())
 
@@ -46,7 +59,7 @@ class BasePsqlModel(metaclass=PsqlModelMeta):
         query = f"""
         INSERT INTO {self._meta['table_name']}
         ({', '.join(fields)})
-        VALUES ({placeholders})
+        VALUES ({placeholders});
         """
     
     def update():
