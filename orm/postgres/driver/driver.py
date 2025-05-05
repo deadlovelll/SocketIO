@@ -1,3 +1,4 @@
+import asyncio
 import socket
 import struct
 
@@ -30,6 +31,62 @@ class PostgresDriver:
                 
         self.message_builder = PostgresDriverMessageBuilder()
         self.message_handler = PostgresDriverMessageHandler()
+        
+    async def establish_connection (
+        self,
+    ) -> None:
+        
+        self.connection = socket.create_connection((self.host, self.port))
+        psql_message = self.message_builder.build_startup_message(
+            self.user,
+            self.database_name,
+            self.password,
+        )
+        await self._send_message(psql_message)
+        await self._consume_until_ready()
+        
+    async def close_connection (
+        self,
+    ) -> None:
+        
+        if self.connection is not None:
+            await self.connection.close()
+            self.connection = None
+     
+    async def reconnect (
+        self,
+    ) -> None:
+        
+        await self.close_connection()
+        await self.establish_connection()
+            
+    def __enter__ (
+        self,
+    ) -> None:
+        
+        asyncio.run(self._ensure_connection())
+        return self
+    
+    def __exit__ (
+        self, exc_type, exc_val, exc_tb,
+    ) -> None:
+        
+        asyncio.run(self.close_connection())
+        
+    async def execute (
+        self,
+        query,
+    ) -> None:
+        
+        byte_message = self._build_query_message(query)
+        if 'INSERT' in query:
+            asyncio.create_task (
+                self._send_message(byte_message)
+            )
+            return
+        self._send_message(byte_message)
+        result = self._consume_messages()
+        return result 
       
     @privatemethod  
     async def _receive_message (
@@ -44,7 +101,8 @@ class PostgresDriver:
         payload = self.connection.recv(length)
         return msg_type, payload
     
-    async def send_message (
+    @privatemethod
+    async def _send_message (
         self,
         message: bytes,
     ) -> None:
@@ -52,7 +110,8 @@ class PostgresDriver:
         await self._ensure_connection()
         self.connection.sendall(message)
     
-    async def build_query_message (
+    @privatemethod
+    async def _build_query_message (
         self,
         query,
     ) -> bytes:
@@ -61,7 +120,8 @@ class PostgresDriver:
         byte_length = len(query_bytes) + 4
         return b'Q' + struct.pack('!I', byte_length) + query_bytes
     
-    async def consume_messages (
+    @privatemethod
+    async def _consume_messages (
         self,
     ) -> None:
         
@@ -103,19 +163,6 @@ class PostgresDriver:
                 self.connection.sendall(result)
             elif result == 'break':  
                 return
-            
-    async def establish_connection (
-        self,
-    ) -> None:
-        
-        self.connection = socket.create_connection((self.host, self.port))
-        psql_message = self.message_builder.build_startup_message(
-            self.user,
-            self.database_name,
-            self.password,
-        )
-        await self.send_message(psql_message)
-        await self._consume_until_ready()
         
     @privatemethod
     async def _ensure_connection (
@@ -124,35 +171,3 @@ class PostgresDriver:
         
         if self.connection is None:
             await self.establish_connection()
-        
-    async def close_connection (
-        self,
-    ) -> None:
-        
-        if self.connection is not None:
-            await self.connection.close()
-            self.connection = None
-     
-    async def reconnect (
-        self,
-    ) -> None:
-        
-        await self.close_connection()
-        await self.establish_connection()
-            
-    def __enter__ (
-        self,
-    ) -> None:
-        
-        self._ensure_connection()
-        return self
-    
-    def __exit__ (
-        self, exc_type, exc_val, exc_tb,
-    ) -> None:
-        
-        self.close_connection()
-        
-    
-        
-    
