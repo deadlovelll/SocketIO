@@ -8,12 +8,35 @@ class BasePsqlModel(metaclass=PsqlModelMeta):
     ) -> None:
         
         for key in self._meta['fields']:
-            setattr(self, key, kwargs.get(key))
+            setattr(self, key, kwargs.get(key)) 
     
-    def get():
-        pass
-    
-    def create (
+    def select (
+        self, 
+        **filters,
+    ) -> None:
+        
+        where_clause = " AND ".join(f"{k} = %s" for k in filters)
+        query = f"""
+        SELECT * 
+        FROM {self._meta['table_name']} 
+        WHERE {where_clause} LIMIT 1
+        """
+        values = tuple(filters.values())
+        
+    def selectOne (
+        self, 
+        **filters,
+    ) -> None:
+        
+        where_clause = " AND ".join(f"{k} = %s" for k in filters)
+        query = f"""
+        SELECT * 
+        FROM {self._meta['table_name']} 
+        WHERE {where_clause} LIMIT 1
+        """
+        values = tuple(filters.values())
+
+    def insert (
         self,
     ) -> None:
         
