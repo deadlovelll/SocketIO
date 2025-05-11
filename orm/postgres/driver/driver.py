@@ -37,6 +37,7 @@ class PostgresDriver:
     ) -> None:
         
         self.connection = socket.create_connection((self.host, self.port))
+        self.connection.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
         psql_message = self.message_builder.build_startup_message(
             self.user,
             self.database_name,
@@ -60,18 +61,21 @@ class PostgresDriver:
         await self.close_connection()
         await self.establish_connection()
             
-    def __enter__ (
+    async def __aenter__ (
         self,
-    ) -> None:
+    ) -> "PostgresDriver":
         
-        asyncio.run(self._ensure_connection())
+        await self._ensure_connection()
         return self
-    
-    def __exit__ (
-        self, exc_type, exc_val, exc_tb,
+
+    async def __aexit__ (
+        self, 
+        exc_type, 
+        exc_val, 
+        exc_tb,
     ) -> None:
         
-        asyncio.run(self.close_connection())
+        await self.close_connection()
         
     async def execute (
         self,
@@ -79,13 +83,8 @@ class PostgresDriver:
     ) -> None:
         
         byte_message = self._build_query_message(query)
-        if 'INSERT' in query:
-            asyncio.create_task (
-                self._send_message(byte_message)
-            )
-            return
-        self._send_message(byte_message)
-        result = self._consume_messages()
+        await self._send_message(byte_message)
+        result = await self._consume_messages()
         return result 
       
     @privatemethod  
@@ -93,12 +92,14 @@ class PostgresDriver:
         self,
     ) -> Union[Optional[str], Optional[dict]]:
         
-        header = self.connection.recv(5)
+        buf = bytearray(5)
+        self.connection.recv_into(buf)
+        header = bytes(buf)
         if len(header) < 5:
             return None, None
         msg_type = header[0:1]
         length = struct.unpack('!I', header[1:5])[0]-4
-        payload = self.connection.recv(length)
+        payload = self.connection.recv_into(length)
         return msg_type, payload
     
     @privatemethod
