@@ -1,5 +1,7 @@
 from orm.postgres.model.meta.meta_model import PsqlModelMeta
 
+from utils.static.privacy.privacy import privatemethod
+
 class BasePsqlModel(metaclass=PsqlModelMeta):
     
     def __init__ (
@@ -15,6 +17,8 @@ class BasePsqlModel(metaclass=PsqlModelMeta):
         **filters,
     ) -> None:
         
+        self._verify_filters(filters, 'SELECT')
+        
         where_clause = " AND ".join(f"{k} = %s" for k in filters)
         query = f"""
         SELECT * 
@@ -28,6 +32,8 @@ class BasePsqlModel(metaclass=PsqlModelMeta):
         **filters,
     ) -> None:
         
+        self._verify_filters(filters, 'SELECT')
+        
         where_clause = " AND ".join(f"{k} = %s" for k in filters)
         query = f"""
         SELECT * 
@@ -40,6 +46,8 @@ class BasePsqlModel(metaclass=PsqlModelMeta):
         self, 
         **filters,
     ) -> None:
+        
+        self._verify_filters(filters, 'SELECT')
         
         where_clause = " AND ".join(f"{k} = %s" for k in filters)
         query = f"""
@@ -61,9 +69,30 @@ class BasePsqlModel(metaclass=PsqlModelMeta):
         ({', '.join(fields)})
         VALUES ({placeholders});
         """
-    
+   
     def update():
         pass
     
-    def delete():
-        pass
+    def delete (
+        self,
+        **filters,
+    ) -> None:
+        
+        self._verify_filters(filters, 'DELETE')
+        
+        where_clause = " AND ".join(f"{k} = %s" for k in filters)
+        query = f"""
+        DELETE  
+        FROM {self._meta['table_name']} 
+        WHERE {where_clause};
+        """
+    
+    @privatemethod
+    def _verify_filters (
+        self, 
+        filters, 
+        operation_name,
+    ) -> None:
+        
+        if not filters:
+            raise ValueError(f"{operation_name} with no filters is unsafe")
