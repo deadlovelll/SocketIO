@@ -10,37 +10,37 @@ from orm.postgres.driver.message_builder.driver_message_builder import (
 from orm.postgres.driver.message_handlers.driver_message_handler import (
     PostgresDriverMessageHandler,
 )
-from utils.static.privacy.privacy import privatemethod
+from utils import privatemethod, ProtectedClass
 
 
-class PostgresDriver:
+class PostgresDriver(ProtectedClass):
     
     def __init__ (
         self,
         driver_config: PostgresDriverConfig,
     ) -> None:
         
-        self.host = driver_config.host
-        self.port = driver_config.port
-        self.user = driver_config.user
-        self.password = driver_config.password
-        self.database_name = driver_config.database_name
+        self._host = driver_config.host
+        self._port = driver_config.port
+        self._user = driver_config.user
+        self._password = driver_config.password
+        self._database_name = driver_config.database_name
         
-        self.connection = None
+        self._connection = None
                 
-        self.message_builder = PostgresDriverMessageBuilder()
-        self.message_handler = PostgresDriverMessageHandler()
+        self._message_builder = PostgresDriverMessageBuilder()
+        self._message_handler = PostgresDriverMessageHandler()
         
     async def establish_connection (
         self,
     ) -> None:
         
-        self.connection = socket.create_connection((self.host, self.port))
-        self.connection.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
-        psql_message = self.message_builder.build_startup_message(
-            self.user,
-            self.database_name,
-            self.password,
+        self._connection = socket.create_connection((self._host, self._port))
+        self._connection.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+        psql_message = self._message_builder.build_startup_message(
+            self._user,
+            self._database_name,
+            self._password,
         )
         await self._send_message(psql_message)
         await self._consume_until_ready()
@@ -49,9 +49,9 @@ class PostgresDriver:
         self,
     ) -> None:
         
-        if self.connection is not None:
-            await self.connection.close()
-            self.connection = None
+        if self._connection is not None:
+            self._connection.close()
+            self._connection = None
      
     async def reconnect (
         self,
@@ -91,12 +91,12 @@ class PostgresDriver:
         self,
     ) -> Union[Optional[str], Optional[dict]]:
         
-        header = self.connection.recv(5)
+        header = self._connection.recv(5)
         if len(header) < 5:
             return None, None
         msg_type = header[0:1]
         length = struct.unpack('!I', header[1:5])[0]-4
-        payload = self.connection.recv(length)
+        payload = self._connection.recv(length)
         return msg_type, payload
     
     @privatemethod
@@ -106,7 +106,7 @@ class PostgresDriver:
     ) -> None:
         
         await self._ensure_connection()
-        self.connection.sendall(message)
+        self._connection.sendall(message)
     
     @privatemethod
     async def _build_query_message (
@@ -125,20 +125,19 @@ class PostgresDriver:
         
         while True:
             msg_type, payload = await self._receive_message()
-            print(msg_type, payload)
             if msg_type is None:
                 break
-            result = self.message_handler.handle (
+            result = self._message_handler.handle (
                 msg_type,
                 payload,
-                self.password,
-                self.user,
+                self._password,
+                self._user,
             )
 
             if isinstance(result, bytes):
-                self.connection.sendall(result)
+                self._connection.sendall(result)
             elif result == 'ready':
-                rows = self.message_handler.get_data_rows()
+                rows = self._message_handler.get_data_rows()
                 return rows
     
     @privatemethod       
@@ -151,15 +150,15 @@ class PostgresDriver:
             if msg_type is None:
                 break
             
-            result = self.message_handler.handle(
+            result = self._message_handler.handle(
                 msg_type,
                 payload,
-                self.password,
-                self.user,
+                self._password,
+                self._user,
             )
             
             if isinstance(result, bytes):
-                self.connection.sendall(result)
+                self._connection.sendall(result)
             elif result == 'break':  
                 return
         
@@ -168,5 +167,5 @@ class PostgresDriver:
         self,
     ) -> None:
         
-        if self.connection is None:
+        if self._connection is None:
             await self.establish_connection()
