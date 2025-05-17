@@ -1,4 +1,3 @@
-import asyncio
 import socket
 import struct
 
@@ -82,7 +81,7 @@ class PostgresDriver:
         query,
     ) -> None:
         
-        byte_message = self._build_query_message(query)
+        byte_message = await self._build_query_message(query)
         await self._send_message(byte_message)
         result = await self._consume_messages()
         return result 
@@ -93,14 +92,23 @@ class PostgresDriver:
     ) -> Union[Optional[str], Optional[dict]]:
         
         buf = bytearray(5)
-        self.connection.recv_into(buf)
         header = bytes(buf)
         if len(header) < 5:
             return None, None
-        msg_type = header[0:1]
-        length = struct.unpack('!I', header[1:5])[0]-4
-        payload = self.connection.recv_into(length)
-        return msg_type, payload
+        msg_type = header[0:1].decode('utf-8', errors='ignore')
+        raw_length = struct.unpack('!I', header[1:5])[0]
+
+        if raw_length < 4:
+            return msg_type, None  
+
+        length = raw_length - 4
+        payload_buf = bytearray(length)
+        n = self.connection.recv_into(payload_buf)
+        if n < length:
+            return msg_type, None
+
+        print(msg_type, payload_buf)
+        return msg_type, payload_buf[:length]
     
     @privatemethod
     async def _send_message (
@@ -149,7 +157,7 @@ class PostgresDriver:
     ) -> None:
         
         while True:
-            msg_type, payload = self._receive_message()
+            msg_type, payload = await self._receive_message()
             if msg_type is None:
                 break
             
