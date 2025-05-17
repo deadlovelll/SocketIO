@@ -22,5 +22,7 @@ class TestDetectors(unittest.TestCase):
     def test_select_query(self) -> None:
         driver = PostgresDriver(self.config)
         query = "SELECT 1;"
+        asyncio.run(driver.establish_connection())
         result = asyncio.run(driver.execute(query))
+        print(result)
         self.assertEqual(result, '1')

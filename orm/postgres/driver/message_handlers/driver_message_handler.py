@@ -139,8 +139,7 @@ class PostgresDriverMessageHandler(ProtectedClass):
     
         """Handles 'Ready For Query' messages."""
         
-        return 'break'
-        
+        return 'ready'
     
     @privatemethod
     def _handle_row_description (

@@ -94,7 +94,7 @@ class PostgresDriverAuthMessageHandler (
             user (str): The client's username.
 
         Returns:
-            str | bytes: 'break' if authentication is complete, or a response payload
+            str | bytes: 'ready' if authentication is complete, or a response payload
             for the required authentication step.
 
         Raises:
@@ -105,7 +105,7 @@ class PostgresDriverAuthMessageHandler (
 
         match status_code:
             case 0:
-                return 'break'
+                return 'ready'
             case 3:
                 return self._get_encoded_password(password)
             case 5:

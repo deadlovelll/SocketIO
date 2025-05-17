@@ -91,24 +91,13 @@ class PostgresDriver:
         self,
     ) -> Union[Optional[str], Optional[dict]]:
         
-        buf = bytearray(5)
-        header = bytes(buf)
+        header = self.connection.recv(5)
         if len(header) < 5:
             return None, None
-        msg_type = header[0:1].decode('utf-8', errors='ignore')
-        raw_length = struct.unpack('!I', header[1:5])[0]
-
-        if raw_length < 4:
-            return msg_type, None  
-
-        length = raw_length - 4
-        payload_buf = bytearray(length)
-        n = self.connection.recv_into(payload_buf)
-        if n < length:
-            return msg_type, None
-
-        print(msg_type, payload_buf)
-        return msg_type, payload_buf[:length]
+        msg_type = header[0:1]
+        length = struct.unpack('!I', header[1:5])[0]-4
+        payload = self.connection.recv(length)
+        return msg_type, payload
     
     @privatemethod
     async def _send_message (
@@ -135,7 +124,8 @@ class PostgresDriver:
     ) -> None:
         
         while True:
-            msg_type, payload = self._receive_message()
+            msg_type, payload = await self._receive_message()
+            print(msg_type, payload)
             if msg_type is None:
                 break
             result = self.message_handler.handle (
