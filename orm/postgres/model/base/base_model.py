@@ -1,5 +1,6 @@
 from orm.postgres.model.meta.meta_model import PsqlModelMeta
 
+from orm.postgres.driver.driver import PostgresDriver
 from utils.static.privacy.privacy import privatemethod
 
 class BasePsqlModel(metaclass=PsqlModelMeta):
@@ -12,20 +13,23 @@ class BasePsqlModel(metaclass=PsqlModelMeta):
         for key in self._meta['fields']:
             setattr(self, key, kwargs.get(key)) 
     
-    def select (
+    async def select (
         self, 
         **filters,
     ) -> None:
         
         self._verify_filters(filters, 'SELECT')
         
-        where_clause = " AND ".join(f"{k} = %s" for k in filters)
-        query = f"""
-        SELECT * 
-        FROM {self._meta['table_name']} 
-        WHERE {where_clause} LIMIT 1;
-        """
-        values = tuple(filters.values())
+        with PostgresDriver() as cursor:
+            where_clause = " AND ".join(f"{k} = %s" for k in filters)
+            query = f"""
+            SELECT * 
+            FROM {self._meta['table_name']} 
+            WHERE {where_clause} LIMIT 1;
+            """
+            values = tuple(filters.values())
+            
+            await cursor.execute(query, values)
         
     def selectOne (
         self, 
