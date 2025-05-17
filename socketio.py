@@ -17,7 +17,7 @@ Designed for extensibility and testability, this server architecture does not re
 core of its I/O processing but wraps asynchronous logic where necessary.
 """
 
-from SocketIO.utils.root_configurer.root_configure import RootConfigurer
+from utils import RootConfigurer
 RootConfigurer().config()
 
 import asyncio
@@ -25,21 +25,24 @@ import os
 import sys
 import psutil
 
-from decorators.lifecycle_hooks.lifecycle_hooks import LifecycleHooks
-from decorators.rate_limit_decorator.rate_limit import RateLimitation
-from decorators.cache_decorator.cache_decorator import CacheDecorator
-from decorators.route_decorator.IO_Router import IORouter
-from decorators.middleware.middleware import IOMiddleware
-from decorators.bound_handlers.bound_handlers import BoundHandlers
-from decorators.cache_decorator.redis_caching.redis_config import RedisConfig
-
-from handlers.__preparation_handler.__preparation_handler import PreparationHandler
-from handlers.request_consumer_handler.request_consumer_handler import RequestConsumerHandler
-from handlers.grpc_handler.grpc_handler import GRPCHandler
+from decorators import (
+    LifecycleHooks,
+    RateLimitation,
+    CacheDecorator,
+    IOMiddleware,
+    IORouter,
+    BoundHandlers,
+    RedisConfig,
+)
+from handlers import (
+    PreparationHandler,
+    RequestConsumerHandler,
+    GRPCHandler,
+)
 
 from commands.command_controller.command_controller.command_controller import CommandController
 
-from utils.socketio_validators.socketio_port_validator.socketio_port_validator import SocketIOPortValidator
+from utils import SocketIOPortValidator
 
 
 class SocketIO (
